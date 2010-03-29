@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">Units</string>
+    <string name="button_go">Go!</string>
+    <string name="have_label">You have:</string>
+    <string name="have_hint">(100km/hour) * 5 minutes</string>
+    <string name="want_label">You want:</string>
+    <string name="want_hint">hours</string>
+</resources>
