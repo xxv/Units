@@ -46,7 +46,7 @@ package net.sourceforge.unitsinjava;
  *  a unit or a prefix.
  */
 
-abstract class Factor extends Entity
+public abstract class Factor extends Entity
 {
   //-------------------------------------------------------------------
   /**  Definition string. */
@@ -73,12 +73,16 @@ abstract class Factor extends Entity
   //-------------------------------------------------------------------
   boolean ignoredIf(Ignore what)
     {
-      if (what==Ignore.PRIMITIVE && isPrimitive) return true;
-      if (what==Ignore.DIMLESS   && isDimless) return true;
+      if (what==Ignore.PRIMITIVE && isPrimitive) {
+		return true;
+	}
+      if (what==Ignore.DIMLESS   && isDimless) {
+		return true;
+	}
       return false;
     }
 
-  enum Ignore {NONE, PRIMITIVE, DIMLESS};
+  public enum Ignore {NONE, PRIMITIVE, DIMLESS};
 
   //=====================================================================
   //  Construct object for factor 'nam' appearing at 'loc'.
@@ -89,8 +93,9 @@ abstract class Factor extends Entity
       super(nam,loc);
       def = df;
 
-      if (df.equals("!"))
-        isPrimitive = true;
+      if (df.equals("!")) {
+		isPrimitive = true;
+	}
 
       if (df.equals("!dimensionless"))
       {
@@ -116,28 +121,31 @@ abstract class Factor extends Entity
       //  return its Unit object.
       //---------------------------------------------------------------
       Unit u = Unit.find(name);
-      if (u!=null)
-        return new Factor[]{null,u};
+      if (u!=null) {
+		return new Factor[]{null,u};
+	}
 
       //---------------------------------------------------------------
       //  The 'name' is not a unit name.
       //  See if it is a prefix or prefixed unit name.
       //---------------------------------------------------------------
-      Prefix p = Prefix.find(name);
+      final Prefix p = Prefix.find(name);
 
       //---------------------------------------------------------------
       //  Return null if not a prefix or prefixed unit name.
       //---------------------------------------------------------------
-      if (p==null)
-        return null;
+      if (p==null) {
+		return null;
+	}
 
       //---------------------------------------------------------------
       //  Get the prefix string.
       //  If it is all of 'name', return its Prefix object.
       //---------------------------------------------------------------
-      String prefix = p.name;
-      if (name.equals(prefix))
-        return new Factor[]{p,null};
+      final String prefix = p.name;
+      if (name.equals(prefix)) {
+		return new Factor[]{p,null};
+	}
 
       //---------------------------------------------------------------
       //  The 'name' has a known prefix 'prefix'.
@@ -145,10 +153,11 @@ abstract class Factor extends Entity
       //  If 'rest' (or its singular form) is a unit name,
       //  return the Prefix and Unit objects.
       //---------------------------------------------------------------
-      String rest = name.substring(prefix.length(),name.length());
+      final String rest = name.substring(prefix.length(),name.length());
       u = Unit.find(rest);
-      if (u!=null)
-        return new Factor[]{p,u};
+      if (u!=null) {
+		return new Factor[]{p,u};
+	}
 
       //---------------------------------------------------------------
       //  Return null if 'rest' is not a unit name.
@@ -169,22 +178,28 @@ abstract class Factor extends Entity
 
       while(true)
       {
-        Factor[] pu = split(def);
+        final Factor[] pu = split(def);
 
-        if (pu==null) break; // Not a prefix-unit
+        if (pu==null) {
+			break; // Not a prefix-unit
+		}
 
-        Factor pref = pu[0];
-        Factor unit = pu[1];
+        final Factor pref = pu[0];
+        final Factor unit = pu[1];
 
         if (unit==null)      // Prefix only
         {
-          if (pref.isNumber) break;
+          if (pref.isNumber) {
+			break;
+		}
           def = pref.def;
         }
 
         else if (pref==null) // Unit only
         {
-          if (unit.isPrimitive || unit.isNumber) break;
+          if (unit.isPrimitive || unit.isNumber) {
+			break;
+		}
           def = unit.def;
         }
 

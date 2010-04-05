@@ -8,9 +8,17 @@
 <TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/have_label"></TextView><EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/have" android:hint="@string/have_hint"></EditText>
 <TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/want_label"></TextView><EditText android:layout_height="wrap_content" android:hint="@string/want_hint" android:id="@+id/want" android:layout_width="fill_parent"></EditText><Button android:layout_height="wrap_content" android:id="@+id/go" android:text="@string/button_go" android:layout_width="fill_parent"></Button>
 
+<TextView android:id="@+id/error_msg"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:textColor="#ff0000" />
 
-
-<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/answer"></TextView>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/answer_log"/>
+<TextView android:id="@+id/answer"
+ 	android:textSize="20sp"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content" 
+	/>
 
 
 </LinearLayout>

@@ -33,7 +33,6 @@
 
 package net.sourceforge.unitsinjava;
 
-import java.util.Vector;
 
 
 
@@ -46,7 +45,7 @@ import java.util.Vector;
  * Holds common methods used by other classes.
  */
 
-class Util
+public class Util
 {
   //=====================================================================
   //  indexOf
@@ -66,9 +65,11 @@ class Util
    */
   static int indexOf(final String chars, final String s, int start)
     {
-      for (int i=start;i<s.length();i++)
-        if (chars.indexOf(s.charAt(i))>=0)
-          return i;
+      for (int i=start;i<s.length();i++) {
+		if (chars.indexOf(s.charAt(i))>=0) {
+			return i;
+		}
+	}
       return s.length();
     }
 
@@ -82,10 +83,11 @@ class Util
    * @param  d number to be converted.
    * @return   String representation of <code>d</code>.
    */
-  static String shownumber(double d)
+  public static String shownumber(double d)
     {
-      if (d==(int)d)
-        return Integer.toString((int)d);
+      if (d==(int)d) {
+		return Integer.toString((int)d);
+	}
 
       return Float.toString((float)d);
     }
@@ -107,7 +109,7 @@ class Util
    */
   static int strtod (final String s, int i)
     {
-      NumberMatcher nm = new NumberMatcher(s,i);
+      final NumberMatcher nm = new NumberMatcher(s,i);
       return nm.match();
     }
 
@@ -132,7 +134,7 @@ class Util
 
   private static class NumberMatcher
   {
-    private String s;
+    private final String s;
     private int i;    // matched so far
     private int j;    // currently look at
     private int c;    // character at j
@@ -163,7 +165,9 @@ class Util
     //===================================================================
     private boolean symbol(int n)
       {
-        if (c!=n) return false;
+        if (c!=n) {
+			return false;
+		}
         getNext();
         return true;
       }
@@ -173,7 +177,9 @@ class Util
     //===================================================================
     private boolean oneOf(String s)
       {
-        if (s.indexOf(c)<0) return false;
+        if (s.indexOf(c)<0) {
+			return false;
+		}
         getNext();
         return true;
       }
@@ -189,10 +195,18 @@ class Util
     //===================================================================
     private boolean mantissa1()
       {
-        if (!digit()) return false;
-        while(digit());
-        if (!symbol('.')) return true;
-        while(digit());
+        if (!digit()) {
+			return false;
+		}
+        while(digit()) {
+			;
+		}
+        if (!symbol('.')) {
+			return true;
+		}
+        while(digit()) {
+			;
+		}
         return true;
       }
 
@@ -201,9 +215,15 @@ class Util
     //===================================================================
     private boolean mantissa2()
       {
-        if (!symbol('.')) return false;
-        if (!digit()) return false;
-        while(digit());
+        if (!symbol('.')) {
+			return false;
+		}
+        if (!digit()) {
+			return false;
+		}
+        while(digit()) {
+			;
+		}
         return true;
       }
 
@@ -212,10 +232,16 @@ class Util
     //===================================================================
     private boolean exponent()
       {
-        if (!oneOf("eE")) return true;
+        if (!oneOf("eE")) {
+			return true;
+		}
         oneOf("+-");
-        if (!digit()) return false;
-        while(digit());
+        if (!digit()) {
+			return false;
+		}
+        while(digit()) {
+			;
+		}
         return true;
       }
 
@@ -224,13 +250,21 @@ class Util
     //===================================================================
     int match()
       {
-        while(oneOf(" \t"));
+        while(oneOf(" \t")) {
+			;
+		}
         oneOf("+-");
-        if (!mantissa1()&&!mantissa2()) return i;
+        if (!mantissa1()&&!mantissa2()) {
+			return i;
+		}
         i = j;
-        if (!exponent()) return i;
+        if (!exponent()) {
+			return i;
+		}
         i = j;
-        while(oneOf(" \t"));
+        while(oneOf(" \t")) {
+			;
+		}
         return j;
       }
   }

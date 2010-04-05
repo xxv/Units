@@ -77,9 +77,9 @@ public class Value
   //-------------------------------------------------------------------
   //  Components of a Value
   //-------------------------------------------------------------------
-  double factor;
-  Product numerator;
-  Product denominator;
+  public double factor;
+  public Product numerator;
+  public Product denominator;
 
   //-------------------------------------------------------------------
   /** Semantics of unit expressions.
@@ -140,7 +140,7 @@ public class Value
    *  @param  s a unit expression.
    *  @return Value represented by the expression. */
   //=====================================================================
-  static Value parse(final String s)
+  public static Value parse(final String s)
     {
       final Parser parser = new Parser();           // Instantiate Parser + Semantics
       final Semantics sem = parser.semantics();     // Access Semantics
@@ -257,7 +257,7 @@ public class Value
   /** Prints out this Value.
    *  <br>(Originally 'showunit'.) */
   //=====================================================================
-  void show()
+  public void show()
     { Env.out.println(asString()); }
 
 
@@ -569,7 +569,7 @@ public class Value
   //=====================================================================
   /** Reduces this Value as much as possible. */
   //=====================================================================
-  void completereduce()
+  public void completereduce()
     {
       /* Keep calling reduceproduct until it doesn't do anything */
       while (true)

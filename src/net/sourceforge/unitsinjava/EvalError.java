@@ -44,7 +44,7 @@ package net.sourceforge.unitsinjava;
  *  Exception thrown by evaluation of unit expression.
  */
 
-class EvalError extends Error
+public class EvalError extends Error
 {
   //-------------------------------------------------------------------
   //  Constructor
