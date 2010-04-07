@@ -1,24 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-
-<TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/have_label"></TextView><EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/have" android:hint="@string/have_hint"></EditText>
-<TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/want_label"></TextView><EditText android:layout_height="wrap_content" android:hint="@string/want_hint" android:id="@+id/want" android:layout_width="fill_parent"></EditText><Button android:layout_height="wrap_content" android:id="@+id/go" android:text="@string/button_go" android:layout_width="fill_parent"></Button>
-
-<TextView android:id="@+id/error_msg"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:textColor="#ff0000" />
-
-<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/answer_log"/>
-<TextView android:id="@+id/answer"
- 	android:textSize="20sp"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content" 
-	/>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
 
 
-</LinearLayout>
+	<LinearLayout android:orientation="vertical"
+		android:layout_width="fill_parent" android:layout_height="fill_parent">
+		<TextView android:id="@+id/result" android:layout_width="fill_parent"
+			android:textAppearance="?android:attr/textAppearanceLarge"
+			android:gravity="center_vertical" android:paddingLeft="6dip"
+			android:minHeight="?android:attr/listPreferredItemHeight"
+			android:layout_height="wrap_content" />
+
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="@string/have_label" />
+			
+		<EditText android:id="@+id/have" android:layout_height="wrap_content"
+			android:layout_width="fill_parent" android:hint="@string/have_hint" />
+
+		<TextView android:text="@string/want_label"
+			android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+		<EditText android:id="@+id/want" android:layout_height="wrap_content"
+			android:hint="@string/want_hint" android:layout_width="fill_parent" />
+
+		<Button android:id="@+id/go" android:layout_height="wrap_content"
+			android:text="@string/button_go" android:layout_width="fill_parent" />
+
+		<TextView android:id="@+id/error_msg" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:textColor="#ff0000" />
+
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/answer_log" />
+		
+	</LinearLayout>
+	
+		<LinearLayout android:id="@+id/history_drawer"
+    	android:background="#000000"
+		android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical">
+
+		<ListView android:id="@+id/history_list"
+			android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1" />
+
+			<Button android:id="@+id/history_close"
+			android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="↑" />
+			
+	</LinearLayout>
+</FrameLayout>
