@@ -75,7 +75,7 @@ public class ValueGui extends Value {
 	        throw new ReciprocalException(invfrom);
 	      }
 
-	      return toValue.factor / fromValue.factor;
+	      return fromValue.factor / toValue.factor;
 	    }
 
 	  public static class ConversionException extends Exception {
