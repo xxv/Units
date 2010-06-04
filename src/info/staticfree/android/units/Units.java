@@ -6,29 +6,34 @@ import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Util;
 import net.sourceforge.unitsinjava.Value;
 import android.app.Activity;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.view.View.OnLongClickListener;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.MultiAutoCompleteTextView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 
 public class Units extends Activity implements OnClickListener, OnFocusChangeListener {
 	private final static String TAG = Units.class.getSimpleName();
 	
-	private EditText wantEditText;
-	private EditText haveEditText;
-	private Button goButton;
+	private MultiAutoCompleteTextView wantEditText;
+	private MultiAutoCompleteTextView haveEditText;
 	private TextView resultView;
 	private TextView errorMsgView;
 	private ListView history;
@@ -37,15 +42,17 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
 	private LinearLayout numberpad;
 	private EditText currentEdit;
 	
+	private UnitUsageDBHelper unitUsageDBHelper;
+	private SQLiteDatabase unitUsageDB;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate()");
         setContentView(R.layout.main);
         
-        wantEditText = ((EditText)findViewById(R.id.want));
-        haveEditText = ((EditText)findViewById(R.id.have));
-        goButton = ((Button)findViewById(R.id.go));
+        wantEditText = ((MultiAutoCompleteTextView)findViewById(R.id.want));
+        haveEditText = ((MultiAutoCompleteTextView)findViewById(R.id.have));
         errorMsgView = ((TextView)findViewById(R.id.error_msg));
         resultView = ((TextView)findViewById(R.id.result));
         history = ((ListView)findViewById(R.id.history_list));
@@ -57,7 +64,6 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
         haveEditText.addTextChangedListener(textChangeWatcher);
         wantEditText.setOnFocusChangeListener(this);
         haveEditText.setOnFocusChangeListener(this);
-		goButton.setOnClickListener(this);
 		
 		currentEdit = haveEditText;
 		
@@ -79,6 +85,9 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
 				
 			}
 		});
+		
+		findViewById(R.id.swap_inputs).setOnClickListener(buttonListener);
+		
 		Log.d(TAG, "setting listeners");
 		// Go through the numberpad and add all the onClick listeners.
 		// Make sure to update if the layout changes.
@@ -87,10 +96,22 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
 			final ViewGroup v = (ViewGroup)numberpad.getChildAt(row);
 			final int columns = v.getChildCount();
 			for (int column = 0; column < columns; column++){
-				v.getChildAt(column).setOnClickListener(buttonListener);
+				final View button = v.getChildAt(column);
+				button.setOnClickListener(buttonListener);
+				button.setOnLongClickListener(buttonListener);
 			}
 		}
 		Log.d(TAG, "Done.");
+		
+		unitUsageDBHelper = new UnitUsageDBHelper(this);
+		unitUsageDB = unitUsageDBHelper.getWritableDatabase();
+		final SimpleCursorAdapter usageAdapter = unitUsageDBHelper.getUnitPrefixAdapter(this, unitUsageDB);
+		haveEditText.setAdapter(usageAdapter);
+		wantEditText.setAdapter(usageAdapter);
+		
+		final UnitsMultiAutoCompleteTokenizer tokenizer = new UnitsMultiAutoCompleteTokenizer();
+		haveEditText.setTokenizer(tokenizer);
+		wantEditText.setTokenizer(tokenizer);
     }
    
     private void setHistoryVisible(boolean visible){
@@ -123,10 +144,6 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
     	final HistoryEntry histEnt = new HistoryEntry(haveExpr, wantExpr, result);
     	resultView.setText(histEnt.toString());
     	historyAdapter.add(histEnt);
-    }
-    
-    public void loadAutocomplete(){
-    	
     }
     
     public void updateCalculation(boolean incremental) throws ConversionException {
@@ -203,10 +220,8 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
     }
 
     public void onClick(View v) {
+    	// XXX delete me
     	switch (v.getId()){
-    	case R.id.go:
-    		go();
-    		break;
     	}	
     }
     
@@ -237,26 +252,60 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
 		}
 	};
 	
-	private final OnClickListener buttonListener = new OnClickListener() {
-		
+	private final ButtonEventListener buttonListener = new ButtonEventListener();
+	
+	private class ButtonEventListener implements OnClickListener, OnLongClickListener {
 		
 		public void onClick(View v) {
-			final Button cb = (Button)v;
 			switch (v.getId()){
+			case R.id.backspace:{
+				dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
+				dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL));
+				
+			} break;
+			
 			case R.id.equal:
 				go();
 				break;
+				
 			case R.id.mul:
-				currentEdit.append("*");
+				dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_STAR));
 				break;
+				
 			case R.id.div:
-				currentEdit.append("/");
+				dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_SLASH));
+				break;
+				
+			case R.id.minus:
+				dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MINUS));
+				break;
+				
+			case R.id.swap_inputs:
+				final Editable e = wantEditText.getText();
+				wantEditText.setText(haveEditText.getText());
+				haveEditText.setText(e);
+				break;
+				
+			case R.id.unit_entry:
+				getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 				break;
 				
 			default:
+				final Button cb = (Button)v;
 				currentEdit.getEditableText().insert(currentEdit.getSelectionStart(), cb.getText());
 			}
 			
+		}
+		
+		public boolean onLongClick(View v) {
+			switch (v.getId()){
+				case R.id.backspace:{
+					currentEdit.getEditableText().clear();
+					
+					return true;
+				}
+			}
+			return false;
 		}
 	};
 

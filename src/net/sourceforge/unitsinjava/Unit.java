@@ -39,7 +39,6 @@
 package net.sourceforge.unitsinjava;
 
 import java.util.Hashtable;
-import java.util.Vector;
 
 
 
@@ -52,12 +51,12 @@ import java.util.Vector;
  *  A unit.
  */
 
-class Unit extends Factor
+public class Unit extends Factor
 {
   //-------------------------------------------------------------------
   //  Table of Units
   //-------------------------------------------------------------------
-  static Hashtable<String,Unit> table = null;
+  public static Hashtable<String,Unit> table = null;
 
 
   //=====================================================================
@@ -119,32 +118,39 @@ class Unit extends Factor
   //=====================================================================
   static Value one = new Value();
 
-  void check()
+  @Override
+void check()
     {
       // check if can be reduced
-      if (Env.verbose==2)
-        Env.out.println("doing '" + name + "'");
-      Value v = Value.fromString(name);
-      if (v==null || !v.isCompatibleWith(one,Factor.Ignore.PRIMITIVE))
-        Env.out.println
+      if (Env.verbose==2) {
+		Env.out.println("doing '" + name + "'");
+	}
+      final Value v = Value.fromString(name);
+      if (v==null || !v.isCompatibleWith(one,Factor.Ignore.PRIMITIVE)) {
+		Env.out.println
           ("'" + name + "' defined as '"
            + def + "' is irreducible");
+	}
 
       // check if not hidden by function
-      if (DefinedFunction.table.containsKey(name))
-        Env.out.println
+      if (DefinedFunction.table.containsKey(name)) {
+		Env.out.println
           ("unit '" + name
            + "' is hidden by function '" + name + "'");
+	}
     }
 
 
   //=====================================================================
   //  Return true if this unit is compatible with Value 'v',
   //=====================================================================
-  boolean isCompatibleWith(final Value v)
+  @Override
+boolean isCompatibleWith(final Value v)
     {
-      Value thisvalue = Value.fromString(name);
-      if (thisvalue==null) return false;
+      final Value thisvalue = Value.fromString(name);
+      if (thisvalue==null) {
+		return false;
+	}
       return thisvalue.isCompatibleWith(v,Factor.Ignore.DIMLESS);
     }
 
@@ -152,7 +158,8 @@ class Unit extends Factor
   //=====================================================================
   //  Return short description of this object to be shown by 'tryallunits'.
   //=====================================================================
-  String desc()
+  @Override
+String desc()
     { return (isPrimitive? "<primitive unit>" : "= " + def); }
 
 
@@ -167,8 +174,9 @@ class Unit extends Factor
       //  If 'name' appears as unit name in table,
       //  return object from the table.
       //---------------------------------------------------------------
-      if (Unit.table.containsKey(name))
-        return Unit.table.get(name);
+      if (Unit.table.containsKey(name)) {
+		return Unit.table.get(name);
+	}
 
       //---------------------------------------------------------------
       //  Plural rules for English: add -s
@@ -176,12 +184,13 @@ class Unit extends Factor
       //  -y becomes -ies except after a vowel when you just add -s
       //  Try removing 's'.
       //---------------------------------------------------------------
-      int ulg = name.length();
+      final int ulg = name.length();
       if (ulg>2 && name.charAt(ulg-1)=='s')
       {
         String temp = name.substring(0,ulg-1);
-        if (Unit.table.containsKey(temp))
-          return Unit.table.get(temp);
+        if (Unit.table.containsKey(temp)) {
+			return Unit.table.get(temp);
+		}
 
         //-------------------------------------------------------------
         //  Removing the suffix 's' did not help. It could still be
@@ -190,8 +199,9 @@ class Unit extends Factor
         if (ulg>3 && name.charAt(ulg-2)=='e')
         {
           temp = name.substring(0,ulg-2);
-          if (Unit.table.containsKey(temp))
-            return Unit.table.get(temp);
+          if (Unit.table.containsKey(temp)) {
+			return Unit.table.get(temp);
+		}
 
           //-----------------------------------------------------------
           //  Removing the suffix 'es' did not help. It could still be
@@ -200,8 +210,9 @@ class Unit extends Factor
           if (ulg>4 && name.charAt(ulg-3)=='i')
           {
             temp = name.substring(0,ulg-3) + "y";
-            if (Unit.table.containsKey(temp))
-              return Unit.table.get(temp);
+            if (Unit.table.containsKey(temp)) {
+				return Unit.table.get(temp);
+			}
           }
         }
       }

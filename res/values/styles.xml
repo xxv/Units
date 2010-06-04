@@ -13,6 +13,10 @@
     <style name="digit_button_style" parent="button_style">
        <item name="android:background">@drawable/blue_button</item>
     </style>
+    
+    <style name="equal_button_style" parent="button_style">
+       <item name="android:background">@drawable/yellow_button</item>
+    </style>
 
     <style name="button_small_style" parent="button_style">
        <item name="android:textSize">30dp</item>

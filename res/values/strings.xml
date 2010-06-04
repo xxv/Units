@@ -3,8 +3,10 @@
     
     <string name="app_name">Units</string>
     <string name="button_go">Go!</string>
-    <string name="have_label">You have:</string>
-    <string name="have_hint">(100km/hour) * 5 minutes</string>
-    <string name="want_label">You want:</string>
-    <string name="want_hint">mi</string>
+    <string name="have_hint">you have</string>
+    <string name="want_hint">you want</string>
+    
+    <!-- calculator buttons -->
+    <string name="unit_entry">unit</string>
+    <string name="backspace">\u232b</string>
 </resources>

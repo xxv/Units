@@ -42,7 +42,6 @@
 package net.sourceforge.unitsinjava;
 
 import java.util.Hashtable;
-import java.util.Vector;
 
 
 
@@ -55,17 +54,17 @@ import java.util.Vector;
  *  A built-in function.
  */
 
-class BuiltInFunction extends Function
+public class BuiltInFunction extends Function
 {
   //-------------------------------------------------------------------
   /**  Table of built-in functions. */
   //-------------------------------------------------------------------
-  static Hashtable<String,BuiltInFunction> table = null;
+  public static Hashtable<String,BuiltInFunction> table = null;
 
   //-------------------------------------------------------------------
   //  Argument and result types
   //-------------------------------------------------------------------
-  private type funcType;
+  private final type funcType;
 
   private enum type
     {
@@ -79,7 +78,7 @@ class BuiltInFunction extends Function
   //  Because Java does not have pointers, the procedure invoked
   //  to evaluate the function is identified by enumeration.
   //-------------------------------------------------------------------
-  private proc procID;
+  private final proc procID;
 
   private enum proc {SIN,COS,TAN,LN,LOG,LOG2,EXP,ASIN,ACOS,ATAN,SQRT,CBRT};
 
@@ -131,15 +130,19 @@ class BuiltInFunction extends Function
       //  Make sure radian is defined and save its object.
       //---------------------------------------------------------------
       Unit r = Unit.table.get("radian");
-      if (r!=null) radian = r;
-      else r = new Unit("radian",new Location(),"!");
+      if (r!=null) {
+		radian = r;
+	} else {
+		r = new Unit("radian",new Location(),"!");
+	}
     }
 
 
   //=====================================================================
   //  Apply the function to Value 'v' (with result in 'v').
   //=====================================================================
-  void applyTo(Value v)
+  @Override
+void applyTo(Value v)
     {
       //---------------------------------------------------------------
       //  Check argument type
@@ -149,19 +152,21 @@ class BuiltInFunction extends Function
         case ANGLEIN:   //-------- Must be a number or an angle
           if (!v.isNumber())
           {
-            String s = v.asString();
+            final String s = v.asString();
             v.denominator.add(radian);
-            if (!v.isNumber())
-              throw new EvalError("Argument " + s + " of " +
-                            name + " is not a number or angle.");
+            if (!v.isNumber()) {
+				throw new EvalError("Argument " + s + " of " +
+				                name + " is not a number or angle.");
+			}
           }
           break;
 
         case ANGLEOUT:  //-------- Must be a number
         case DIMLESS:
-          if (!v.isNumber())
-            throw new EvalError("Argument " + v.asString() + " of " +
+          if (!v.isNumber()) {
+			throw new EvalError("Argument " + v.asString() + " of " +
                             name + " is not a number.");
+		}
           break;
 
         case NOCHECK:   //-------- No checking
@@ -174,7 +179,7 @@ class BuiltInFunction extends Function
       //---------------------------------------------------------------
       //  Apply the function
       //---------------------------------------------------------------
-      double arg = v.factor;
+      final double arg = v.factor;
       switch (procID)
       {
         case SIN:  v.factor = Math.sin(arg); break;
@@ -195,22 +200,24 @@ class BuiltInFunction extends Function
       //---------------------------------------------------------------
       //  Check result
       //---------------------------------------------------------------
-      double result = v.factor;
-      boolean NaN = Double.isNaN(result) | Double.isInfinite(result);
+      final double result = v.factor;
+      final boolean NaN = Double.isNaN(result) | Double.isInfinite(result);
 
       switch (funcType)
       {
         case ANGLEIN:   //-------- Must be a number
         case DIMLESS:
-          if (NaN)
-            throw new EvalError("The result of " +
+          if (NaN) {
+			throw new EvalError("The result of " +
                             name + " is undefined.");
+		}
           break;
 
         case ANGLEOUT:  //-------- Must be an angle
-          if (NaN)
-            throw new EvalError("The result of " +
+          if (NaN) {
+			throw new EvalError("The result of " +
                             name + " is undefined.");
+		}
             v.numerator.add(radian);
           break;
 
@@ -227,18 +234,23 @@ class BuiltInFunction extends Function
   //  These methods, defined in Entity and Function classes,
   //  are never invoked for a BuiltInFunction.
   //=====================================================================
-  void applyInverseTo(Value v)
+  @Override
+void applyInverseTo(Value v)
     { throw new Error("Program Error"); }
 
-  String showdef()
+  @Override
+String showdef()
     { throw new Error("Program Error"); }
 
-  void check()
+  @Override
+void check()
     { throw new Error("Program Error"); }
 
-  boolean isCompatibleWith(final Value v)
+  @Override
+boolean isCompatibleWith(final Value v)
     { throw new Error("Program Error"); }
 
-  String desc()
+  @Override
+String desc()
     { throw new Error("Program Error"); }
 }
