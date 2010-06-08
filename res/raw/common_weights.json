@@ -1,0 +1,70 @@
+{"-- These unit weights are loaded with all locales and are intended to weigh them above more obscure units like hemidemisemiquaver. Weights should be '2' for units that are generally common anywhere and '1' for weights that are more common than hemidemisemiquaver. --": 0,
+
+"-- metric distance, volume, weight, area --": 0,
+"kilometer": 2,
+"meter": 2,
+"centimeter": 2,
+"millimeter": 2,
+
+"liter": 2,
+"milliliter": 2,
+
+"kilogram": 2,
+"gram": 2,
+
+"km^2": 2,
+"m^2": 2,
+
+"-- time units --": 0,
+"week": 2,
+"day": 2,
+"hour": 2,
+"minute": 2,
+"second": 2,
+
+"-- common technical units --": 0,
+"volt": 1,
+"ampere": 1,
+"milliampere": 1,
+"kilojoule": 1,
+"joule": 1,
+"mole": 1,
+
+"radian": 1,
+"degree": 1,
+
+"gigabyte": 1,
+"megabyte": 1,
+"kilobyte": 1,
+"byte": 1,
+
+"GHz": 1,
+"MHz": 1,
+"kHz": 1,
+"Hz": 1,
+
+"-- imperial distance, volume, weight, area --": 0,
+"mile": 2,
+"yard": 2,
+"foot": 2,
+"inch": 2,
+
+"gallon": 2,
+"quart": 2,
+"pint": 2,
+"cup": 2,
+"fluidounce": 2,
+"teaspoon": 2,
+"tablespoon": 2,
+
+"ton": 2,
+"stone": 1,
+"pound": 2,
+"ounce": 2,
+
+"-- speeds --": 0,
+"km/hr": 2,
+"mi/hr": 2,
+
+"--": 0
+}

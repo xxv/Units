@@ -1,0 +1,20 @@
+{
+"mile": 10,
+"yard": 10,
+"foot": 10,
+"inch": 10,
+
+"gallon": 10,
+"quart": 10,
+"pint": 10,
+"cup": 10,
+"fluidounce": 10,
+"teaspoon": 10,
+"tablespoon": 10,
+
+"ton": 10,
+"pound": 10,
+"ounce": 10,
+
+"--": 0
+}
