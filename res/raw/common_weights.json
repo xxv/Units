@@ -63,8 +63,22 @@
 "ounce": 2,
 
 "-- speeds --": 0,
-"km/hr": 2,
-"mi/hr": 2,
+"kph": 2,
+"mph": 2,
+"mach": 2,
+"fps": 1,
+"knot": 1,
+
+"-- numbers --": 0,
+"googol": 1,
+"quintillion": 1,
+"septillion": 1,
+"trillion": 2,
+"billion": 2,
+"million": 2,
+"thousand": 2,
+"pi": 2,
+"light": 2,
 
 "--": 0
 }
