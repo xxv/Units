@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/history_drawer"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:background="#000000"
+		android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical" android:visibility="invisible">
+
+		<ListView android:id="@+id/history_list"
+			android:layout_width="fill_parent" 
+			android:layout_height="fill_parent" 
+			android:layout_weight="1"
+			android:stackFromBottom="true"
+			android:transcriptMode="normal"
+			 />
+
+			<Button android:id="@+id/history_close"
+			android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="↑" />
+			
+	</LinearLayout>

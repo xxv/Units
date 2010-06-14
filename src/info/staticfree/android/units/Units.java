@@ -9,36 +9,36 @@ import android.app.Activity;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
+import android.view.View.OnTouchListener;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
-
-public class Units extends Activity implements OnClickListener, OnFocusChangeListener {
+public class Units extends Activity implements OnClickListener, OnEditorActionListener, OnTouchListener {
 	private final static String TAG = Units.class.getSimpleName();
 	
 	private MultiAutoCompleteTextView wantEditText;
 	private MultiAutoCompleteTextView haveEditText;
 	private TextView resultView;
-	private TextView errorMsgView;
 	private ListView history;
 	private LinearLayout historyDrawer;
 	private Button historyClose;
 	private LinearLayout numberpad;
-	private MultiAutoCompleteTextView currentEdit;
 	
 	private UnitUsageDBHelper unitUsageDBHelper;
 	private SQLiteDatabase unitUsageDB;
@@ -51,17 +51,11 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
         
         wantEditText = ((MultiAutoCompleteTextView)findViewById(R.id.want));
         haveEditText = ((MultiAutoCompleteTextView)findViewById(R.id.have));
-        errorMsgView = ((TextView)findViewById(R.id.error_msg));
         resultView = ((TextView)findViewById(R.id.result));
         history = ((ListView)findViewById(R.id.history_list));
         historyDrawer = ((LinearLayout)findViewById(R.id.history_drawer));
         historyClose = ((Button)findViewById(R.id.history_close));
         numberpad = ((LinearLayout)findViewById(R.id.numberpad));
-
-        wantEditText.setOnFocusChangeListener(this);
-        haveEditText.setOnFocusChangeListener(this);
-		
-		currentEdit = haveEditText;
 		
 		historyAdapter = new ArrayAdapter<HistoryEntry>(this, android.R.layout.simple_list_item_1);
 		history.setAdapter(historyAdapter);
@@ -100,13 +94,17 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
 		
 		unitUsageDBHelper = new UnitUsageDBHelper(this);
 		unitUsageDB = unitUsageDBHelper.getWritableDatabase();
-		final SimpleCursorAdapter usageAdapter = unitUsageDBHelper.getUnitPrefixAdapter(this, unitUsageDB);
-		haveEditText.setAdapter(usageAdapter);
-		wantEditText.setAdapter(usageAdapter);
+
+		haveEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(this, unitUsageDB, wantEditText));
+		wantEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(this, unitUsageDB, haveEditText));
+		
+		wantEditText.setOnEditorActionListener(this);
 		
 		final UnitsMultiAutoCompleteTokenizer tokenizer = new UnitsMultiAutoCompleteTokenizer();
 		haveEditText.setTokenizer(tokenizer);
 		wantEditText.setTokenizer(tokenizer);
+		haveEditText.setOnTouchListener(this);
+		wantEditText.setOnTouchListener(this);
     }
    
     private void setHistoryVisible(boolean visible){
@@ -135,41 +133,36 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
     	}
     }
     
-    public void addToHistory(String haveExpr, String wantExpr, double result){
-    	final HistoryEntry histEnt = new HistoryEntry(haveExpr, wantExpr, result);
+    // TODO make reciprocal notice better animated so it doesn't modify main layout
+    public void addToHistory(String haveExpr, String wantExpr, double result, boolean reciprocal){
+    	haveExpr = haveExpr.trim();
+    	wantExpr = wantExpr.trim();
+    	final HistoryEntry histEnt = new HistoryEntry(reciprocal ? "1÷(" + haveExpr + ")" : haveExpr, wantExpr, result);
     	resultView.setText(histEnt.toString());
     	historyAdapter.add(histEnt);
-    }
-    
-    public void updateCalculation(boolean incremental) throws ConversionException {
-    	final String haveStr = haveEditText.getText().toString();
-    	final String wantStr = wantEditText.getText().toString();
     	
-    		final Value have = ValueGui.fromString(haveStr);
-    		if (have == null){
-    			if (!incremental){
-    				haveEditText.requestFocus();
-    			}
-    			return;
-    		}
-    		final Value want = ValueGui.fromString(wantStr);
-    		if (want == null){
-    			if (!incremental){
-    				wantEditText.requestFocus();
-    			}
-    			return;
-    		}
-
-    		double resultVal;
-    		final boolean reciprocal = false;
-
+    	final View reciprocalNotice = findViewById(R.id.reciprocal_notice);
+    	if (reciprocal){
+    		//resultView.setError("reciprocal conversion");
+    		resultView.requestFocus();
     		
-		resultVal = ValueGui.convertNonInteractive(have,  want);
-		
-		resultView.setText(haveStr + " = " + Util.shownumber(resultVal) + " " + wantStr);
+    		reciprocalNotice.setVisibility(View.VISIBLE);
+    		reciprocalNotice.startAnimation(AnimationUtils.makeInAnimation(this, true));
+    	}else{
+    		reciprocalNotice.setVisibility(View.GONE);
+    		resultView.setError(null);
+    	}
     }
     
-    // TODO filter results to translate unicode to/from engine. ÷ → / and Inifinity → ∞
+    // TODO there's got to be a translate function that's more efficient than this...
+    public String unicodeToAscii(String unicodeInput){
+    	return unicodeInput.
+    	replaceAll("÷", "/").
+    	replaceAll("×", "*").
+    	replaceAll("−", "-");
+    }
+    
+    // TODO filter error messages and output translate to unicode from engine. error msgs and Inifinity → ∞
     // TODO integrate reciprocal conversion a bit better.
     public void go(){
     	final String haveStr = haveEditText.getText().toString();
@@ -178,7 +171,7 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
     	try {
     		Value have = null;
     		try {
-    			have = ValueGui.fromString(haveStr);
+    			have = ValueGui.fromString(unicodeToAscii(haveStr));
 
     		}catch (final EvalError e){
     			haveEditText.requestFocus();
@@ -188,7 +181,7 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
     		
     		Value want = null;
     		try {
-    			want = ValueGui.fromString(wantStr);
+    			want = ValueGui.fromString(unicodeToAscii(wantStr));
 
     		}catch (final EvalError e){
     			wantEditText.requestFocus();
@@ -200,30 +193,32 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
     		boolean reciprocal = false;
 
     		try {
-    			errorMsgView.setText(null);
+    			wantEditText.setError(null);
     			resultVal = ValueGui.convertNonInteractive(have,  want);
 
     		} catch (final ReciprocalException re){
     			reciprocal = true;
-    			errorMsgView.setText("reciprocal conversion");
+
     			resultVal = ValueGui.convertNonInteractive(re.reciprocal, want);
     		}
 
-    		addToHistory(reciprocal ? "1/(" + haveStr + ")" : haveStr, wantStr, resultVal);
-    		
     		allClear();
     		
+    		addToHistory(haveStr, wantStr, resultVal, reciprocal);
+
     	} catch (final ConversionException e) {
 
     		resultView.setText(null);
-    		errorMsgView.setText(e.getMessage());
+    		wantEditText.setError(e.getMessage());
     		return;
     	}
     }
     
     public void allClear(){
     	haveEditText.getEditableText().clear();
+    	haveEditText.setError(null);
 		wantEditText.getEditableText().clear();
+		wantEditText.setError(null);
 		haveEditText.requestFocus();
     }
 
@@ -243,9 +238,29 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
     
 	private final ButtonEventListener buttonListener = new ButtonEventListener();
 	
+	private void swapInputs(EditText focused, EditText unfocused){
+		
+		final Editable e = wantEditText.getText();
+		int start = 0, end = 0;
+		if (focused != null){
+			start = focused.getSelectionStart();
+			end   = focused.getSelectionEnd();
+		}
+		
+		wantEditText.setText(haveEditText.getText());
+		haveEditText.setText(e);
+		if (unfocused != null){
+			unfocused.requestFocus();
+			unfocused.setSelection(start, end);
+		}
+	}
+	
 	private class ButtonEventListener implements OnClickListener, OnLongClickListener {
 		
+		
 		public void onClick(View v) {
+			final View currentFocus = getCurrentFocus();
+
 			switch (v.getId()){
 			case R.id.backspace:{
 				dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
@@ -256,44 +271,34 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
 			case R.id.equal:
 				go();
 				break;
-				
-			case R.id.mul:
-				dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_STAR));
-				break;
-				
-			case R.id.div:
-				dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_SLASH));
-				break;
-				
-			case R.id.minus:
-				dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MINUS));
-				break;
-				
 			case R.id.swap_inputs:{
-				final Editable e = wantEditText.getText();
-				final int start = currentEdit.getSelectionStart();
-				final int end   = currentEdit.getSelectionEnd();
 				
-				wantEditText.setText(haveEditText.getText());
-				haveEditText.setText(e);
-				
-				if (currentEdit == haveEditText){
-					wantEditText.requestFocus();
+
+				if (getCurrentFocus() == haveEditText){
+					swapInputs(haveEditText, wantEditText);
 					
+				}else if (getCurrentFocus() == wantEditText){
+					swapInputs(wantEditText, haveEditText);
 				}else{
-					haveEditText.requestFocus();
+					swapInputs(null, null);
 				}
-				currentEdit.setSelection(start, end);
+				
+
 				
 			}break;
 				
 			case R.id.unit_entry:
-				currentEdit.showDropDown();
+				if (currentFocus instanceof MultiAutoCompleteTextView){
+					((MultiAutoCompleteTextView)currentFocus).showDropDown();
+				}
 				break;
 				
 			default:
 				final Button cb = (Button)v;
-				currentEdit.getEditableText().insert(currentEdit.getSelectionStart(), cb.getText());
+				
+				if (currentFocus instanceof EditText){
+					((EditText)currentFocus).getEditableText().insert(((EditText)currentFocus).getSelectionStart(), cb.getText());
+				}
 			}
 			
 		}
@@ -301,21 +306,49 @@ public class Units extends Activity implements OnClickListener, OnFocusChangeLis
 		public boolean onLongClick(View v) {
 			switch (v.getId()){
 				case R.id.backspace:{
-					currentEdit.getEditableText().clear();
-					
+					final View currentFocus = getCurrentFocus();
+					if (currentFocus instanceof EditText){
+						((EditText)currentFocus).getEditableText().clear();
+						((EditText)currentFocus).setError(null);
+					}
 					return true;
 				}
 			}
 			return false;
 		}
-	};
+	}
 
-	public void onFocusChange(View v, boolean hasFocus) {
+	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 		switch (v.getId()){
+			case R.id.want:
+				go();
+				return true;
+		}
+		return false;
+	};
+	
+	private int defaultInputType;
+	public boolean onTouch(View v, MotionEvent event) {
+		switch (v.getId()){
+		
+		// this is used to prevent the first touch on these editors from triggering the IME soft keyboard.
 		case R.id.want:
 		case R.id.have:
-			currentEdit = (MultiAutoCompleteTextView)v;
-			break;
-		}	
+			if (event.getAction() == MotionEvent.ACTION_DOWN){
+				final EditText editor = (EditText)v;
+				if (v.hasFocus()){
+					editor.setInputType(defaultInputType);
+					v.requestFocus();
+					return false;
+
+				}
+				defaultInputType = editor.getInputType();
+				editor.setInputType(InputType.TYPE_NULL);
+
+
+			}
+		}
+		
+		return false;
 	}
 }

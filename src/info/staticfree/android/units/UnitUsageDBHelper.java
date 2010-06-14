@@ -22,6 +22,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.FilterQueryProvider;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 /**
  * In order to sort through all the possible units, a database of weights is used.
@@ -152,22 +153,29 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
      * @param db the unit usage database
      * @return an Adapter that uses the Simple Dropdown Item view
      */
-    public SimpleCursorAdapter getUnitPrefixAdapter(Context context, SQLiteDatabase db){
+    public UnitCursorAdapter getUnitPrefixAdapter(Context context, SQLiteDatabase db, TextView otherEntry){
     	
     	final Cursor dbCursor = db.query(DB_USAGE_TABLE, null, null, null, null, null, USAGE_SORT);
 
-    	// Simple it says - ha!
-    	final SimpleCursorAdapter adapter = new SimpleCursorAdapter(context, 
-    			android.R.layout.simple_dropdown_item_1line, 
-    			dbCursor, 
-    			new String[] {UsageEntry._UNIT}, 
-    			new int[] {android.R.id.text1} );
+    	final UnitCursorAdapter adapter = new UnitCursorAdapter(context, dbCursor);
 
     	adapter.setStringConversionColumn(dbCursor.getColumnIndex(UsageEntry._UNIT));
 
     	// a filter that searches for units starting with the given constraint
     	adapter.setFilterQueryProvider(new UnitMatcherFilterQueryProvider(db));
+    	
     	return adapter;
+    }
+    
+    public class UnitCursorAdapter extends SimpleCursorAdapter {
+
+    	public UnitCursorAdapter (Context context, Cursor dbCursor){
+    		super(context, android.R.layout.simple_dropdown_item_1line,
+    				dbCursor, 
+    				new String[] {UsageEntry._UNIT}, 
+    				new int[] {android.R.id.text1});
+    	}
+
     }
 
     private class UnitMatcherFilterQueryProvider implements FilterQueryProvider {
