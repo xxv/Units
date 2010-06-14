@@ -41,7 +41,6 @@
 
 package net.sourceforge.unitsinjava;
 
-import java.util.Hashtable;
 import java.util.Vector;
 
 
@@ -60,13 +59,13 @@ class TabularFunction extends DefinedFunction
   //-------------------------------------------------------------------
   //  The table
   //-------------------------------------------------------------------
-  private double[] xValues;
-  private double[] yValues;
+  private final double[] xValues;
+  private final double[] yValues;
 
   //-------------------------------------------------------------------
   //  Dimension of the result
   //-------------------------------------------------------------------
-  private String tableunit;
+  private final String tableunit;
 
 
   //=====================================================================
@@ -87,7 +86,7 @@ class TabularFunction extends DefinedFunction
     {
       super(nam,loc);
       tableunit = u;
-      int n = x.size();
+      final int n = x.size();
       xValues = new double[n];
       yValues = new double[n];
       for (int i=0;i<n;i++)
@@ -109,10 +108,12 @@ class TabularFunction extends DefinedFunction
     {
       //  If unit name contains '[', we have a table definition.
 
-      int leftParen = nam.indexOf('[');
-      int rightParen = nam.indexOf(']',leftParen+1);
+      final int leftParen = nam.indexOf('[');
+      final int rightParen = nam.indexOf(']',leftParen+1);
 
-      if (leftParen<0) return false;
+      if (leftParen<0) {
+		return false;
+	}
 
       // Get function name and unit
 
@@ -125,8 +126,8 @@ class TabularFunction extends DefinedFunction
         return true;
       }
 
-      String funcname = nam.substring(0,leftParen);
-      String tabunit = nam.substring(leftParen+1,rightParen);
+      final String funcname = nam.substring(0,leftParen);
+      final String tabunit = nam.substring(leftParen+1,rightParen);
 
       // Is it redefinition?
 
@@ -138,14 +139,16 @@ class TabularFunction extends DefinedFunction
         return true;
       }
 
-      Vector<Double> x = new Vector<Double>();
-      Vector<Double> y = new Vector<Double>();
+      final Vector<Double> x = new Vector<Double>();
+      final Vector<Double> y = new Vector<Double>();
 
       int p = 0;
       while (p<df.length())
       {
         int q = Util.strtod(df,p);
-        if (p==q) break;
+        if (p==q) {
+			break;
+		}
 
         x.addElement(new Double(df.substring(p,q).trim()));
         p = q;
@@ -165,8 +168,12 @@ class TabularFunction extends DefinedFunction
         y.addElement(new Double(df.substring(p,q).trim()));
         p = q;
 
-        if (p>=df.length()) break;
-        if (df.charAt(p)==',') p++;
+        if (p>=df.length()) {
+			break;
+		}
+        if (df.charAt(p)==',') {
+			p++;
+		}
       }
 
       // Install function in table.
@@ -180,23 +187,25 @@ class TabularFunction extends DefinedFunction
   //=====================================================================
   //  Apply the function to Value 'v' (with result in 'v').
   //=====================================================================
-  void applyTo(Value v)
+  @Override
+void applyTo(Value v)
     {
       Value dim = null;
       try
       { dim = Value.parse(tableunit); }
 
-      catch (EvalError e)
+      catch (final EvalError e)
       {
         throw new EvalError("Invalid dimension, " + dim +
                          ", of function " + name + ". " + e.getMessage());
       }
 
-      if (!v.isNumber())
-        throw new EvalError("Argument " + v.asString() + " of " +
+      if (!v.isNumber()) {
+		throw new EvalError("Argument " + v.asString() + " of " +
                          name + " is not a number.");
+	}
 
-      double result = interpolate(v,v.factor,xValues,yValues,"");
+      final double result = interpolate(v,v.factor,xValues,yValues,"");
 
       dim.factor *= result;
       v.copyFrom(dim);
@@ -206,27 +215,29 @@ class TabularFunction extends DefinedFunction
   //=====================================================================
   //  Apply inverse of the function to Value 'v' (with result in 'v').
   //=====================================================================
-  void applyInverseTo(Value v)
+  @Override
+void applyInverseTo(Value v)
     {
       Value dim = null;
       try
       { dim = Value.parse(tableunit); }
 
-      catch (EvalError e)
+      catch (final EvalError e)
       {
         throw new EvalError("Invalid dimension, " + dim +
                          ", of function ~" + name + ". " + e.getMessage());
       }
 
-      Value n = new Value(v);
+      final Value n = new Value(v);
       n.div(dim);
 
-      if (!n.isNumber())
-        throw new EvalError("Argument " + v.asString() +
+      if (!n.isNumber()) {
+		throw new EvalError("Argument " + v.asString() +
                       " of function ~" + name + " is not conformable to " +
                         dim.asString() + ".");
+	}
 
-      double result = interpolate(v,n.factor,yValues,xValues,"~");
+      final double result = interpolate(v,n.factor,yValues,xValues,"~");
 
       v.copyFrom(new Value());
       v.factor = result;
@@ -236,18 +247,23 @@ class TabularFunction extends DefinedFunction
   //  Return definition of the function.
   //  (Originally 'showfuncdef'.)
   //=====================================================================
-  String showdef()
+  @Override
+String showdef()
     {
-      String pref = ("0123456789.".indexOf(tableunit.charAt(0))>=0)? " * " : " ";
-      boolean nc = Env.verbose>0; // not compact?
+      final String pref = ("0123456789.".indexOf(tableunit.charAt(0))>=0)? " * " : " ";
+      final boolean nc = Env.verbose>0; // not compact?
 
-      StringBuffer sb = new StringBuffer();
-      if (Env.verbose>0) sb.append("\tDefinition: interpolated table with points");
-      else sb.append("Interpolated table with points:");
+      final StringBuffer sb = new StringBuffer();
+      if (Env.verbose>0) {
+		sb.append("\tDefinition: interpolated table with points");
+	} else {
+		sb.append("Interpolated table with points:");
+	}
 
-      for(int i=0;i<xValues.length;i++)
-        sb.append((Env.verbose>0? "\n\t\t    " : "\n ") + name
+      for(int i=0;i<xValues.length;i++) {
+		sb.append((Env.verbose>0? "\n\t\t    " : "\n ") + name
                      + "(" + xValues[i]+ ") = " + yValues[i] + pref + tableunit);
+	}
       return sb.toString();
     }
 
@@ -255,10 +271,12 @@ class TabularFunction extends DefinedFunction
   //=====================================================================
   //  Check the definition. Used in 'checkunits'.
   //=====================================================================
-  void check()
+  @Override
+void check()
     {
-      if (Env.verbose==2)
-        Env.out.println("doing function " + name);
+      if (Env.verbose==2) {
+		Env.out.println("doing function " + name);
+	}
 
       // Check for monotonicity which is needed for unique inverses
       if (xValues.length<=1)
@@ -267,15 +285,16 @@ class TabularFunction extends DefinedFunction
           ("Table '" + name + "' has only one data point");
         return;
       }
-      int direction = signum(yValues[1]-yValues[0]);
-      for(int i=2;i<xValues.length;i++)
-        if (direction==0 || signum(yValues[i]-yValues[i-1]) != direction)
+      final int direction = signum(yValues[1]-yValues[0]);
+      for(int i=2;i<xValues.length;i++) {
+		if (direction==0 || signum(yValues[i]-yValues[i-1]) != direction)
         {
           Env.out.println
             ("Table '" + name + "' lacks unique inverse around entry "
               + Util.shownumber(xValues[i-1]));
           return;
         }
+	}
       return;
     }
 
@@ -283,10 +302,13 @@ class TabularFunction extends DefinedFunction
   //=====================================================================
   //  Return true if this function is compatible with Value 'v',
   //=====================================================================
-  boolean isCompatibleWith(final Value v)
+  @Override
+public boolean isCompatibleWith(final Value v)
     {
-      Value thisvalue = Value.fromString(tableunit);
-      if (thisvalue==null) return false;
+      final Value thisvalue = Value.fromString(tableunit);
+      if (thisvalue==null) {
+		return false;
+	}
       return thisvalue.isCompatibleWith(v,Factor.Ignore.DIMLESS);
     }
 
@@ -294,7 +316,8 @@ class TabularFunction extends DefinedFunction
   //=====================================================================
   //  Return short description of this object to be shown by 'tryallunits'.
   //=====================================================================
-  String desc()
+  @Override
+String desc()
     { return "<piecewise linear unit>"; }
 
 
@@ -307,9 +330,11 @@ class TabularFunction extends DefinedFunction
   //=====================================================================
   private double interpolate(Value v, double xval, double[] x, double[] y, String inv)
     {
-      for(int i=0;i<x.length-1;i++)
-        if ((x[i]<=xval && xval<=x[i+1]) || (x[i]>=xval && xval>=x[i+1]))
-          return y[i] + (xval-x[i])*(y[i+1]-y[i])/(x[i+1]-x[i]);
+      for(int i=0;i<x.length-1;i++) {
+		if ((x[i]<=xval && xval<=x[i+1]) || (x[i]>=xval && xval>=x[i+1])) {
+			return y[i] + (xval-x[i])*(y[i+1]-y[i])/(x[i+1]-x[i]);
+		}
+	}
 
       throw new EvalError("Argument " + v.asString() +
                      " is outside the domain of " + inv + name + ".");

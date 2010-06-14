@@ -247,6 +247,7 @@ void check()
     { throw new Error("Program Error"); }
 
   @Override
+public
 boolean isCompatibleWith(final Value v)
     { throw new Error("Program Error"); }
 

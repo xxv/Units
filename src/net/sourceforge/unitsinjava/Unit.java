@@ -145,7 +145,7 @@ void check()
   //  Return true if this unit is compatible with Value 'v',
   //=====================================================================
   @Override
-boolean isCompatibleWith(final Value v)
+public boolean isCompatibleWith(final Value v)
     {
       final Value thisvalue = Value.fromString(name);
       if (thisvalue==null) {

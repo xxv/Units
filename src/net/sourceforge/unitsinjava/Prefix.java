@@ -40,7 +40,6 @@
 package net.sourceforge.unitsinjava;
 
 import java.util.Hashtable;
-import java.util.Vector;
 
 
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
@@ -79,9 +78,11 @@ class Prefix extends Factor
     {
       //  If unitname ends with '-', we have a prefix definition.
 
-      if (!nam.endsWith("-")) return false;
+      if (!nam.endsWith("-")) {
+		return false;
+	}
 
-      String prefname = nam.substring(0,nam.length()-1);
+      final String prefname = nam.substring(0,nam.length()-1);
 
       // Is it redefinition?
 
@@ -105,16 +106,19 @@ class Prefix extends Factor
   //=====================================================================
   static Value one = new Value();
 
-  void check()
+  @Override
+void check()
     {
       // check for bad '/' character in prefix
       int plevel = 0;
       for (int i=0;i<def.length();i++)
       {
-        int ch = def.charAt(i);
-        if (ch==')') plevel--;
-        else if (ch=='(') plevel++;
-        else if (plevel==0 && ch=='/')
+        final int ch = def.charAt(i);
+        if (ch==')') {
+			plevel--;
+		} else if (ch=='(') {
+			plevel++;
+		} else if (plevel==0 && ch=='/')
         {
           Env.out.println
            ("'" + name + "-' defined as '"
@@ -124,13 +128,15 @@ class Prefix extends Factor
       }
 
       // check if can be reduced
-      if (Env.verbose==2)
-        Env.out.println("doing '" + name + "'");
-      Value v = Value.fromString(name);
-      if (v==null || !v.isCompatibleWith(one,Factor.Ignore.PRIMITIVE))
-        Env.out.println
+      if (Env.verbose==2) {
+		Env.out.println("doing '" + name + "'");
+	}
+      final Value v = Value.fromString(name);
+      if (v==null || !v.isCompatibleWith(one,Factor.Ignore.PRIMITIVE)) {
+		Env.out.println
           ("'" + name + "' defined as '"
            + def + "' is irreducible");
+	}
     }
 
 
@@ -138,10 +144,12 @@ class Prefix extends Factor
   //  These methods, defined in Entity class,
   //  are never called for a Prefix object.
   //=====================================================================
-  boolean isCompatibleWith(final Value v)
+  @Override
+public boolean isCompatibleWith(final Value v)
     { throw new Error("Program Error"); }
 
-  String desc()
+  @Override
+String desc()
     { throw new Error("Program Error"); }
 
 
@@ -152,12 +160,14 @@ class Prefix extends Factor
   //=====================================================================
   static Prefix find(final String name)
     {
-      int nlg = name.length();
+      final int nlg = name.length();
       int plg;
       for (plg=nlg;plg>0;plg--)
       {
-        Prefix p = table.get(name.substring(0,plg));
-        if (p!=null) return p;
+        final Prefix p = table.get(name.substring(0,plg));
+        if (p!=null) {
+			return p;
+		}
       }
       return null;
     }
