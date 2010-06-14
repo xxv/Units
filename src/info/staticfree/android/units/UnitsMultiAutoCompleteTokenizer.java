@@ -10,7 +10,7 @@ public class UnitsMultiAutoCompleteTokenizer implements MultiAutoCompleteTextVie
 	final Pattern unitRegexEnd = Pattern.compile("^([a-zA-Z]\\w+)");
 	
 	public CharSequence terminateToken(CharSequence text) {
-		return text;
+		return text + " ";
 	}
 	
 	public int findTokenStart(CharSequence text, int cursor) {
