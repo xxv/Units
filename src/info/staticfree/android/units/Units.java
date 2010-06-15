@@ -51,12 +51,14 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         
         wantEditText = ((MultiAutoCompleteTextView)findViewById(R.id.want));
         haveEditText = ((MultiAutoCompleteTextView)findViewById(R.id.have));
+        // TODO add long-press options to result for copy, send
         resultView = ((TextView)findViewById(R.id.result));
         history = ((ListView)findViewById(R.id.history_list));
         historyDrawer = ((LinearLayout)findViewById(R.id.history_drawer));
         historyClose = ((Button)findViewById(R.id.history_close));
         numberpad = ((LinearLayout)findViewById(R.id.numberpad));
 		
+        // TODO move history to a database, provide settings to clear/disable.
 		historyAdapter = new ArrayAdapter<HistoryEntry>(this, android.R.layout.simple_list_item_1);
 		history.setAdapter(historyAdapter);
 		// TODO consolidate listeners
@@ -163,7 +165,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     }
     
     // TODO filter error messages and output translate to unicode from engine. error msgs and Inifinity → ∞
-    // TODO integrate reciprocal conversion a bit better.
     public void go(){
     	final String haveStr = haveEditText.getText().toString();
     	final String wantStr = wantEditText.getText().toString();
