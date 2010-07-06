@@ -16,9 +16,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -33,7 +35,6 @@ import android.widget.TextView.OnEditorActionListener;
 // TODO On error, focus on errored box
 // TODO Auto-scale text for display (square)
 // TODO white BG on input boxes
-// TODO fix input box focus issue
 // TODO add function parenthesis auto complete
 // TODO longpress on history + result for copy, use result
 // TODO longpress on unit for description (lok in unit addition error message for hints)
@@ -61,6 +62,10 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
         wantEditText = ((MultiAutoCompleteTextView)findViewById(R.id.want));
         haveEditText = ((MultiAutoCompleteTextView)findViewById(R.id.have));
+        defaultInputType = wantEditText.getInputType();
+        wantEditText.setOnFocusChangeListener(inputBoxOnFocusChange);
+        haveEditText.setOnFocusChangeListener(inputBoxOnFocusChange);
+
         // TODO add long-press options to result for copy, send
         resultView = ((TextView)findViewById(R.id.result));
         history = ((ListView)findViewById(R.id.history_list));
@@ -333,12 +338,25 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		switch (v.getId()){
 			case R.id.want:
 				go();
+				final InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+
 				return true;
 		}
 		return false;
 	};
 
 	private int defaultInputType;
+	// make sure to reset the input type when losing focus.
+	private final OnFocusChangeListener inputBoxOnFocusChange = new OnFocusChangeListener() {
+
+		public void onFocusChange(View v, boolean hasFocus) {
+			if (!hasFocus){
+				((MultiAutoCompleteTextView)v).setInputType(defaultInputType);
+			}
+		}
+	};
 	public boolean onTouch(View v, MotionEvent event) {
 		switch (v.getId()){
 
@@ -353,9 +371,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 					return false;
 
 				}
-				defaultInputType = editor.getInputType();
-				editor.setInputType(InputType.TYPE_NULL);
 
+				editor.setInputType(InputType.TYPE_NULL);
 
 			}
 		}

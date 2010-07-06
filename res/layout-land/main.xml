@@ -30,7 +30,7 @@
 			android:inputType="text"
 			android:imeOptions="actionNext"
 			android:layout_margin="0dip"
-			
+			android:nextFocusDown="@+id/want"
 			 />
 			<Button android:id="@+id/swap_inputs"
 			android:text="swap"
@@ -47,6 +47,8 @@
 			android:imeOptions="actionGo"
 			
 			android:layout_margin="0dip"
+			
+			android:nextFocusUp="@+id/have"
 			 />
 		</LinearLayout>
 				
