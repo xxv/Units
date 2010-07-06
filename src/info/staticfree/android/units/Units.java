@@ -32,12 +32,11 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 // TODO On add from history, move cursor to end of input box
-// TODO On error, focus on errored box
 // TODO Auto-scale text for display (square)
 // TODO white BG on input boxes
 // TODO add function parenthesis auto complete
 // TODO longpress on history + result for copy, use result
-// TODO longpress on unit for description (lok in unit addition error message for hints)
+// TODO longpress on unit for description (look in unit addition error message for hints)
 // TODO add help + about box
 // TODO create app icon
 public class Units extends Activity implements OnClickListener, OnEditorActionListener, OnTouchListener {
@@ -182,7 +181,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     // TODO filter error messages and output translate to unicode from engine. error msgs and Inifinity → ∞
     public void go(){
     	final String haveStr = haveEditText.getText().toString();
-    	final String wantStr = wantEditText.getText().toString();
+    	String wantStr = wantEditText.getText().toString();
 
     	try {
     		Value have = null;
@@ -210,7 +209,24 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     		try {
     			wantEditText.setError(null);
-    			resultVal = ValueGui.convertNonInteractive(have,  want);
+
+    			// if no want value is specified, provide a definition.
+        		if (wantStr.length() > 0){
+        			resultVal = ValueGui.convertNonInteractive(have,  want);
+
+        		}else{
+        			resultVal = have.factor;
+        		     final StringBuffer haveDef = new StringBuffer();
+
+        		      haveDef.append(have.numerator.asString());
+
+        		      if (have.denominator.size()>0) {
+        		        haveDef.append(" ÷").append(have.denominator.asString());
+        		    }
+
+        			wantStr = haveDef.toString();
+        		}
+
 
     		} catch (final ReciprocalException re){
     			reciprocal = true;
@@ -225,6 +241,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	} catch (final ConversionException e) {
 
     		resultView.setText(null);
+    		wantEditText.requestFocus();
     		wantEditText.setError(e.getMessage());
     		return;
     	}

@@ -54,7 +54,7 @@ import java.util.Vector;
  *  It may be empty, representing dimensionless number 1.
  */
 
-class Product
+public class Product
 {
   //-------------------------------------------------------------------
   //  The factors in a Product are represented as element of this Vector.
@@ -115,7 +115,7 @@ class Product
   //=====================================================================
   //  Return number of factors.
   //=====================================================================
-  int size()
+  public int size()
     { return factors.size(); }
 
 
@@ -160,7 +160,7 @@ class Product
   //=====================================================================
   //  Return printable representation of the Product.
   //=====================================================================
-  String asString()
+  public String asString()
     {
       StringBuffer sb = new StringBuffer();
       int counter = 1;
