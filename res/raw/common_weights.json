@@ -7,12 +7,14 @@
 "millimeter": 2,
 
 "liter": 2,
+"centiliter": 2,
 "milliliter": 2,
 
 "kilogram": 2,
 "gram": 2,
 
 "km^2": 2,
+"hectare": 2,
 "m^2": 2,
 
 "-- time units --": 0,
@@ -22,8 +24,13 @@
 "minute": 2,
 "second": 2,
 
+"-- energy --": 0,
+"kilocalorie": 2,
+"Calorie": 2,
+
 "-- common technical units --": 0,
 "volt": 1,
+"watt": 1,
 "ampere": 1,
 "milliampere": 1,
 "kilojoule": 1,
@@ -79,6 +86,9 @@
 "thousand": 2,
 "pi": 2,
 "light": 2,
+
+"-- functions --": 0,
+"sqrt(" 1,
 
 "--": 0
 }

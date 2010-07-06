@@ -29,9 +29,19 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+// TODO On add from history, move cursor to end of input box
+// TODO On error, focus on errored box
+// TODO Auto-scale text for display (square)
+// TODO white BG on input boxes
+// TODO fix input box focus issue
+// TODO add function parenthesis auto complete
+// TODO longpress on history + result for copy, use result
+// TODO longpress on unit for description (lok in unit addition error message for hints)
+// TODO add help + about box
+// TODO create app icon
 public class Units extends Activity implements OnClickListener, OnEditorActionListener, OnTouchListener {
 	private final static String TAG = Units.class.getSimpleName();
-	
+
 	private MultiAutoCompleteTextView wantEditText;
 	private MultiAutoCompleteTextView haveEditText;
 	private TextView resultView;
@@ -39,16 +49,16 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 	private LinearLayout historyDrawer;
 	private Button historyClose;
 	private LinearLayout numberpad;
-	
+
 	private UnitUsageDBHelper unitUsageDBHelper;
 	private SQLiteDatabase unitUsageDB;
-	
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate()");
         setContentView(R.layout.main);
-        
+
         wantEditText = ((MultiAutoCompleteTextView)findViewById(R.id.want));
         haveEditText = ((MultiAutoCompleteTextView)findViewById(R.id.have));
         // TODO add long-press options to result for copy, send
@@ -57,7 +67,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         historyDrawer = ((LinearLayout)findViewById(R.id.history_drawer));
         historyClose = ((Button)findViewById(R.id.history_close));
         numberpad = ((LinearLayout)findViewById(R.id.numberpad));
-		
+
         // TODO move history to a database, provide settings to clear/disable.
 		historyAdapter = new ArrayAdapter<HistoryEntry>(this, android.R.layout.simple_list_item_1);
 		history.setAdapter(historyAdapter);
@@ -66,19 +76,19 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
             	final HistoryEntry entry = historyAdapter.getItem(position);
-            	
+
             	haveEditText.setText(entry.haveExpr);
             	wantEditText.setText(entry.wantExpr);
-            	
+
             	setHistoryVisible(false);
 			}
 		});
-		
+
 		resultView.setOnClickListener(this);
 		historyClose.setOnClickListener(this);
-		
+
 		findViewById(R.id.swap_inputs).setOnClickListener(buttonListener);
-		
+
 		Log.d(TAG, "setting listeners");
 		// Go through the numberpad and add all the onClick listeners.
 		// Make sure to update if the layout changes.
@@ -93,22 +103,22 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			}
 		}
 		Log.d(TAG, "Done.");
-		
+
 		unitUsageDBHelper = new UnitUsageDBHelper(this);
 		unitUsageDB = unitUsageDBHelper.getWritableDatabase();
 
 		haveEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(this, unitUsageDB, wantEditText));
 		wantEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(this, unitUsageDB, haveEditText));
-		
+
 		wantEditText.setOnEditorActionListener(this);
-		
+
 		final UnitsMultiAutoCompleteTokenizer tokenizer = new UnitsMultiAutoCompleteTokenizer();
 		haveEditText.setTokenizer(tokenizer);
 		wantEditText.setTokenizer(tokenizer);
 		haveEditText.setOnTouchListener(this);
 		wantEditText.setOnTouchListener(this);
     }
-   
+
     private void setHistoryVisible(boolean visible){
     	if (visible){
     		historyDrawer.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.history_show));
@@ -118,7 +128,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			historyDrawer.setVisibility(View.INVISIBLE);
     	}
     }
-    
+
     private class HistoryEntry {
     	public String haveExpr;
     	public String wantExpr;
@@ -128,13 +138,13 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     		this.wantExpr = wantExpr;
     		this.result = result;
 		}
-    	
+
     	@Override
     	public String toString() {
     		return haveExpr + " = " + Util.shownumber(result) + " " + wantExpr;
     	}
     }
-    
+
     // TODO make reciprocal notice better animated so it doesn't modify main layout
     public void addToHistory(String haveExpr, String wantExpr, double result, boolean reciprocal){
     	haveExpr = haveExpr.trim();
@@ -142,12 +152,12 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	final HistoryEntry histEnt = new HistoryEntry(reciprocal ? "1÷(" + haveExpr + ")" : haveExpr, wantExpr, result);
     	resultView.setText(histEnt.toString());
     	historyAdapter.add(histEnt);
-    	
+
     	final View reciprocalNotice = findViewById(R.id.reciprocal_notice);
     	if (reciprocal){
     		//resultView.setError("reciprocal conversion");
     		resultView.requestFocus();
-    		
+
     		reciprocalNotice.setVisibility(View.VISIBLE);
     		reciprocalNotice.startAnimation(AnimationUtils.makeInAnimation(this, true));
     	}else{
@@ -155,7 +165,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     		resultView.setError(null);
     	}
     }
-    
+
     // TODO there's got to be a translate function that's more efficient than this...
     public String unicodeToAscii(String unicodeInput){
     	return unicodeInput.
@@ -163,12 +173,12 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	replaceAll("×", "*").
     	replaceAll("−", "-");
     }
-    
+
     // TODO filter error messages and output translate to unicode from engine. error msgs and Inifinity → ∞
     public void go(){
     	final String haveStr = haveEditText.getText().toString();
     	final String wantStr = wantEditText.getText().toString();
-    	
+
     	try {
     		Value have = null;
     		try {
@@ -179,7 +189,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     			haveEditText.setError(e.getLocalizedMessage());
     			return;
     		}
-    		
+
     		Value want = null;
     		try {
     			want = ValueGui.fromString(unicodeToAscii(wantStr));
@@ -204,7 +214,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     		}
 
     		allClear();
-    		
+
     		addToHistory(haveStr, wantStr, resultVal, reciprocal);
 
     	} catch (final ConversionException e) {
@@ -214,7 +224,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     		return;
     	}
     }
-    
+
     public void allClear(){
     	haveEditText.getEditableText().clear();
     	haveEditText.setError(null);
@@ -228,26 +238,26 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	case R.id.result:
     		setHistoryVisible(true);
     		break;
-    		
+
     	case R.id.history_close:
     		setHistoryVisible(false);
     		break;
-    	}	
+    	}
     }
-    
+
     private ArrayAdapter<HistoryEntry> historyAdapter;
-    
+
 	private final ButtonEventListener buttonListener = new ButtonEventListener();
-	
+
 	private void swapInputs(EditText focused, EditText unfocused){
-		
+
 		final Editable e = wantEditText.getText();
 		int start = 0, end = 0;
 		if (focused != null){
 			start = focused.getSelectionStart();
 			end   = focused.getSelectionEnd();
 		}
-		
+
 		wantEditText.setText(haveEditText.getText());
 		haveEditText.setText(e);
 		if (unfocused != null){
@@ -255,10 +265,10 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			unfocused.setSelection(start, end);
 		}
 	}
-	
+
 	private class ButtonEventListener implements OnClickListener, OnLongClickListener {
-		
-		
+
+
 		public void onClick(View v) {
 			final View currentFocus = getCurrentFocus();
 
@@ -266,44 +276,44 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			case R.id.backspace:{
 				dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
 				dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL));
-				
+
 			} break;
-			
+
 			case R.id.equal:
 				go();
 				break;
 			case R.id.swap_inputs:{
-				
+
 
 				if (getCurrentFocus() == haveEditText){
 					swapInputs(haveEditText, wantEditText);
-					
+
 				}else if (getCurrentFocus() == wantEditText){
 					swapInputs(wantEditText, haveEditText);
 				}else{
 					swapInputs(null, null);
 				}
-				
 
-				
+
+
 			}break;
-				
+
 			case R.id.unit_entry:
 				if (currentFocus instanceof MultiAutoCompleteTextView){
 					((MultiAutoCompleteTextView)currentFocus).showDropDown();
 				}
 				break;
-				
+
 			default:
 				final Button cb = (Button)v;
-				
+
 				if (currentFocus instanceof EditText){
 					((EditText)currentFocus).getEditableText().insert(((EditText)currentFocus).getSelectionStart(), cb.getText());
 				}
 			}
-			
+
 		}
-		
+
 		public boolean onLongClick(View v) {
 			switch (v.getId()){
 				case R.id.backspace:{
@@ -327,11 +337,11 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		}
 		return false;
 	};
-	
+
 	private int defaultInputType;
 	public boolean onTouch(View v, MotionEvent event) {
 		switch (v.getId()){
-		
+
 		// this is used to prevent the first touch on these editors from triggering the IME soft keyboard.
 		case R.id.want:
 		case R.id.have:
@@ -349,7 +359,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
 			}
 		}
-		
+
 		return false;
 	}
 }

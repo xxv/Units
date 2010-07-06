@@ -26,10 +26,10 @@ import android.widget.TextView;
 
 /**
  * In order to sort through all the possible units, a database of weights is used.
- * Units with a higher weight are shown first in all lists. 
+ * Units with a higher weight are shown first in all lists.
  * Weights are initialized from static JSON files, including regional weights (eg.
  * to put imperial units above metric in the US).
- * 
+ *
  * @author steve
  *
  */
@@ -39,9 +39,9 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		DB_NAME = "units",
 		DB_USAGE_TABLE = "usage";
 	private final Context context;
-	
+
 	private static final int DB_VERSION = 1;
-	
+
     public UnitUsageDBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
@@ -52,14 +52,14 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		   db.execSQL("CREATE TABLE '"+DB_USAGE_TABLE+
            "' ('"   + UsageEntry._ID + "' INTEGER PRIMARY KEY," +
            		"'" + UsageEntry._UNIT+"' VARCHAR(255)," +
-           		"'" + UsageEntry._USE_COUNT + "' INTEGER" + 
+           		"'" + UsageEntry._USE_COUNT + "' INTEGER" +
            	")");
-		   
+
 		   // load the initial table in
 		   final ContentValues cv = new ContentValues();
-		   
+
 		   Log.d(TAG, "init all weights hash");
-		   final HashMap<String, Integer> allUnitWeights = 
+		   final HashMap<String, Integer> allUnitWeights =
 			   new HashMap<String, Integer>(Unit.table.keySet().size());
 		   Log.d(TAG, "adding all known weights...");
 		   for (final String unitName: Unit.table.keySet()){
@@ -84,17 +84,18 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		   for (final String unitName: sortedUnits){
 			   cv.put(UsageEntry._UNIT, unitName);
 			   cv.put(UsageEntry._USE_COUNT, allUnitWeights.get(unitName));
-			   
+
 			   db.insert(DB_USAGE_TABLE, null, cv);
 		   }
 		   db.setTransactionSuccessful();
 		   db.endTransaction();
 		   Log.d(TAG, "done!");
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	private void addAll(JSONObject unitWeights, HashMap<String, Integer> allWeights){
 		for (final Iterator i = unitWeights.keys(); i.hasNext(); ){
-			final String key = (String)i.next(); 
+			final String key = (String)i.next();
 			if (allWeights.containsKey(key)){
 				allWeights.put(key, allWeights.get(key) + unitWeights.optInt(key));
 			}else{
@@ -107,28 +108,29 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS "+ DB_USAGE_TABLE);
         onCreate(db);
-		
+
 	}
-	
+
     /**
      * A weight file is just a static JSON file used to set the initial
-     * weights for unit recommendation precedence. 
-     * 
+     * weights for unit recommendation precedence.
+     *
      * @param resourceId
      * @return
      */
-    private JSONObject loadInitialWeights(int resourceId){
+    @SuppressWarnings("unchecked")
+	private JSONObject loadInitialWeights(int resourceId){
     	final InputStream is = context.getResources().openRawResource(resourceId);
-    	
+
     	final StringBuilder jsonString = new StringBuilder();
     	try{
-    		
+
 	    	for (final BufferedReader isReader = new BufferedReader(new InputStreamReader(is), 16000);
 	    			isReader.ready();){
 	    		jsonString.append(isReader.readLine());
 	    	}
 	    	final JSONObject jo = new JSONObject(jsonString.toString());
-	    	
+
 	    	// remove all "comments", which are just key entries that start with "--"
 	    	for (final Iterator i = jo.keys(); i.hasNext(); ){
 	    		final String key = (String)i.next();
@@ -136,25 +138,25 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 	    			i.remove();
 	    		}
 	    	}
-	    	
+
 	    	return jo;
-	    	
+
     	}catch (final Exception e){
     		e.printStackTrace();
     	}
     	return null;
     }
-	
+
     public final static String USAGE_SORT =  UsageEntry._USE_COUNT + " DESC, "+UsageEntry._UNIT + " ASC";
     /**
      * Creates an Adapter that looks for the start of a unit string from the database.
      * For use with the MultiAutoCompleteTextView
-     * 
+     *
      * @param db the unit usage database
      * @return an Adapter that uses the Simple Dropdown Item view
      */
     public UnitCursorAdapter getUnitPrefixAdapter(Context context, SQLiteDatabase db, TextView otherEntry){
-    	
+
     	final Cursor dbCursor = db.query(DB_USAGE_TABLE, null, null, null, null, null, USAGE_SORT);
 
     	final UnitCursorAdapter adapter = new UnitCursorAdapter(context, dbCursor);
@@ -163,16 +165,16 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
     	// a filter that searches for units starting with the given constraint
     	adapter.setFilterQueryProvider(new UnitMatcherFilterQueryProvider(db));
-    	
+
     	return adapter;
     }
-    
+
     public class UnitCursorAdapter extends SimpleCursorAdapter {
 
     	public UnitCursorAdapter (Context context, Cursor dbCursor){
     		super(context, android.R.layout.simple_dropdown_item_1line,
-    				dbCursor, 
-    				new String[] {UsageEntry._UNIT}, 
+    				dbCursor,
+    				new String[] {UsageEntry._UNIT},
     				new int[] {android.R.id.text1});
     	}
 
@@ -183,11 +185,11 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
     	// matches a unit being entered in-progress (at the end of the expression)
     	// intentionally does not match single-letter units (what's the point for autocompleting these?)
     	private final Pattern unitRegex = Pattern.compile("^.*?([a-zA-Z]\\w+)$");
-    	
+
     	public UnitMatcherFilterQueryProvider(SQLiteDatabase db){
     		this.db = db;
     	}
-    	
+
     	public Cursor runQuery(CharSequence constraint) {
 			if (constraint == null || constraint.length() == 0){
 				return db.query(DB_USAGE_TABLE, null, null, null, null, null, USAGE_SORT);
@@ -201,9 +203,9 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 				}
 
 				Log.d("REGEX", modConstraint);
-				return db.query(DB_USAGE_TABLE, 
-						null, 
-						UsageEntry._UNIT +" GLOB ?", 
+				return db.query(DB_USAGE_TABLE,
+						null,
+						UsageEntry._UNIT +" GLOB ?",
 								new String[] {modConstraint+"*"}, null, null, USAGE_SORT);
 			}
 		}
@@ -217,7 +219,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
     public void logUnitUsed(String unit, SQLiteDatabase db){
     	// TODO efficient, but should probably be sanity checked.
     	db.execSQL("UPDATE " + DB_USAGE_TABLE + " SET " + UsageEntry._USE_COUNT + "=" + UsageEntry._USE_COUNT + " + 1 WHERE " + UsageEntry._UNIT + "='" + unit + "'" );
-    	
+
     }
 
 }
