@@ -455,7 +455,7 @@
        color-interpolation-filters="sRGB">
       <feBlend
          id="feBlend3700"
-         in2="result91"
+         in2="SourceGraphic"
          mode="screen"
          result="result1" />
       <feGaussianBlur
@@ -666,7 +666,7 @@
        color-interpolation-filters="sRGB">
       <feBlend
          id="feBlend4238"
-         in2="result91"
+         in2="SourceGraphic"
          mode="screen"
          result="result1" />
       <feGaussianBlur
@@ -823,7 +823,7 @@
        color-interpolation-filters="sRGB">
       <feBlend
          id="feBlend4548"
-         in2="result91"
+         in2="SourceGraphic"
          mode="screen"
          result="result1" />
       <feGaussianBlur
@@ -903,7 +903,7 @@
        color-interpolation-filters="sRGB">
       <feBlend
          id="feBlend4585"
-         in2="result91"
+         in2="SourceGraphic"
          mode="screen"
          result="result1" />
       <feGaussianBlur
@@ -1034,6 +1034,34 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3514"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3540"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3540-7"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3569"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -1042,11 +1070,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.12374369"
-     inkscape:cx="1413.8988"
-     inkscape:cy="355.91821"
+     inkscape:zoom="0.35000001"
+     inkscape:cx="2831.0416"
+     inkscape:cy="701.63249"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer2"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true" />
@@ -1148,7 +1176,7 @@
          sodipodi:nodetypes="ccccccccc"
          id="path4166"
          d="m 2910.9375,709.71873 0,-492.34373 0,-143.375 -143.375,0 -237.8125,0 -142.3259,0 0,0 c -79.4337,0 -143.375,63.94127 -143.375,143.375 l 0,492.34375"
-         style="display:inline;color:#000000;fill:#cccccc;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:5;marker:none;visibility:visible;overflow:visible;enable-background:accumulate" />
+         style="color:#000000;fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:5;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
       <g
          style="filter:url(#filter4546)"
          id="g4543">
@@ -1159,7 +1187,7 @@
            inkscape:export-filename="/home/steve/media/android/workspace/Units/res/drawable-hdpi/top_grey_default.png"
            id="path3692"
            d="m 1037.4376,-141.49775 c -83.5538,0 -150.75,67.19617 -150.75,150.75 l 0,516.4375 709.799,0 0,-667.1875 -559.049,0 z m 507.049,52.03125 0,563.15625 -605.799,0 0,-464.15625 c -2.0542,-53.4472 47.9862,-102.5062 101.3125,-98.5 894.1229,-0.915479 -389.6381,-0.417403 504.4865,-0.5 z"
-           style="color:#000000;fill:#552b00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4106-4-7);enable-background:accumulate" />
+           style="color:#000000;fill:#333333;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4106-4-7);enable-background:accumulate" />
       </g>
     </g>
     <g
@@ -1175,7 +1203,7 @@
          sodipodi:nodetypes="cccccccc"
          id="path4162"
          d="m 2249.7634,742.14733 0,472.91517 c 0,79.4337 63.9413,143.375 143.375,143.375 l 136.6116,0 237.8125,0 143.375,0 0,-143.375 0,-472.91521"
-         style="display:inline;color:#000000;fill:#cccccc;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:5;marker:none;visibility:visible;overflow:visible;enable-background:accumulate" />
+         style="color:#000000;fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:5;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
       <g
          style="filter:url(#filter4583)"
          id="g4580">
@@ -1186,7 +1214,7 @@
            inkscape:export-filename="/home/steve/media/android/workspace/Units/res/drawable-hdpi/bottom_grey_default.png"
            id="path3845"
            d="m 886.6876,526.68975 0,516.15625 c 0,83.5536 67.1962,151 150.75,151 l 559.049,0 0,-667.15625 -709.799,0 z m 52,52 605.799,0 0,563.15625 c -894.1166,-2.2669 389.6262,3.0163 -504.4865,-0.5312 -53.3263,4.0062 -103.3667,-45.0215 -101.3125,-98.4688 l 0,-464.15625 z"
-           style="color:#000000;fill:#552b00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4106-4-7);enable-background:accumulate" />
+           style="color:#000000;fill:#333333;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4106-4-7);enable-background:accumulate" />
       </g>
     </g>
     <rect
@@ -1205,9 +1233,15 @@
        x="885.71429"
        y="1798.7323"
        transform="translate(-1336.1696,-186.31025)" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="focus"
+     style="display:inline">
     <path
-       style="color:#000000;fill:#ff9324;fill-opacity:0.83116883;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4106-4-7);enable-background:accumulate"
-       d="m 884.6875,526.6875 c 0.10518,174.35314 -0.21013,348.71307 0.15724,523.062 1.80164,54.3675 35.19038,105.8581 83.82401,129.8363 25.26544,13.15 54.39535,17.5398 82.76875,16.258 182.3542,0 364.7083,0 547.0625,0 0,-223.7188 0,-447.43755 0,-671.1563 -237.9375,0 -475.875,0 -713.8125,0 l 0,1 0,1 z m 657.8125,54 c 0,186.38542 0,372.77083 0,559.1563 -110.8851,-0.181 -221.7718,-0.7472 -332.6562,-0.4688 -7.5711,-0.764 -5.1465,4.2766 -8.9063,0.5586 -57.7458,-0.2308 -115.5249,-0.455 -173.25,-0.6211 -48.70461,-3.7217 -90.39624,-50.4155 -87,-99.4687 0,-153.05213 0,-306.10422 0,-459.1563 200.6042,0 401.2083,0 601.8125,0 z"
+       style="color:#000000;fill:#ff9324;fill-opacity:0.83116886;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4106-4-7);enable-background:accumulate"
+       d="m 2220.8571,712.99774 c 0.1052,174.35314 -0.2101,348.71306 0.1573,523.06196 1.8016,54.3676 35.1904,105.8581 83.824,129.8363 25.2654,13.1501 54.3953,17.5398 82.7687,16.258 182.3542,0 364.7083,0 547.0625,0 0,-223.7187 0,-447.43751 0,-671.15626 -237.9375,0 -475.875,0 -713.8125,0 l 0,1 0,1 z m 657.8125,54 c 0,186.38542 0,372.77086 0,559.15636 -110.8851,-0.181 -221.7718,-0.7472 -332.6562,-0.4688 -7.5711,-0.764 -5.1465,4.2766 -8.9063,0.5586 -57.7458,-0.2308 -115.5249,-0.455 -173.25,-0.6211 -48.7046,-3.7217 -90.3962,-50.4155 -87,-99.4687 0,-153.0522 0,-306.10428 0,-459.15636 200.6042,0 401.2083,0 601.8125,0 z"
        id="path3845-4"
        inkscape:export-filename="/home/steve/media/android/workspace/Units/res/drawable-hdpi/input_bottom_focused.png"
        inkscape:export-xdpi="12.29"
@@ -1218,7 +1252,7 @@
        inkscape:export-xdpi="12.29"
        inkscape:export-filename="/home/steve/media/android/workspace/Units/res/drawable-hdpi/input_top_focused.png"
        id="path3692-3"
-       d="m 1037.4376,-143.49775 c -83.55379,0 -150.74999,67.19617 -150.74999,150.75 l 0,516.4375 709.79899,0 0,-667.1875 -559.049,0 z m 507.049,52.03125 0,563.15625 -605.79899,0 0,-464.15625 c -2.0542,-53.4472 47.9862,-102.5062 101.31249,-98.5 894.1229,-0.91548 -389.63809,-0.4174 504.4865,-0.5 z"
+       d="m 2373.6072,42.812489 c -83.5538,0 -150.75,67.196171 -150.75,150.750001 l 0,516.4375 709.799,0 0,-667.187501 -559.049,0 z m 507.049,52.03125 0,563.156251 -605.799,0 0,-464.15625 c -2.0542,-53.4472 47.9863,-102.506201 101.3125,-98.500001 894.1229,-0.91548 -389.638,-0.4174 504.4865,-0.5 z"
        style="color:#000000;fill:#ff9324;fill-opacity:0.83116886;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4106-4-7);enable-background:accumulate" />
   </g>
 </svg>
