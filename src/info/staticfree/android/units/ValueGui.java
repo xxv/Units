@@ -6,9 +6,9 @@ import net.sourceforge.unitsinjava.Factor;
 import net.sourceforge.unitsinjava.Value;
 
 /**
- * A wrapper of Value to allow for GUI interactions by getting 
+ * A wrapper of Value to allow for GUI interactions by getting
  * rid of the input/output calls.
- * 
+ *
  * @author steve
  *
  */
@@ -30,13 +30,13 @@ public class ValueGui extends Value {
 	        v.completereduce();
 	        return v;
 	    }
-	  
+
 	  public static Value getReciprocal(Value inval){
 		    final Value inv = new Value();
 		    inv.factor = 1/inval.factor;
 	        inv.numerator = inval.denominator;
 	        inv.denominator = inval.numerator;
-	        
+
 	        return inv;
 	  }
 	  //=====================================================================
@@ -47,7 +47,7 @@ public class ValueGui extends Value {
 	   *
 	   *  @param  fromValue 'from' expression converted to completely reduced Value.
 	   *  @param  toValue 'to' expression converted to completely reduced Value.
-	 * @throws ConversionException 
+	 * @throws ConversionException
 	   */
 	  public static double convertNonInteractive
 	    (Value fromValue, Value toValue) throws ConversionException
@@ -66,7 +66,7 @@ public class ValueGui extends Value {
 	        //-------------------------------------------------------------
 	        if (Env.strict || !toValue.isCompatibleWith(invfrom,Factor.Ignore.DIMLESS))
 	        {
-	        	throw new ConversionException("conformability error");
+	        	throw new ConversionException();
 	        }
 
 	        //-------------------------------------------------------------
@@ -80,23 +80,23 @@ public class ValueGui extends Value {
 
 	  public static class ConversionException extends Exception {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 834962768736410424L;
 
 		public ConversionException(String msg){
 			  super(msg);
 		  }
-		
+
 		public ConversionException(){
 			super();
 		}
 	  }
-	  
+
 	  public static class ReciprocalException extends ConversionException {
 
 			/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 5809033194217476893L;
 		public Value reciprocal;

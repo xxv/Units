@@ -36,9 +36,10 @@
 "second": 2,
 "s": 1,
 
-"-- energy --": 0,
+"-- energy, work, etc. --": 0,
 "kilocalorie": 2,
 "Calorie": 2,
+"horsepower": 2,
 
 "-- common technical units --": 0,
 "volt": 1,
@@ -81,6 +82,8 @@
 "pound": 2,
 "ounce": 2,
 
+"acre": 2,
+
 "-- speeds --": 0,
 "kph": 2,
 "mph": 2,
@@ -100,7 +103,7 @@
 "light": 2,
 
 "-- functions --": 0,
-"sqrt(" 1,
+"sqrt(": 1,
 
 "--": 0
 }

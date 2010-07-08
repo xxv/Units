@@ -6,8 +6,11 @@ import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Util;
 import net.sourceforge.unitsinjava.Value;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputType;
 import android.util.Log;
@@ -31,14 +34,12 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-// TODO On add from history, move cursor to end of input box
-// TODO Auto-scale text for display (square)
-// TODO white BG on input boxes
-// TODO add function parenthesis auto complete
+// TODO high: create app icon
+// TODO med: add function parenthesis auto complete
 // TODO longpress on history + result for copy, use result
 // TODO longpress on unit for description (look in unit addition error message for hints)
 // TODO add help + about box
-// TODO create app icon
+// TODO low: Auto-scale text for display (square)
 public class Units extends Activity implements OnClickListener, OnEditorActionListener, OnTouchListener {
 	private final static String TAG = Units.class.getSimpleName();
 
@@ -83,6 +84,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
             	haveEditText.setText(entry.haveExpr);
             	wantEditText.setText(entry.wantExpr);
+            	haveEditText.requestFocus();
+            	haveEditText.setSelection(haveEditText.length());
 
             	setHistoryVisible(false);
 			}
@@ -108,11 +111,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		}
 		Log.d(TAG, "Done.");
 
-		unitUsageDBHelper = new UnitUsageDBHelper(this);
-		unitUsageDB = unitUsageDBHelper.getWritableDatabase();
 
-		haveEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(this, unitUsageDB, wantEditText));
-		wantEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(this, unitUsageDB, haveEditText));
+		unitUsageDBHelper = new UnitUsageDBHelper(this);
 
 		wantEditText.setOnEditorActionListener(this);
 
@@ -121,6 +121,25 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		wantEditText.setTokenizer(tokenizer);
 		haveEditText.setOnTouchListener(this);
 		wantEditText.setOnTouchListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+    	super.onResume();
+
+    	unitUsageDB = unitUsageDBHelper.getWritableDatabase();
+		haveEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(this, unitUsageDB, wantEditText));
+		wantEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(this, unitUsageDB, haveEditText));
+
+    	if (unitUsageDBHelper.getUnitUsageDbCount(unitUsageDB) == 0){
+    		new LoadInitialUnitUsageTask().execute();
+    	}
+    }
+
+    @Override
+    protected void onPause() {
+    	super.onPause();
+    	unitUsageDB.close();
     }
 
     private void setHistoryVisible(boolean visible){
@@ -153,6 +172,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     public void addToHistory(String haveExpr, String wantExpr, double result, boolean reciprocal){
     	haveExpr = haveExpr.trim();
     	wantExpr = wantExpr.trim();
+    	new AddToUsageTask().execute(haveExpr, wantExpr);
     	final HistoryEntry histEnt = new HistoryEntry(reciprocal ? "1÷(" + haveExpr + ")" : haveExpr, wantExpr, result);
     	resultView.setText(histEnt.toString());
     	historyAdapter.add(histEnt);
@@ -171,7 +191,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     }
 
     // TODO there's got to be a translate function that's more efficient than this...
-    public String unicodeToAscii(String unicodeInput){
+    public static String unicodeToAscii(String unicodeInput){
     	return unicodeInput.
     	replaceAll("÷", "/").
     	replaceAll("×", "*").
@@ -180,12 +200,17 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     // TODO filter error messages and output translate to unicode from engine. error msgs and Inifinity → ∞
     public void go(){
-    	final String haveStr = haveEditText.getText().toString();
-    	String wantStr = wantEditText.getText().toString();
+    	final String haveStr = haveEditText.getText().toString().trim();
+    	String wantStr = wantEditText.getText().toString().trim();
 
     	try {
     		Value have = null;
     		try {
+    			if (haveStr.length() == 0){
+    				haveEditText.requestFocus();
+    				haveEditText.setError(getText(R.string.err_have_empty));
+    				return;
+    			}
     			have = ValueGui.fromString(unicodeToAscii(haveStr));
 
     		}catch (final EvalError e){
@@ -242,7 +267,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     		resultView.setText(null);
     		wantEditText.requestFocus();
-    		wantEditText.setError(e.getMessage());
+    		wantEditText.setError(getText(R.string.err_no_conform));
     		return;
     	}
     }
@@ -322,16 +347,13 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
 			case R.id.unit_entry:
 				if (currentFocus instanceof MultiAutoCompleteTextView){
+					((MultiAutoCompleteTextView) currentFocus).setError(null);
 					((MultiAutoCompleteTextView)currentFocus).showDropDown();
 				}
 				break;
 
 			default:
-				final Button cb = (Button)v;
-
-				if (currentFocus instanceof EditText){
-					((EditText)currentFocus).getEditableText().insert(((EditText)currentFocus).getSelectionStart(), cb.getText());
-				}
+				dispatchKeyEvent(new KeyEvent(SystemClock.uptimeMillis(), ((Button)v).getText().toString(), Units.class.hashCode(), KeyEvent.FLAG_SOFT_KEYBOARD));
 			}
 
 		}
@@ -395,5 +417,46 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		}
 
 		return false;
+	}
+
+	/**
+	 * Add the units in the given expression(s) to the usage database.
+	 * @author steve
+	 *
+	 */
+	private class AddToUsageTask extends AsyncTask<String, Void, Void>{
+
+		@Override
+		protected Void doInBackground(String... params) {
+			for (final String param: params){
+				UnitUsageDBHelper.logUnitsInExpression(param, unitUsageDB);
+			}
+			return null;
+		}
+	}
+
+	/**
+	 * Load the initial usage data on the first run of the application.
+	 *
+	 * @author steve
+	 *
+	 */
+	private class LoadInitialUnitUsageTask extends AsyncTask<Void, Void, Void>{
+		private ProgressDialog pd;
+		@Override
+		protected void onPreExecute() {
+			pd = ProgressDialog.show(Units.this, getText(R.string.app_name), getText(R.string.dialog_loading_units));
+		}
+		@Override
+		protected Void doInBackground(Void... params) {
+			unitUsageDBHelper.loadInitialUnitUsage(unitUsageDB);
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			pd.dismiss();
+		}
 	}
 }

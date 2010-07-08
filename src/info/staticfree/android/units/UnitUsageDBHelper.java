@@ -14,6 +14,7 @@ import net.sourceforge.unitsinjava.Unit;
 
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -47,6 +48,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         this.context = context;
 }
 
+    // TODO make unit name unique.
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		   db.execSQL("CREATE TABLE '"+DB_USAGE_TABLE+
@@ -54,7 +56,21 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
            		"'" + UsageEntry._UNIT+"' VARCHAR(255)," +
            		"'" + UsageEntry._USE_COUNT + "' INTEGER" +
            	")");
+	}
 
+	public int getUnitUsageDbCount(SQLiteDatabase db){
+		final String[] proj = {UsageEntry._ID};
+		if (!db.isOpen()){
+			return -1;
+		}
+		final Cursor c = db.query(DB_USAGE_TABLE, proj, null, null, null, null, null);
+		c.moveToFirst();
+		final int count = c.getCount();
+		c.close();
+		return count;
+	}
+
+	public void loadInitialUnitUsage(SQLiteDatabase db){
 		   // load the initial table in
 		   final ContentValues cv = new ContentValues();
 
@@ -79,6 +95,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		   Log.d(TAG, "Sorting units...");
 		   Collections.sort(sortedUnits);
 		   Log.d(TAG, "Adding all sorted units...");
+
 		   // TODO put this in a background thread and show progress bar.
 		   db.beginTransaction();
 		   for (final String unitName: sortedUnits){
@@ -155,9 +172,10 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
      * @param db the unit usage database
      * @return an Adapter that uses the Simple Dropdown Item view
      */
-    public UnitCursorAdapter getUnitPrefixAdapter(Context context, SQLiteDatabase db, TextView otherEntry){
+    public UnitCursorAdapter getUnitPrefixAdapter(Activity context, SQLiteDatabase db, TextView otherEntry){
 
     	final Cursor dbCursor = db.query(DB_USAGE_TABLE, null, null, null, null, null, USAGE_SORT);
+    	context.startManagingCursor(dbCursor);
 
     	final UnitCursorAdapter adapter = new UnitCursorAdapter(context, dbCursor);
 
@@ -180,11 +198,14 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
     }
 
+    private static final Pattern UNIT_REGEX = Pattern.compile("([a-zA-Z]\\w+)");
+	private static final Pattern UNIT_EXTRACT_REGEX = Pattern.compile(".*?([a-zA-Z]\\w+)");
+
     private class UnitMatcherFilterQueryProvider implements FilterQueryProvider {
     	private final SQLiteDatabase db;
     	// matches a unit being entered in-progress (at the end of the expression)
     	// intentionally does not match single-letter units (what's the point for autocompleting these?)
-    	private final Pattern unitRegex = Pattern.compile("^.*?([a-zA-Z]\\w+)$");
+
 
     	public UnitMatcherFilterQueryProvider(SQLiteDatabase db){
     		this.db = db;
@@ -194,7 +215,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 			if (constraint == null || constraint.length() == 0){
 				return db.query(DB_USAGE_TABLE, null, null, null, null, null, USAGE_SORT);
 			}else{
-				final Matcher m = unitRegex.matcher(constraint);
+				final Matcher m = UNIT_EXTRACT_REGEX.matcher(constraint);
 				String modConstraint;
 				if (m.matches()){
 					modConstraint = m.group(1);
@@ -209,6 +230,8 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 								new String[] {modConstraint+"*"}, null, null, USAGE_SORT);
 			}
 		}
+
+
     }
 
     /**
@@ -216,10 +239,17 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
      * @param unit name of the unit
      * @param db the unit usage database
      */
-    public void logUnitUsed(String unit, SQLiteDatabase db){
+    public static void logUnitUsed(String unit, SQLiteDatabase db){
     	// TODO efficient, but should probably be sanity checked.
     	db.execSQL("UPDATE " + DB_USAGE_TABLE + " SET " + UsageEntry._USE_COUNT + "=" + UsageEntry._USE_COUNT + " + 1 WHERE " + UsageEntry._UNIT + "='" + unit + "'" );
 
+    }
+
+    public static void logUnitsInExpression(String expression, SQLiteDatabase db){
+    	final Matcher m = UNIT_REGEX.matcher(expression);
+    	while(m.find()){
+    		logUnitUsed(m.group(1), db);
+    	}
     }
 
 }
