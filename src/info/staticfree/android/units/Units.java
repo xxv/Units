@@ -42,7 +42,6 @@ import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView.OnEditorActionListener;
 
-// TODO high: create app icon
 // TODO high: add help + about box
 // TODO high: either implement history database or persist it in memory on activity state save
 // TODO med: add function parenthesis auto complete
