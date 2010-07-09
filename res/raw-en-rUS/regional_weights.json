@@ -1,20 +1,21 @@
-{
-"mile": 10,
-"yard": 10,
-"foot": 10,
-"inch": 10,
+{"-- imperial measures used in the US --": 0
+"mile": 2,
+"yard": 2,
+"foot": 2,
+"inch": 2,
+"acre": 2,
 
-"gallon": 10,
-"quart": 10,
-"pint": 10,
-"cup": 10,
-"fluidounce": 10,
-"teaspoon": 10,
-"tablespoon": 10,
+"gallon": 2,
+"quart": 2,
+"pint": 2,
+"cup": 2,
+"fluidounce": 2,
+"teaspoon": 2,
+"tablespoon": 2,
 
-"ton": 10,
-"pound": 10,
-"ounce": 10,
+"ton": 2,
+"pound": 2,
+"ounce": 2,
 
 "--": 0
 }
