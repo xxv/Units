@@ -381,6 +381,33 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		return super.onContextItemSelected(item);
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()){
+		case R.id.about:
+			return true;
+
+		case R.id.show_history:
+			setHistoryVisible(true);
+			return true;
+
+		case R.id.clear_history:
+			historyAdapter.clear();
+			resultView.setText(null);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+
+	}
+
     private ArrayAdapter<HistoryEntry> historyAdapter;
 
 

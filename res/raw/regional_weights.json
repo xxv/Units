@@ -1,15 +1,29 @@
 {"-- Default world region. This prefers metric over imperial. --": 0,
-"-- metric distance, volume, weight --": 0,
+"-- metric distance, volume, weight, area --": 0,
 "kilometer": 2,
+"km": 1,
 "meter": 2,
+"m": 1,
 "centimeter": 2,
+"cm": 1,
 "millimeter": 2,
+"mm": 1,
 
 "liter": 2,
+"l": 1,
+"centiliter": 2,
+"cl": 1,
 "milliliter": 2,
+"ml": 1,
 
 "kilogram": 2,
+"kg": 1,
 "gram": 2,
+"g": 1,
+
+"km^2": 1,
+"hectare": 2,
+"m^2": 1,
 
 "--": 0
 }
