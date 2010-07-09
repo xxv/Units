@@ -63,6 +63,11 @@
 "kHz": 1,
 "Hz": 1,
 
+"-- other misc distances --": 0,
+"astronomicalunit": 2,
+"au": 1,
+"angstrom": 1,
+
 "-- imperial distance, volume, weight, area --": 0,
 "mile": 2,
 "yard": 2,
