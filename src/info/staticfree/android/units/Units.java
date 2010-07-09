@@ -7,17 +7,23 @@ import net.sourceforge.unitsinjava.Util;
 import net.sourceforge.unitsinjava.Value;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
@@ -32,15 +38,16 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView.OnEditorActionListener;
 
 // TODO high: create app icon
+// TODO high: add help + about box
 // TODO med: add function parenthesis auto complete
-// TODO longpress on history + result for copy, use result
-// TODO longpress on unit for description (look in unit addition error message for hints)
-// TODO add help + about box
+// TODO low: longpress on unit for description (look in unit addition error message for hints)
 // TODO low: Auto-scale text for display (square)
-public class Units extends Activity implements OnClickListener, OnEditorActionListener, OnTouchListener {
+public class Units extends Activity implements OnClickListener, OnEditorActionListener, OnTouchListener, OnLongClickListener {
 	private final static String TAG = Units.class.getSimpleName();
 
 	private MultiAutoCompleteTextView wantEditText;
@@ -66,7 +73,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         wantEditText.setOnFocusChangeListener(inputBoxOnFocusChange);
         haveEditText.setOnFocusChangeListener(inputBoxOnFocusChange);
 
-        // TODO add long-press options to result for copy, send
         resultView = ((TextView)findViewById(R.id.result));
         history = ((ListView)findViewById(R.id.history_list));
         historyDrawer = ((LinearLayout)findViewById(R.id.history_drawer));
@@ -82,16 +88,15 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
             	final HistoryEntry entry = historyAdapter.getItem(position);
 
-            	haveEditText.setText(entry.haveExpr);
-            	wantEditText.setText(entry.wantExpr);
-            	haveEditText.requestFocus();
-            	haveEditText.setSelection(haveEditText.length());
+            	setCurrentEntry(entry);
 
             	setHistoryVisible(false);
 			}
 		});
+		history.setOnCreateContextMenuListener(this);
 
 		resultView.setOnClickListener(this);
+		resultView.setOnCreateContextMenuListener(this);
 		historyClose.setOnClickListener(this);
 
 		findViewById(R.id.swap_inputs).setOnClickListener(buttonListener);
@@ -142,11 +147,19 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	unitUsageDB.close();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+    	// TODO Auto-generated method stub
+    	super.onSaveInstanceState(outState);
+
+    }
+
     private void setHistoryVisible(boolean visible){
-    	if (visible){
+    	if (visible && historyDrawer.getVisibility() == View.INVISIBLE){
     		historyDrawer.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.history_show));
     		historyDrawer.setVisibility(View.VISIBLE);
-    	}else{
+
+    	}else if(! visible && historyDrawer.getVisibility() == View.VISIBLE){
 			historyDrawer.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.history_hide));
 			historyDrawer.setVisibility(View.INVISIBLE);
     	}
@@ -188,6 +201,14 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     		reciprocalNotice.setVisibility(View.GONE);
     		resultView.setError(null);
     	}
+    }
+
+    private void setCurrentEntry(HistoryEntry entry){
+    	haveEditText.setText(entry.haveExpr + " ");// extra space is to prevent auto-complete from triggering.
+    	wantEditText.setText(entry.wantExpr + (entry.wantExpr.length() > 0 ? " " : ""));
+    	haveEditText.requestFocus();
+    	haveEditText.setSelection(haveEditText.length());
+
     }
 
     // TODO there's got to be a translate function that's more efficient than this...
@@ -292,9 +313,77 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	}
     }
 
+
+	public boolean onLongClick(View v) {
+		switch (v.getId()){
+		case R.id.result:
+			v.showContextMenu();
+			return true;
+		}
+		return false;
+	}
+
+	private static final int
+		MENU_COPY       = 0,
+		MENU_SEND       = 1,
+		MENU_USE_RESULT = 2,
+		MENU_REEDIT     = 3;
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+
+		menu.add(Menu.NONE, MENU_REEDIT, Menu.FIRST, R.string.ctx_menu_reedit);
+		menu.add(Menu.NONE, MENU_COPY, Menu.CATEGORY_SYSTEM, android.R.string.copy);
+		menu.add(Menu.NONE, MENU_SEND, Menu.CATEGORY_SYSTEM, R.string.ctx_menu_send);
+		menu.add(Menu.NONE, MENU_USE_RESULT, Menu.CATEGORY_SECONDARY, R.string.ctx_menu_use_result);
+
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		final ContextMenuInfo ctxMenuInfo = item.getMenuInfo();
+		int position = history.getCount() - 1;
+		if (ctxMenuInfo instanceof AdapterContextMenuInfo){
+			position = ((AdapterContextMenuInfo) ctxMenuInfo).position;
+		}
+		final HistoryEntry historyItem = (HistoryEntry) history.getItemAtPosition(position);
+		final String historyItemString = historyItem.toString();
+
+		switch (item.getItemId()){
+		case MENU_COPY: {
+			final ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+			clipboard.setText(historyItemString);
+			Toast.makeText(this, getString(R.string.toast_copy, historyItemString),
+					Toast.LENGTH_SHORT).show();
+		} break;
+
+		case MENU_REEDIT: {
+			setCurrentEntry(historyItem);
+			setHistoryVisible(false);
+		}break;
+
+		case MENU_SEND: {
+			startActivity(Intent.createChooser(
+					new Intent(Intent.ACTION_SEND)
+						.setType("text/plain")
+						.putExtra(Intent.EXTRA_TEXT,
+								historyItemString),
+					getText(R.string.ctx_menu_send_title)));
+		}break;
+
+		case MENU_USE_RESULT: {
+			setCurrentEntry(new HistoryEntry(historyItem.result + " " + historyItem.wantExpr, "", 0));
+			setHistoryVisible(false);
+		}break;
+		}
+
+		return super.onContextItemSelected(item);
+	}
+
     private ArrayAdapter<HistoryEntry> historyAdapter;
 
-	private final ButtonEventListener buttonListener = new ButtonEventListener();
+
 
 	private void swapInputs(EditText focused, EditText unfocused){
 
@@ -312,7 +401,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			unfocused.setSelection(start, end);
 		}
 	}
-
+	private final ButtonEventListener buttonListener = new ButtonEventListener();
 	private class ButtonEventListener implements OnClickListener, OnLongClickListener {
 
 
@@ -459,4 +548,5 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			pd.dismiss();
 		}
 	}
+
 }

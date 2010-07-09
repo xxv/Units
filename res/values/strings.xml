@@ -2,9 +2,20 @@
 <resources>
     
     <string name="app_name">Units</string>
+    
     <string name="button_go">Go!</string>
     <string name="have_hint">you have</string>
     <string name="want_hint">you want</string>
+    
+    <string name="ctx_menu_send">Send</string>
+    <string name="ctx_menu_send_title">Send result with...</string>
+    <string name="ctx_menu_reedit">Re-edit</string>
+    <string name="ctx_menu_use_result">Use result</string>
+    
+    <string name="toast_copy">\"%s\" copied to clipboard.</string>
+    
+    
+    <!-- user-facing alerts -->
     <string name="dialog_loading_units">Loading initial unit usage database...</string>
     <string name="err_have_empty">What do you want to convert from?</string>
     <string name="err_no_conform">Could not convert to this unit.</string>
