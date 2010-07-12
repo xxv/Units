@@ -2,11 +2,20 @@ package info.staticfree.android.units;
 
 import info.staticfree.android.units.ValueGui.ConversionException;
 import info.staticfree.android.units.ValueGui.ReciprocalException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Util;
 import net.sourceforge.unitsinjava.Value;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -30,6 +39,7 @@ import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -388,10 +398,12 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		return true;
 	}
 
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()){
 		case R.id.about:
+			showDialog(DIALOG_ABOUT);
 			return true;
 
 		case R.id.show_history:
@@ -408,9 +420,65 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
 	}
 
+    /**
+     * Read an InputStream into a String until it hits EOF.
+     *
+     * @param in
+     * @return the complete contents of the InputStream
+     * @throws IOException
+     */
+    static public String inputStreamToString(InputStream in) throws IOException{
+            final int bufsize = 8196;
+            final char[] cbuf = new char[bufsize];
+
+            final StringBuffer buf = new StringBuffer(bufsize);
+
+            final InputStreamReader in_reader = new InputStreamReader(in);
+
+            for (int readBytes = in_reader.read(cbuf, 0, bufsize);
+                    readBytes > 0;
+                    readBytes = in_reader.read(cbuf, 0, bufsize)) {
+                    buf.append(cbuf, 0, readBytes);
+            }
+
+            return buf.toString();
+    }
+
+
+	private static final int
+		DIALOG_ABOUT = 0;
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id){
+		case DIALOG_ABOUT:
+            final Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle(R.string.dialog_about_title);
+            builder.setIcon(R.drawable.icon);
+
+            try {
+                final WebView wv = new WebView(this);
+				final InputStream is = getAssets().open("README.xhtml");
+				wv.loadDataWithBaseURL("file:///android_asset/", inputStreamToString(is), "application/xhtml+xml", "utf-8", null);
+				wv.setBackgroundColor(0);
+				builder.setView(wv);
+			} catch (final IOException e) {
+				builder.setMessage("Error: could not load README.xhtml");
+				e.printStackTrace();
+			}
+
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int which) {
+                            setResult(RESULT_OK);
+                    }
+            });
+            return builder.create();
+
+		}
+		return null;
+	}
+
     private ArrayAdapter<HistoryEntry> historyAdapter;
-
-
 
 	private void swapInputs(EditText focused, EditText unfocused){
 

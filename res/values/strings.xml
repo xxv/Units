@@ -18,8 +18,7 @@
     <string name="menu_show_history">Show history</string>
     <string name="menu_clear_history">Clear history</string>
     
-    <string name="dialog_about">Android Units</string>
-    
+    <string name="dialog_about_title">About Units</string>    
     
     <!-- user-facing alerts -->
     <string name="dialog_loading_units">Loading initial unit usage database...</string>

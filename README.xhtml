@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xml:lang="en" lang="en">
+<head>
+  <title>Android Units</title>
+  <link rel="stylesheet" href="android_style.css" type="text/css" />
+</head>
+
+  <body>
+    <h1>Android Units</h1>
+    <p>Android Units is a powerful unit-aware calculator that can also easily perform simple unit conversions. It's based on GNU Units.</p>
+        
+    <a class="webonly" href="sshot01.png" style="float: right"><img src="sshot01.thumb.png" /></a>
+    <a class="webonly" href="sshot02.png" style="float: right"><img src="sshot02.thumb.png" /></a>
+
+    <h2 class="webonly">Download</h2>
+
+    <p class="webonly">You can download this application from the Android market or directly from <a href="Units.apk">Units.apk</a>.</p>
+
+    <h2>Usage</h2>
+        
+<p>Place the value and the unit you want to convert from in the "you have" box and the unit you wish to convert to in the "you want" box. You can enter simple units, such as "centimeter" or complex units, such as "km÷hr". You can press the "unit" button to show a list of all the units. If you don't specify a "to" unit, it will provide a definition in base units. For a list of examples, please see below.</p>
+        
+    <h2>Auto-completion</h2>
+<p>Both "you have" and "you want" will auto-complete with all the known units, sorted by usage. The more you use a given unit, the closer it is to the top of the list. The usage is seeded with initial usage values for common units, including regional weights based on your device's locale.</p>
+        
+<p>Units will not auto-complete every possible permutation of unit metric prefix ("deci", "centi", "milli") with unit ("meter", "liter"). Once you make a calculation with a prefix+unit combination, Units will remember it and auto-complete it from then-on.</p>
+
+    <h2>Reciprocal detection</h2>
+
+<p>Units will auto-detect instances where you may have accidentally forgotten to convert to/from the reciprocal of a given value. For instance, if you enter "100mpg" and ask for "liter÷100km", it will compute it using the reciprocal of the "from" value and provide a notice that it used the reciprocal.</p>
+
+    <h2>Calculations</h2>
+        
+<p>You can enter complex calculations in both input areas. For example, you can add two conformable units such as, "2 cm + (4 + (1/2)) in" or multiply values to higher dimensions, such as, "3m × 1m × 2cm" to convert to "liter" or "m^3". You can even convert to an arbitrary complex unit, provided that everything conforms properly.</p>
+
+    <h2>Examples</h2>
+
+<dl><dt>US→EU height conversion</dt>
+<dd>    5ft + 6in = 167.64 cm</dd>
+    <dt>UK→US weight conversion</dt>
+<dd>    13 stone = 182 lbs</dd>
+    <dt>Volume conversion</dt>
+    <dd>    10cm×5cm ×3cm = 0.15 liter</dd>
+</dl>
+
+<dl><dt>Kitchen: volume to weight</dt>
+<dd>    1cup flour_sifted = 113.398094 g</dd>
+
+<dt>Driving: time to distance</dt>
+<dd>    100kph ×5minute = 5.1780934 mile</dd></dl>
+
+    <dl><dt>Your weight in eggs</dt>
+<dd>    78kg = 1560 eggs</dd>
+    <dt>Time to walk across the U.S. (without sleeping)</dt>
+<dd>    2600mile ÷3mph = 5.15873 week</dd>
+    <dt>Gasoline efficiency in an alternative unit</dt>
+<dd>    1÷(25mile ÷gallon) = 79.36508 microhogshead ÷furlong</dd></dl>
+
+    <dl><dt>Electricity</dt>
+<dd>    3volt ×150mA = 0.45 watt</dd>
+    <dt>Approximate time it takes light to get from the sun to the Earth.</dt>
+<dd>    sundist ÷c = 8.316755 minute</dd>
+    <dt>EM frequency to wavelength</dt>
+<dd>    light ÷2.417GHz = 12.403494 cm</dd></dl>
+
+    <h2>This is free software / open source</h2>
+        
+    <p>Units is an Android front-end to the classic <a href="http://www.gnu.org/software/units/">GNU Units</a> utility, using <a href="http://units-in-java.sourceforge.net/">Units in Java</a> for all the heavy lifting.</p>
+
+    <p>If you wish to get the source to this application and/or contribute to its ongoing development, please visit the <a href="http://staticfree.info/projects/units/">Android Units project page</a>.</p>
+
+    <p class="webonly">The source is available by way of the <a href="git://staticfree.info/git/Units/">Android Units git repository</a>. You can grab a copy for yourself by running:</p>
+        <pre class="webonly">
+              <code>git clone git://staticfree.info/git/Units/</code>
+        </pre>
+
+
+    <h2>License (GPLv3)</h2>
+    <p>Android Units<br/>
+    ©2010 Steve Pomeroy</p>
+
+    <p>This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.</p>
+
+    <p>This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.</p>
+
+    <p>You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
+</body>
+</html>

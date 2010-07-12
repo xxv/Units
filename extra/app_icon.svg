@@ -179,6 +179,13 @@
            in="SourceGraphic" />
       </feMerge>
     </filter>
+    <inkscape:perspective
+       id="perspective2875"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -187,7 +194,7 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="16"
+     inkscape:zoom="2.8284272"
      inkscape:cx="8.8421167"
      inkscape:cy="35.048352"
      inkscape:document-units="px"
@@ -195,7 +202,8 @@
      showgrid="true"
      gridtolerance="10"
      showguides="false"
-     inkscape:snap-global="false">
+     inkscape:snap-global="false"
+     inkscape:guide-bbox="true">
     <inkscape:grid
        type="xygrid"
        id="grid2816"
@@ -204,6 +212,14 @@
        enabled="true"
        snapvisiblegridlinesonly="true"
        dotted="true" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="11.313708,33.941125"
+       id="guide2863" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="58.336309,33.057242"
+       id="guide2865" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -246,14 +262,14 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-size:19.71352959px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#f2f2f2;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="10.910053"
+       style="font-size:19;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:center;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:middle;color:#000000;fill:#f2f2f2;fill-opacity:1;fill-rule:nonzero;stroke:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       x="34.410053"
        y="1036.8478"
        id="text3604"><tspan
          sodipodi:role="line"
          id="tspan3606"
-         x="10.910053"
-         y="1036.8478">=m</tspan></text>
+         x="34.410053"
+         y="1036.8478">= cm</tspan></text>
     <text
        id="text3608"
        y="1009.8743"
@@ -263,6 +279,6 @@
          y="1009.8743"
          x="35.179276"
          id="tspan3610"
-         sodipodi:role="line">9.8ft</tspan></text>
+         sodipodi:role="line">4.9in</tspan></text>
   </g>
 </svg>
