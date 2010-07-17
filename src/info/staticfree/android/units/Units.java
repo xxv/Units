@@ -52,8 +52,8 @@ import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView.OnEditorActionListener;
 
-// TODO high: add help + about box
 // TODO high: either implement history database or persist it in memory on activity state save
+// TODO high: fix mdpi app icon on Android 1.6
 // TODO med: add function parenthesis auto complete
 // TODO low: longpress on unit for description (look in unit addition error message for hints)
 // TODO low: Auto-scale text for display (square)

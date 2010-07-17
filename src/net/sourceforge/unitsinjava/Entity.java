@@ -53,7 +53,7 @@ package net.sourceforge.unitsinjava;
 public abstract class Entity implements Comparable<Entity>
 {
   /** Name of this Entity. */
-  String name;
+  public String name;
 
   /** Where this Entity is defined. */
   Location location;
@@ -81,7 +81,7 @@ public abstract class Entity implements Comparable<Entity>
   //=====================================================================
   //  Check the definition.Used in 'checkunits'.
   //=====================================================================
-  abstract void check();
+  public abstract void check();
 
 
   //=====================================================================
@@ -94,7 +94,7 @@ public abstract class Entity implements Comparable<Entity>
   //  Return short description of the defined object
   //  to be shown by 'tryallunits'.
   //=====================================================================
-  abstract String desc();
+  public abstract String desc();
 
 }
 

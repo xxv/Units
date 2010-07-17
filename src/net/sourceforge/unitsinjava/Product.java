@@ -132,6 +132,11 @@ public class Product
   void delete(int i)
     { factors.removeElementAt(i); }
 
+  public Vector<Factor> getFactors()
+  {
+    return factors;
+  }
+
 
   //=====================================================================
   //  Return true if this Product and Product "p" have the same factors,

@@ -10,7 +10,9 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Unit;
+import net.sourceforge.unitsinjava.Value;
 
 import org.json.JSONObject;
 
@@ -41,7 +43,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		DB_USAGE_TABLE = "usage";
 	private final Context context;
 
-	private static final int DB_VERSION = 1;
+	private static final int DB_VERSION = 2;
 
     public UnitUsageDBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -54,7 +56,8 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		   db.execSQL("CREATE TABLE '"+DB_USAGE_TABLE+
            "' ('"   + UsageEntry._ID + "' INTEGER PRIMARY KEY," +
            		"'" + UsageEntry._UNIT+"' VARCHAR(255)," +
-           		"'" + UsageEntry._USE_COUNT + "' INTEGER" +
+           		"'" + UsageEntry._USE_COUNT + "' INTEGER," +
+           		"'" + UsageEntry._FACTOR_FPRINT + "' TEXT" +
            	")");
 	}
 
@@ -96,12 +99,22 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		   Collections.sort(sortedUnits);
 		   Log.d(TAG, "Adding all sorted units...");
 
-		   // TODO put this in a background thread and show progress bar.
 		   db.beginTransaction();
 		   for (final String unitName: sortedUnits){
 			   cv.put(UsageEntry._UNIT, unitName);
 			   cv.put(UsageEntry._USE_COUNT, allUnitWeights.get(unitName));
 
+			   String fpr = "";
+			   try {
+				   final Value unit = ValueGui.fromString(unitName);
+
+
+				   fpr = ValueGui.getFingerprint(unit);
+			   }catch (final EvalError e){
+				   // skip things we can't handle
+			   }
+			   cv.put(UsageEntry._FACTOR_FPRINT, fpr);
+			   Log.d(TAG, unitName + ": " + fpr);
 			   db.insert(DB_USAGE_TABLE, null, cv);
 		   }
 		   db.setTransactionSuccessful();

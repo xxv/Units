@@ -243,7 +243,7 @@ String showdef()
     { throw new Error("Program Error"); }
 
   @Override
-void check()
+public void check()
     { throw new Error("Program Error"); }
 
   @Override
@@ -252,6 +252,6 @@ boolean isCompatibleWith(final Value v)
     { throw new Error("Program Error"); }
 
   @Override
-String desc()
+public String desc()
     { throw new Error("Program Error"); }
 }

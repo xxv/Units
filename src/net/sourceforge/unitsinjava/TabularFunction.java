@@ -272,7 +272,7 @@ String showdef()
   //  Check the definition. Used in 'checkunits'.
   //=====================================================================
   @Override
-void check()
+public void check()
     {
       if (Env.verbose==2) {
 		Env.out.println("doing function " + name);
@@ -317,7 +317,7 @@ public boolean isCompatibleWith(final Value v)
   //  Return short description of this object to be shown by 'tryallunits'.
   //=====================================================================
   @Override
-String desc()
+public String desc()
     { return "<piecewise linear unit>"; }
 
 

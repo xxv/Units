@@ -39,6 +39,21 @@ public class ValueGui extends Value {
 
 	        return inv;
 	  }
+
+	  public static String getFingerprint(Value val){
+		   final StringBuilder unitFprint = new StringBuilder();
+		   for (final Factor f : val.numerator.getFactors()){
+			   unitFprint.append(f.name);
+			   unitFprint.append(',');
+		   }
+		   unitFprint.append(';');
+		   for (final Factor f : val.denominator.getFactors()){
+			   unitFprint.append(f.name);
+			   unitFprint.append(',');
+		   }
+		   return unitFprint.toString();
+	  }
+
 	  //=====================================================================
 	  //  convert to Value
 	  //=====================================================================

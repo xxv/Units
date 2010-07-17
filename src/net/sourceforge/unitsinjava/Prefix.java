@@ -107,7 +107,7 @@ class Prefix extends Factor
   static Value one = new Value();
 
   @Override
-void check()
+public void check()
     {
       // check for bad '/' character in prefix
       int plevel = 0;
@@ -149,7 +149,7 @@ public boolean isCompatibleWith(final Value v)
     { throw new Error("Program Error"); }
 
   @Override
-String desc()
+public String desc()
     { throw new Error("Program Error"); }
 
 

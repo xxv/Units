@@ -119,7 +119,7 @@ public class Unit extends Factor
   static Value one = new Value();
 
   @Override
-void check()
+public void check()
     {
       // check if can be reduced
       if (Env.verbose==2) {
@@ -159,7 +159,7 @@ public boolean isCompatibleWith(final Value v)
   //  Return short description of this object to be shown by 'tryallunits'.
   //=====================================================================
   @Override
-String desc()
+public String desc()
     { return (isPrimitive? "<primitive unit>" : "= " + def); }
 
 
@@ -168,7 +168,7 @@ String desc()
   //  Return the Unit object if so, or null otherwise.
   //  (Originally part of 'lookupunit'.)
   //=====================================================================
-  static Unit find(final String name)
+  public static Unit find(final String name)
     {
       //---------------------------------------------------------------
       //  If 'name' appears as unit name in table,
