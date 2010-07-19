@@ -22,7 +22,7 @@
 
 		<MultiAutoCompleteTextView android:id="@+id/want"
 			android:layout_height="wrap_content"
-			android:completionThreshold="2" 
+			android:completionThreshold="1" 
 			android:hint="@string/want_hint" android:layout_width="fill_parent"
 			android:inputType="text"
 			android:imeOptions="actionGo"
