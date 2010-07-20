@@ -1,6 +1,9 @@
 package info.staticfree.android.units;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -15,14 +18,18 @@ import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Unit;
 import net.sourceforge.unitsinjava.Value;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
@@ -46,27 +53,30 @@ import android.widget.TextView;
 public class UnitUsageDBHelper extends SQLiteOpenHelper {
 	public final static String TAG = UnitUsageDBHelper.class.getSimpleName();
 	public static final String
-		DB_NAME = "units",
-		DB_USAGE_TABLE = "usage";
+	DB_NAME = "units",
+	DB_USAGE_TABLE = "usage";
 	private final Context context;
 
+	// TODO add a preference that remembers the last loaded version. Load new
+	// units and fingerprints.
+	private static final String UNITS_DAT_VERSION = "1.50";
 	private static final int DB_VERSION = 3;
 
-    public UnitUsageDBHelper(Context context) {
-        super(context, DB_NAME, null, DB_VERSION);
-        this.context = context;
-    }
+	public UnitUsageDBHelper(Context context) {
+		super(context, DB_NAME, null, DB_VERSION);
+		this.context = context;
+	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		   db.execSQL("CREATE TABLE '"+DB_USAGE_TABLE+
-           "' ('"   + UsageEntry._ID + "' INTEGER PRIMARY KEY," +
-           		"'" + UsageEntry._UNIT+"' VARCHAR(255)," +
-           		"'" + UsageEntry._USE_COUNT + "' INTEGER," +
-           		"'" + UsageEntry._FACTOR_FPRINT + "' TEXT," +
-           		"CONSTRAINT unit_unique UNIQUE ("+UsageEntry._UNIT+") ON CONFLICT IGNORE" +
-           	")");
-		   db.execSQL("CREATE INDEX 'factor_fprints' ON "+DB_USAGE_TABLE + " (" +UsageEntry._FACTOR_FPRINT+ ")");
+		db.execSQL("CREATE TABLE '"+DB_USAGE_TABLE+
+				"' ('"   + UsageEntry._ID + "' INTEGER PRIMARY KEY," +
+				"'" + UsageEntry._UNIT+"' VARCHAR(255)," +
+				"'" + UsageEntry._USE_COUNT + "' INTEGER," +
+				"'" + UsageEntry._FACTOR_FPRINT + "' TEXT," +
+				"CONSTRAINT unit_unique UNIQUE ("+UsageEntry._UNIT+") ON CONFLICT IGNORE" +
+		")");
+		db.execSQL("CREATE INDEX 'factor_fprints' ON "+DB_USAGE_TABLE + " (" +UsageEntry._FACTOR_FPRINT+ ")");
 	}
 
 	public int getUnitUsageDbCount(SQLiteDatabase db){
@@ -81,58 +91,94 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		return count;
 	}
 
+	@SuppressWarnings("unchecked")
+	public HashMap<String,String> loadFingerprints(){
+		final HashMap<String, String> fingerprints = new HashMap<String, String>();
+		try {
+			final JSONObject fprints = loadJsonObjectFromRawResource(context, R.raw.fingerprints);
+			for (final Iterator i = fprints.keys(); i.hasNext(); ){
+				final String key = (String) i.next();
+				fingerprints.put(key, fprints.optString(key));
+			}
+		} catch (final Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return fingerprints;
+	}
+
+
 	public static String getFingerprint(String unitName){
-		   String fpr = "";
-		   try {
-			   final Value unit = ValueGui.fromString(unitName);
+
+		String fpr = null;
+		try {
+			final Value unit = ValueGui.fromString(unitName);
 
 
-			   fpr = ValueGui.getFingerprint(unit);
-		   }catch (final EvalError e){
-			   // skip things we can't handle
-		   }
-		   return fpr;
+			fpr = ValueGui.getFingerprint(unit);
+		}catch (final EvalError e){
+			// skip things we can't handle
+		}
+		return fpr;
 	}
 
 	public void loadInitialUnitUsage(SQLiteDatabase db){
-		   // load the initial table in
-		   final ContentValues cv = new ContentValues();
+		// load the initial table in
+		final ContentValues cv = new ContentValues();
 
-		   Log.d(TAG, "init all weights hash");
-		   final HashMap<String, Integer> allUnitWeights =
-			   new HashMap<String, Integer>(Unit.table.keySet().size());
-		   Log.d(TAG, "adding all known weights...");
-		   for (final String unitName: Unit.table.keySet()){
-			   // don't add all uppercase names
-			   if (! unitName.toUpperCase().equals(unitName)){
-				   allUnitWeights.put(unitName, 0);
-			   }
-		   }
-		   Log.d(TAG, "adding common weights");
-		   addAll(loadInitialWeights(R.raw.common_weights), allUnitWeights);
-		   Log.d(TAG, "adding regional weights");
-		   addAll(loadInitialWeights(R.raw.regional_weights), allUnitWeights);
+		Log.d(TAG, "init all weights hash");
+		final HashMap<String, Integer> allUnitWeights =
+			new HashMap<String, Integer>(Unit.table.keySet().size());
+		Log.d(TAG, "adding all known weights...");
+		for (final String unitName: Unit.table.keySet()){
+			// don't add all uppercase names
+			if (! unitName.toUpperCase().equals(unitName)){
+				allUnitWeights.put(unitName, 0);
+			}
+		}
+		Log.d(TAG, "adding common weights");
+		addAll(loadInitialWeights(R.raw.common_weights), allUnitWeights);
+		Log.d(TAG, "adding regional weights");
+		addAll(loadInitialWeights(R.raw.regional_weights), allUnitWeights);
 
-		   // This is so that things of common weight end up in non-random order
-		   // without having to do an SQL order-by.
-		   final ArrayList<String> sortedUnits = new ArrayList<String>(allUnitWeights.keySet());
-		   Log.d(TAG, "Sorting units...");
-		   Collections.sort(sortedUnits);
-		   Log.d(TAG, "Adding all sorted units...");
+		// This is so that things of common weight end up in non-random order
+		// without having to do an SQL order-by.
+		final ArrayList<String> sortedUnits = new ArrayList<String>(allUnitWeights.keySet());
+		Log.d(TAG, "Sorting units...");
+		Collections.sort(sortedUnits);
+		Log.d(TAG, "Adding all sorted units...");
 
-		   db.beginTransaction();
-		   for (final String unitName: sortedUnits){
-			   cv.put(UsageEntry._UNIT, unitName);
-			   cv.put(UsageEntry._USE_COUNT, allUnitWeights.get(unitName));
+		final HashMap<String,String> fingerprints = loadFingerprints();
 
-			   final String fpr = getFingerprint(unitName);
-			   cv.put(UsageEntry._FACTOR_FPRINT, fpr);
-			   Log.d(TAG, unitName + ": " + fpr);
-			   db.insert(DB_USAGE_TABLE, null, cv);
-		   }
-		   db.setTransactionSuccessful();
-		   db.endTransaction();
-		   Log.d(TAG, "done!");
+		db.beginTransaction();
+		for (final String unitName: sortedUnits){
+			cv.put(UsageEntry._UNIT, unitName);
+			cv.put(UsageEntry._USE_COUNT, allUnitWeights.get(unitName));
+
+			final String fpr = fingerprints.containsKey(unitName) ? fingerprints.get(unitName) : getFingerprint(unitName);
+
+			fingerprints.put(unitName, fpr);
+			cv.put(UsageEntry._FACTOR_FPRINT, fpr);
+			db.insert(DB_USAGE_TABLE, null, cv);
+		}
+		db.setTransactionSuccessful();
+		db.endTransaction();
+
+		if (context.checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+			final File externalStorage = Environment.getExternalStorageDirectory();
+			final File fprintsOutput = new File(externalStorage, "units_fingerprints.json");
+			final JSONObject jo = new JSONObject(fingerprints);
+			try {
+				final FileWriter fw = new FileWriter(fprintsOutput);
+				fw.write(jo.toString(1));
+				fw.close();
+				Log.i(TAG, "fingerprints written to: "+fprintsOutput.getCanonicalPath());
+
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+		}
+		Log.d(TAG, "done!");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -149,73 +195,78 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS "+ DB_USAGE_TABLE);
-        onCreate(db);
+		db.execSQL("DROP TABLE IF EXISTS "+ DB_USAGE_TABLE);
+		onCreate(db);
 
 	}
 
-    /**
-     * A weight file is just a static JSON file used to set the initial
-     * weights for unit recommendation precedence.
-     *
-     * @param resourceId
-     * @return
-     */
-    @SuppressWarnings("unchecked")
+	/**
+	 * A weight file is just a static JSON file used to set the initial
+	 * weights for unit recommendation precedence.
+	 *
+	 * @param resourceId
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
 	private JSONObject loadInitialWeights(int resourceId){
-    	final InputStream is = context.getResources().openRawResource(resourceId);
+		try{
 
-    	final StringBuilder jsonString = new StringBuilder();
-    	try{
+			final JSONObject jo = loadJsonObjectFromRawResource(context, resourceId);
 
-	    	for (final BufferedReader isReader = new BufferedReader(new InputStreamReader(is), 16000);
-	    			isReader.ready();){
-	    		jsonString.append(isReader.readLine());
-	    	}
-	    	final JSONObject jo = new JSONObject(jsonString.toString());
+			// remove all "comments", which are just key entries that start with "--"
+			for (final Iterator i = jo.keys(); i.hasNext(); ){
+				final String key = (String)i.next();
+				if (key.startsWith("--")){
+					i.remove();
+				}
+			}
 
-	    	// remove all "comments", which are just key entries that start with "--"
-	    	for (final Iterator i = jo.keys(); i.hasNext(); ){
-	    		final String key = (String)i.next();
-	    		if (key.startsWith("--")){
-	    			i.remove();
-	    		}
-	    	}
+			return jo;
 
-	    	return jo;
+		}catch (final Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
 
-    	}catch (final Exception e){
-    		e.printStackTrace();
-    	}
-    	return null;
-    }
+	private static JSONObject loadJsonObjectFromRawResource(Context context, int resourceId) throws IOException, JSONException{
+		final InputStream is = context.getResources().openRawResource(resourceId);
+
+		final StringBuilder jsonString = new StringBuilder();
+
+		for (final BufferedReader isReader = new BufferedReader(new InputStreamReader(is), 16000);
+		isReader.ready();){
+			jsonString.append(isReader.readLine());
+		}
+		return new JSONObject(jsonString.toString());
+	}
 
 
-    public final static String USAGE_SORT =  UsageEntry._USE_COUNT + " DESC, "+UsageEntry._UNIT + " ASC";
+	public final static String USAGE_SORT =  UsageEntry._USE_COUNT + " DESC, "+UsageEntry._UNIT + " ASC";
 	private static final String CONFORMING_SELECTION = UsageEntry._FACTOR_FPRINT + " = ?";
 
 
 
-    /**
-     * Creates an Adapter that looks for the start of a unit string from the database.
-     * For use with the MultiAutoCompleteTextView
-     *
-     * @param db the unit usage database
-     * @return an Adapter that uses the Simple Dropdown Item view
-     */
-    public UnitCursorAdapter getUnitPrefixAdapter(Activity context, SQLiteDatabase db, TextView otherEntry){
+	/**
+	 * Creates an Adapter that looks for the start of a unit string from the database.
+	 * For use with the MultiAutoCompleteTextView
+	 *
+	 * @param db the unit usage database
+	 * @return an Adapter that uses the Simple Dropdown Item view
+	 */
+	public UnitCursorAdapter getUnitPrefixAdapter(Activity context, SQLiteDatabase db, TextView otherEntry){
 
-    	final Cursor dbCursor = db.query(DB_USAGE_TABLE, null, null, null, null, null, USAGE_SORT);
+		final Cursor dbCursor = db.query(DB_USAGE_TABLE, null, null, null, null, null, USAGE_SORT);
 
-    	context.startManagingCursor(dbCursor);
+		context.startManagingCursor(dbCursor);
 
-    	final UnitCursorAdapter adapter = new UnitCursorAdapter(context, dbCursor, db, otherEntry);
-
-
+		final UnitCursorAdapter adapter = new UnitCursorAdapter(context, dbCursor, db, otherEntry);
 
 
-    	return adapter;
-    }
+
+
+		return adapter;
+	}
 
 	private static String cachedEntryText;
 	private static String[] cachedEntryFprintArgs;
@@ -242,185 +293,183 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
-    public class UnitCursorAdapter extends SimpleCursorAdapter {
-    	private final SQLiteDatabase db;
+	public class UnitCursorAdapter extends SimpleCursorAdapter {
+		private final SQLiteDatabase db;
 
-    	private static final int MSG_REQUERY = 0;
-    	private boolean runningQuery;
-    	private final Activity mActivity;
-    	private final TextView otherEntry;
-    	private final Handler mHandler = new Handler(){
-    		@Override
+		private static final int MSG_REQUERY = 0;
+		private boolean runningQuery;
+		private final Activity mActivity;
+		private final Handler mHandler = new Handler(){
+			@Override
 			public void handleMessage(Message msg) {
-    			switch (msg.what){
-    			case MSG_REQUERY:
-    	    		if (!runningQuery && db.isOpen()){
-    	    			changeCursor(getFilterQueryProvider().runQuery(null));
-    	    			notifyDataSetInvalidated();
-    	    		}
-    				break;
-    			}
-    		};
-    	};
-    	public UnitCursorAdapter (Activity context, Cursor dbCursor, SQLiteDatabase db, TextView otherEntry){
-    		super(context, android.R.layout.simple_dropdown_item_1line,
-    				dbCursor,
-    				new String[] {UsageEntry._UNIT},
-    				new int[] {android.R.id.text1});
+				switch (msg.what){
+				case MSG_REQUERY:
+					if (!runningQuery && db.isOpen()){
+						changeCursor(getFilterQueryProvider().runQuery(null));
+						notifyDataSetInvalidated();
+					}
+					break;
+				}
+			};
+		};
+		public UnitCursorAdapter (Activity context, Cursor dbCursor, SQLiteDatabase db, TextView otherEntry){
+			super(context, android.R.layout.simple_dropdown_item_1line,
+					dbCursor,
+					new String[] {UsageEntry._UNIT},
+					new int[] {android.R.id.text1});
 
-    		this.otherEntry = otherEntry;
-    		this.mActivity = context;
-    		this.db = db;
-        	setStringConversionColumn(dbCursor.getColumnIndex(UsageEntry._UNIT));
+			this.mActivity = context;
+			this.db = db;
+			setStringConversionColumn(dbCursor.getColumnIndex(UsageEntry._UNIT));
 
-        	final TextUpdateWatcher tuw = new TextUpdateWatcher(this);
-        	otherEntry.addTextChangedListener(tuw);
-        	otherEntry.setOnFocusChangeListener(tuw);
+			final TextUpdateWatcher tuw = new TextUpdateWatcher(this);
+			otherEntry.addTextChangedListener(tuw);
+			otherEntry.setOnFocusChangeListener(tuw);
 
-        	// a filter that searches for units starting with the given constraint
-        	setFilterQueryProvider(new UnitMatcherFilterQueryProvider(db, otherEntry));
-    	}
+			// a filter that searches for units starting with the given constraint
+			setFilterQueryProvider(new UnitMatcherFilterQueryProvider(db, otherEntry));
+		}
 
-    	public void otherEntryUpdated(){
-    		if (!mHandler.hasMessages(MSG_REQUERY)){
-    			mHandler.sendEmptyMessage(MSG_REQUERY);
-    		}
-    	}
+		public void otherEntryUpdated(){
+			if (!mHandler.hasMessages(MSG_REQUERY)){
+				mHandler.sendEmptyMessage(MSG_REQUERY);
+			}
+		}
 
-    	private Cursor queryWithConforming(SQLiteDatabase db, TextView otherEntry, String selection, String[] selectionArgs){
-        	String conformingSelection = null;
-        	String[] conformingSelectionArgs = getConformingSelectionArgs(otherEntry);
+		private Cursor queryWithConforming(SQLiteDatabase db, TextView otherEntry, String selection, String[] selectionArgs){
+			String conformingSelection = null;
+			String[] conformingSelectionArgs = getConformingSelectionArgs(otherEntry);
 
-        	if (selection != null){
-        		if (conformingSelectionArgs != null){
-    	    		conformingSelection = CONFORMING_SELECTION + " AND " + selection;
-    	    		final ArrayList<String> args = new ArrayList<String>();
-    	    		args.add(conformingSelectionArgs[0]);
-    	    		args.addAll(Arrays.asList(selectionArgs));
-    	    		conformingSelectionArgs = args.toArray(new String[]{});
-        		}else{
-        			conformingSelection = selection;
-        			conformingSelectionArgs = selectionArgs;
-        		}
-        	}else if (conformingSelectionArgs != null){
-        		conformingSelection = CONFORMING_SELECTION;
-        	}
-        	Cursor c = db.query(DB_USAGE_TABLE, null, conformingSelection, conformingSelectionArgs, null, null, USAGE_SORT);
-        	// If we don't get anything by conforming, the user may be attempting to ask for
-        	// a complex result and we should just return everything.
-        	if (c.getCount() == 0){
-        		c.close();
-        		c = db.query(DB_USAGE_TABLE, null, selection, selectionArgs, null, null, USAGE_SORT);
-        	}
-        	return c;
-    	}
+			if (selection != null){
+				if (conformingSelectionArgs != null){
+					conformingSelection = CONFORMING_SELECTION + " AND " + selection;
+					final ArrayList<String> args = new ArrayList<String>();
+					args.add(conformingSelectionArgs[0]);
+					args.addAll(Arrays.asList(selectionArgs));
+					conformingSelectionArgs = args.toArray(new String[]{});
+				}else{
+					conformingSelection = selection;
+					conformingSelectionArgs = selectionArgs;
+				}
+			}else if (conformingSelectionArgs != null){
+				conformingSelection = CONFORMING_SELECTION;
+			}
+			Cursor c = db.query(DB_USAGE_TABLE, null, conformingSelection, conformingSelectionArgs, null, null, USAGE_SORT);
+			// If we don't get anything by conforming, the user may be attempting to ask for
+			// a complex result and we should just return everything.
+			if (c.getCount() == 0){
+				c.close();
+				c = db.query(DB_USAGE_TABLE, null, selection, selectionArgs, null, null, USAGE_SORT);
+			}
+			return c;
+		}
 
-        private class UnitMatcherFilterQueryProvider implements FilterQueryProvider {
-        	private final SQLiteDatabase db;
-        	// matches a unit being entered in-progress (at the end of the expression)
-        	// intentionally does not match single-letter units (what's the point for autocompleting these?)
+		private class UnitMatcherFilterQueryProvider implements FilterQueryProvider {
+			private final SQLiteDatabase db;
+			// matches a unit being entered in-progress (at the end of the expression)
+			// intentionally does not match single-letter units (what's the point for autocompleting these?)
 
-        	TextView otherEntry;
+			TextView otherEntry;
 
-        	public UnitMatcherFilterQueryProvider(SQLiteDatabase db, TextView otherEntry){
-        		this.db = db;
-        		this.otherEntry = otherEntry;
-        	}
+			public UnitMatcherFilterQueryProvider(SQLiteDatabase db, TextView otherEntry){
+				this.db = db;
+				this.otherEntry = otherEntry;
+			}
 
 
-        	public synchronized Cursor runQuery(CharSequence constraint) {
-        		runningQuery = true;
+			public synchronized Cursor runQuery(CharSequence constraint) {
+				runningQuery = true;
 
-        		final String[] selectionArgs = null;
-        		final String selection = null;
-        		Cursor c = null;
+				final String[] selectionArgs = null;
+				final String selection = null;
+				Cursor c = null;
 
-    			if (constraint == null || constraint.length() == 0){
-    				c = queryWithConforming(db, otherEntry, selection, selectionArgs);
-    			}else{
-    				final Matcher m = UNIT_EXTRACT_REGEX.matcher(constraint);
-    				String modConstraint;
-    				if (m.matches()){
-    					modConstraint = m.group(1);
-    					c = queryWithConforming(db, otherEntry, UsageEntry._UNIT +" GLOB ?", new String[] {modConstraint+"*"});
-    				}else{
-    					c = queryWithConforming(db, otherEntry, null, null);
-    				}
-    			}
-    			mActivity.startManagingCursor(c);
-    			runningQuery = false;
-    			return c;
-    		}
+				if (constraint == null || constraint.length() == 0){
+					c = queryWithConforming(db, otherEntry, selection, selectionArgs);
+				}else{
+					final Matcher m = UNIT_EXTRACT_REGEX.matcher(constraint);
+					String modConstraint;
+					if (m.matches()){
+						modConstraint = m.group(1);
+						c = queryWithConforming(db, otherEntry, UsageEntry._UNIT +" GLOB ?", new String[] {modConstraint+"*"});
+					}else{
+						c = queryWithConforming(db, otherEntry, null, null);
+					}
+				}
+				mActivity.startManagingCursor(c);
+				runningQuery = false;
+				return c;
+			}
 
-        }
+		}
 
-        private class TextUpdateWatcher implements TextWatcher, OnFocusChangeListener {
-        	private boolean dirty = false;
+		private class TextUpdateWatcher implements TextWatcher, OnFocusChangeListener {
+			private boolean dirty = false;
 
-        	private final UnitCursorAdapter adapter;
+			private final UnitCursorAdapter adapter;
 
-        	public TextUpdateWatcher(UnitCursorAdapter adapter) {
-        		this.adapter = adapter;
-    		}
-    		public void afterTextChanged(Editable s) {}
+			public TextUpdateWatcher(UnitCursorAdapter adapter) {
+				this.adapter = adapter;
+			}
+			public void afterTextChanged(Editable s) {}
 
-    		public void beforeTextChanged(CharSequence s, int start, int count,
-    				int after) {}
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
 
-    		public void onTextChanged(CharSequence s, int start, int before,
-    				int count) {
-    			if (s.length() == 0){
-    				// change immediately if cleared.
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				if (s.length() == 0){
+					// change immediately if cleared.
 					adapter.otherEntryUpdated();
 					dirty = false;
-    			}else{
-    				dirty = true;
-    			}
+				}else{
+					dirty = true;
+				}
 
-    		}
+			}
 
-    		public void onFocusChange(View v, boolean hasFocus) {
-    			if (!hasFocus && dirty){
-    				dirty = false;
+			public void onFocusChange(View v, boolean hasFocus) {
+				if (!hasFocus && dirty){
+					dirty = false;
 					adapter.otherEntryUpdated();
-    			}
+				}
 
-    		}
-        }
-    }
+			}
+		}
+	}
 
-    private static final Pattern UNIT_REGEX = Pattern.compile("([a-zA-Z]\\w+)");
+	private static final Pattern UNIT_REGEX = Pattern.compile("([a-zA-Z]\\w+)");
 	private static final Pattern UNIT_EXTRACT_REGEX = Pattern.compile(".*?([a-zA-Z]\\w+)");
 
 
 	private final static String[] INCREMENT_QUERY_PROJECTION = {UsageEntry._UNIT};
-    /**
-     * Increments the usage counter for the given unit.
-     * @param unit name of the unit
-     * @param db the unit usage database
-     */
-    public static void logUnitUsed(String unit, SQLiteDatabase db){
+	/**
+	 * Increments the usage counter for the given unit.
+	 * @param unit name of the unit
+	 * @param db the unit usage database
+	 */
+	public static void logUnitUsed(String unit, SQLiteDatabase db){
 
-    	final String[] selectionArgs = {unit};
-    	final Cursor c = db.query(DB_USAGE_TABLE, INCREMENT_QUERY_PROJECTION, UsageEntry._UNIT + "=?", selectionArgs, null, null, null);
-    	if (c.getCount() > 0){
-        	// TODO efficient, but should probably be sanity checked.
-    		db.execSQL("UPDATE " + DB_USAGE_TABLE + " SET " + UsageEntry._USE_COUNT + "=" + UsageEntry._USE_COUNT + " + 1 WHERE " + UsageEntry._UNIT + "='" + unit + "'" );
-    	}else{
-    		final ContentValues cv = new ContentValues();
-    		cv.put(UsageEntry._UNIT, unit);
-    		cv.put(UsageEntry._USE_COUNT, 1);
-    		cv.put(UsageEntry._FACTOR_FPRINT, getFingerprint(unit));
-    		db.insert(DB_USAGE_TABLE, null, cv);
-    	}
-    	c.close();
-    }
+		final String[] selectionArgs = {unit};
+		final Cursor c = db.query(DB_USAGE_TABLE, INCREMENT_QUERY_PROJECTION, UsageEntry._UNIT + "=?", selectionArgs, null, null, null);
+		if (c.getCount() > 0){
+			// TODO efficient, but should probably be sanity checked.
+			db.execSQL("UPDATE " + DB_USAGE_TABLE + " SET " + UsageEntry._USE_COUNT + "=" + UsageEntry._USE_COUNT + " + 1 WHERE " + UsageEntry._UNIT + "='" + unit + "'" );
+		}else{
+			final ContentValues cv = new ContentValues();
+			cv.put(UsageEntry._UNIT, unit);
+			cv.put(UsageEntry._USE_COUNT, 1);
+			cv.put(UsageEntry._FACTOR_FPRINT, getFingerprint(unit));
+			db.insert(DB_USAGE_TABLE, null, cv);
+		}
+		c.close();
+	}
 
-    public static void logUnitsInExpression(String expression, SQLiteDatabase db){
-    	final Matcher m = UNIT_REGEX.matcher(expression);
-    	while(m.find()){
-    		logUnitUsed(m.group(1), db);
-    	}
-    }
+	public static void logUnitsInExpression(String expression, SQLiteDatabase db){
+		final Matcher m = UNIT_REGEX.matcher(expression);
+		while(m.find()){
+			logUnitUsed(m.group(1), db);
+		}
+	}
 
 }

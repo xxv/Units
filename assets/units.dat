@@ -2,10 +2,10 @@
 # This file is the units database for use with GNU units, a units conversion
 # program by Adrian Mariano adrian@cam.cornell.edu
 #
-# 24 September 2007 Version 1.49
+# 14 February 2010 Version 1.50
 #
 # Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2004, 2005, 2006
-#               2007
+#               2007, 2008, 2009, 2010
 # Free Software Foundation, Inc
 #
 # This program is free software; you can redistribute it and/or modify
@@ -208,6 +208,7 @@ da-                     deka
 d-                      deci
 c-                      centi
 m-                      milli
+u-                      micro   # it should be a mu but u is easy to type
 n-                      nano
 p-                      pico
 f-                      femto
@@ -234,6 +235,15 @@ seven                   7
 eight                   8
 nine                    9
 ten                     10
+eleven                  11
+twelve                  12
+thirteen                13
+fourteen                14
+fifteen                 15
+sixteen                 16
+seventeen               17
+eighteen                18
+nineteen                19
 twenty                  20
 thirty                  30
 forty                   40
@@ -542,6 +552,7 @@ bell                    1|8 watch  # Bell would be sounded every 30 minutes.
 
 circle                  2 pi radian
 degree                  1|360 circle
+deg                     degree
 arcdeg                  degree
 arcmin                  1|60 degree
 arcminute               arcmin
@@ -682,7 +693,7 @@ degF                    5|9 degC  # by setting 0 to the coldest temperature
                                   #    Phil. Trans. (London) 33, 78, 1724)
 
 degreesrankine          degF              # The Rankine scale has the 
-degrankine              degreesrankine    # Fahrenheit degree, but it's zero
+degrankine              degreesrankine    # Fahrenheit degree, but its zero
 degreerankine           degF              # is at absolute zero.
 degR                    degrankine
 tempR                   degrankine
@@ -760,11 +771,11 @@ light                   c
 mu0                     4 pi 1e-7 H/m    # permeability of vacuum (exact)
 epsilon0                1/mu0 c^2        # permittivity of vacuum (exact)
 energy                  c^2              # convert mass to energy
-e                      1.602176462e-19 C # electron charge
-h                     6.62606876e-34 J s # Planck constant
+e                      1.602176487e-19 C # electron charge
+h                     6.62606896e-34 J s # Planck constant
 hbar                    h / 2 pi
 spin                    hbar
-G                6.6743e-11 N m^2 / kg^2 # Newtonian gravitational constant
+G               6.67428e-11 N m^2 / kg^2 # Newtonian gravitational constant
                                          #    This is the NIST 2002 value.
                                          #    Note that NIST increased the
                                          #    uncertainty of G to 1500 ppm
@@ -777,7 +788,7 @@ coulombconst            1/4 pi epsilon0  # listed as "k" sometimes
 
 # Physico-chemical constants
 
-atomicmassunit          1.66053873e-27 kg# atomic mass unit (defined to be
+atomicmassunit         1.660538782e-27 kg# atomic mass unit (defined to be
 u                       atomicmassunit   #   1|12 of the mass of carbon 12)
 amu                     atomicmassunit
 amu_chem                1.66026e-27 kg   # 1|16 of the weighted average mass of
@@ -801,7 +812,7 @@ loschmidt     avogadro mol / molarvolume # Molecules per cubic meter of an
 stefanboltzmann pi^2 k^4 / 60 hbar^3 c^2 # The power per area radiated by a 
 sigma                   stefanboltzmann  #   blackbody at temperature T is 
                                          #   given by sigma T^4.
-wiendisplacement        2.8977686e-3 m K # Wien's Displacement Law gives the
+wiendisplacement        2.8977685e-3 m K # Wien's Displacement Law gives the
                                          #   frequency at which the the Planck
                                          #   spectrum has maximum intensity.
                                          #   The relation is lambda T = b where
@@ -824,8 +835,8 @@ K_J    483597.9 GHz/V   # Direct measurement of the volt is difficult.  Until
                         #   constant K_J, which is equal to 2e/h, relates the
                         #   measured frequency to the potential.  The value
                         #   given here is the officially specified value for
-                        #   use beginning in 1990.  The 1998 recommended value
-                        #   of the constant is 483597.898 GHz/V.
+                        #   use beginning in 1990.  The 2006 recommended value
+                        #   of the constant is 483597.891 GHz/V.
 R_K    25812.807 ohm    # Measurement of the ohm also presents difficulties.
                         #   The old approach involved maintaining resistances
                         #   that were subject to drift.  The new standard is
@@ -877,7 +888,7 @@ H2O100C       0.95838 force gram / cm^3
 
 # Atomic constants
 
-Rinfinity               10973731.568 /m  # The wavelengths of a spectral series
+Rinfinity            10973731.568527 /m  # The wavelengths of a spectral series
 R_H                     10967760 /m      #   can be expressed as 
                                          #     1/lambda = R (1/m^2 - 1/n^2).
                                          #   where R is a number that various
@@ -889,7 +900,7 @@ R_H                     10967760 /m      #   can be expressed as
                                          #        m_e c alpha^2 / 2 h 
                                          #   with a loss of 5 digits
                                          #   of precision.  
-alpha                   7.297352533e-3   # The fine structure constant was
+alpha                   7.2973525376e-3  # The fine structure constant was
                                          #   introduced to explain fine
                                          #   structure visible in spectral
                                          #   lines.  It can be computed from
@@ -902,7 +913,7 @@ prout                   185.5 keV        # nuclear binding energy equal to 1|12
                                          #   binding energy of the deuteron
 # Planck constants
 
-planckmass              2.1767e-8 kg     # sqrt(hbar c / G)
+planckmass              2.17644e-8 kg     # sqrt(hbar c / G)
 m_P                     planckmass
 plancktime              hbar / planckmass c^2
 t_P                     plancktime
@@ -911,17 +922,17 @@ l_P                     plancklength
 
 # Masses of elementary particles
 
-electronmass            5.485799110e-4 u
+electronmass            5.4857990943e-4 u
 m_e                     electronmass
-protonmass              1.00727646688 u
+protonmass              1.00727646677 u
 m_p                     protonmass
-neutronmass             1.00866491578 u
+neutronmass             1.00866491597 u
 m_n                     neutronmass
-muonmass                0.1134289168 u
+muonmass                0.1134289256 u
 m_mu                    muonmass
-deuteronmass            2.01355321271 u
+deuteronmass            2.013553212724 u
 m_d                     deuteronmass
-alphaparticlemass       4.0015061747 u
+alphaparticlemass       4.001506179127 u
 m_alpha                 alphaparticlemass
 
 # particle wavelengths: the compton wavelength of a particle is
@@ -940,11 +951,11 @@ bohrmagneton            e hbar / 2 electronmass
 mu_B                    bohrmagneton
 nuclearmagneton         e hbar /  2 protonmass
 mu_N                    nuclearmagneton
-mu_mu                   4.49044813e-26 J/T  # Muon magnetic moment
-mu_p                    1.410606633e-26 J/T # Proton magnetic moment
-mu_e                    928.476362e-26 J/T  # Electron magnetic moment
-mu_n                    0.96623640e-26 J/T  # Neutron magnetic moment
-mu_d                    0.433073457e-26 J/T # Deuteron magnetic moment
+mu_mu                   4.49044786e-26 J/T  # Muon magnetic moment
+mu_p                    1.410606662e-26 J/T # Proton magnetic moment
+mu_e                    928.476377e-26 J/T  # Electron magnetic moment
+mu_n                    0.96623641e-26 J/T  # Neutron magnetic moment
+mu_d                    0.433073465e-26 J/T # Deuteron magnetic moment
 
 #
 # Units derived from physical constants
@@ -989,7 +1000,7 @@ lorentz                 bohrmagneton / h c  # Used to measure the extent
 cminv                   h c / cm            # Unit of energy used in infrared
 invcm                   cminv               #   spectroscopy.  
 wavenumber              cminv
-kcal_mol                kcal / mol N_A      # kcal/mol is used as a unit of
+kcal_mol                kcal_th / mol N_A   # kcal/mol is used as a unit of
                                             #   energy by physical chemists.
 #
 # CGS system based on centimeter, gram and second
@@ -1145,8 +1156,12 @@ lumen                   cd sr         # Luminous flux (luminous energy per
 lm                      lumen         #    time unit)
 
 talbot                  lumen s       # Luminous energy
-lumberg                 talbot
-
+lumberg                 talbot        # References give these values for 
+lumerg                  talbot        #    lumerg and lumberg both.  Note that 
+                                      #    a paper from 1948 suggests that
+				      #    lumerg should be 1e-7 talbots so
+				      #    that lumergs/erg = talbots/joule.
+                                      #    lumerg = luminous erg
 lux                     lm/m^2        # Illuminance or exitance (luminous
 lx                      lux           #   flux incident on or coming from
 phot                    lumen / cm^2  #   a surface)
@@ -1753,7 +1768,7 @@ winekeg                 12 usgallon
 petroleumbarrel         42 usgallon     # Originated in Pennsylvania oil
 barrel                  petroleumbarrel # fields, from the winetierce
 bbl                     barrel
-hogshead                2 liquidbarrel
+ushogshead              2 liquidbarrel
 usfirkin                9 gallon
 
 # Dry measures: The Winchester Bushel was defined by William III in 1702 and
@@ -2014,8 +2029,14 @@ boll                    6 brbushel
 firlot                  1|4 boll
 brfirkin                9 brgallon     # Used for ale and beer
 cran                    37.5 brgallon  # measures herring, about 750 fish
-brhogshead              63 brgallon
-brbeerbutt              2 brhogshead
+brwinehogshead          52.5 brgallon  # This value is approximately equal
+brhogshead              brwinehogshead #   to the old wine hogshead of 63
+                                       #   wine gallons.  This adjustment
+                                       #   is listed in the OED and in 
+                                       #   "The Weights and Measures of
+				       #   England" by R. D. Connor
+brbeerhogshead          54 brgallon
+brbeerbutt              2 brbeerhogshead
 registerton             100 ft^3  # Used for internal capacity of ships
 shippington             40 ft^3   # Used for ship's cargo freight or timber
 brshippington           42 ft^3   #
@@ -2095,6 +2116,16 @@ shaftment               6 inch # Distance from tip of outstretched thumb to the
                                #   opposite side of the palm of the hand.  The
                                #   ending -ment is from the old English word
                                #   for hand. [18]
+smoot              5 ft + 7 in # Created as part of an MIT fraternity prank.
+                               #   In 1958 Oliver Smoot was used to measure
+                               #   the length of the Harvard Bridge, which was
+                               #   marked off in smooth lengths.  These
+                               #   markings have been maintained on the bridge
+                               #   since then and repainted by subsequent
+                               #   incoming fraternity members.  During a
+                               #   bridge rennovation the new sidewalk was
+                               #   scored every smooth rather than at the 
+                               #   customary 6 ft spacing.
 #
 # Cooking measures
 #
@@ -2228,7 +2259,7 @@ koshersalt_morton       4.8 g / ustsp   # Morton kosher salt
 
 # Egg weights and volumes for a USA large egg
 
-egg                     50 grams
+egg                     50 grams        # without shell
 eggwhite                30 grams
 eggyolk                 18.6 grams
 eggvolume               3 ustablespoons + 1|2 ustsp
@@ -2433,11 +2464,65 @@ quad                    quadrillion btu
 ECtherm                 1.05506e8 J    # Exact definition, close to 1e5 btu
 UStherm                 1.054804e8 J   # Exact definition
 therm                   UStherm
-toe                     1e10 cal_IT    # ton oil equivalent.  Energy released
-                                       # by burning one metric ton of oil. [18]
-tonscoal                1|2.3 toe      # Energy in metric ton coal from [18].
-naturalgas              toe / 1270 m^3 # Energy released from natural gas
-                                       # from [18].  (At what pressure?)
+
+# Energy densities of various fuels
+#
+# Most of these fuels have varying compositions or qualities and hence their
+# actual energy densities vary.  These numbers are hence only approximate.
+#
+# E1. http://bioenergy.ornl.gov/papers/misc/energy_conv.html
+# E2. http://www.aps.org/policy/reports/popa-reports/energy/units.cfm
+# E3. http://www.ior.com.au/ecflist.html
+
+tonoil                  1e10 cal_IT    # Ton oil equivalent.  A conventional
+                                       # value for the energy released by 
+toe                     tonoil         # burning one metric ton of oil. [18,E2] 
+                                       # Note that energy per mass of petroleum 
+                       		       # products is fairly constant.
+                       		       # Variations in volumetric energy
+                       		       # density result from variations in the
+                       		       # density (kg/m^3) of different fuels.
+                       		       # This definition is given by the
+                       		       # IEA/OECD.
+toncoal                 7e9 cal_IT     # Energy in metric ton coal from [18].
+                                       # This is a nominal value which
+                                       # is close to the heat content
+                                       # of coal used in the 1950's
+barreloil               5.8 Mbtu       # Conventional value for barrel of crude
+                                       # oil [E2].  Actual range is 5.6 - 6.3.
+naturalgas_HHV          1027 btu/ft3   # Energy content of natural gas.  HHV
+naturalgas_LHV          930 btu/ft3    # is for Higher Heating Value and
+naturalgas              naturalgas_HHV # includes energy from condensation
+                                       # combustion products.  LHV is for Lower
+                                       # Heating Value and excludes these. 
+                                       # American publications typically report
+                                       # HHV whereas European ones report LHV.
+charcoal                30 GJ/tonne  
+woodenergy_dry          20 GJ/tonne    # HHV, a cord weights about a tonne
+woodenergy_airdry       15 GJ/tonne    # 20% moisture content
+coal_bituminous         27 GJ / tonne
+coal_lignite            15 GJ / tonne   
+coal_US                 22 GJ / ton    # Average for US coal (short ton), 1995
+ethanol_HHV         84000 btu/usgallon
+ethanol_LHV         75700 btu/usgallon
+diesel             130500 btu/usgallon
+gasoline_LHV       115000 btu/usgallon
+gasoline_HHV       125000 btu/usgallon
+gasoline                gasoline_HHV
+heating                 37.3 MJ/liter  
+fueloil                 39.7 MJ/liter  # low sulphur
+propane                 93.3 MJ/m^3
+butane                  124 MJ/m^3
+
+# These values give total energy from uranium fission.  Actual efficiency 
+# of nuclear power plants is around 30%-40%.  Note also that some reactors 
+# use enriched uranium around 3% U-235.  Uranium during processing or use 
+# may be in a compound of uranium oxide or uranium hexafluoride, in which
+# case the energy density would be lower depending on how much uranium is 
+# in the compound. 
+
+uranium_pure     200 MeV avogadro / (235.0439299 g/mol)  # Pure U-235
+uranium_natural         0.7% uranium_pure        # Natural uranium: 0.7% U-235
 
 # Celsius heat unit: energy to raise a pound of water 1 degC
 
@@ -2479,6 +2564,54 @@ clo                     0.155 degC m^2 / W # Supposed to be the insulance
                                            # but [5] gives a slightly different
                                            # value of 0.875 ft^2 degF hr / btu.
 tog                     0.1 degC m^2 / W   # Also used for clothing. 
+
+
+# The bel was defined by engineers of Bell Laboratories to describe the
+# reduction in audio level over a length of one mile. It was originally
+# called the transmission unit (TU) but was renamed around 1923 to honor
+# Alexander Graham Bell. The bel proved inconveniently large so the decibel
+# has become more common.  The decibel is dimensionless since it reports a 
+# ratio, but it is used in various contexts to report a signal's power 
+# relative to some reference level.
+
+bel(x)     [1;1] 10^(x);    log(bel)        # Basic bel definition
+decibel(x) [1;1] 10^(x/10); 10 log(decibel) # Basic decibel definition
+dB(x)      [1;1] 10^(x/10); 10 log(dB)      # Abbreviation
+dBW(x)     [1;W] dB(x) W ;  ~dB(dBW/W)      # Reference = 1 W
+dBk(x)     [1;W] dB(x) kW ; ~dB(dBk/kW)     # Reference = 1 kW
+dBf(x)     [1;W] dB(x) fW ; ~dB(dBf/fW)     # Reference = 1 fW
+dBm(x)     [1;W] dB(x) mW ; ~dB(dBm/mW)     # Reference = 1 mW
+dBmW(x)    [1;W] dBm(x) ;   ~dBm(dBmW)      # Reference = 1 mW
+
+dBJ(x)     [1;J] dB(x) J; ~dB(dBJ/J) # Energy relative to 1 joule
+                                     # Used for power spectral density
+                                     # since W/Hz = J
+
+# When used to measure amplitude, voltage, or current the signal is squared
+# because power is proportional to the square of these measures.  The root
+# mean square (RMS) voltage is typically used with these units. 
+ 
+dBV(x)  [1;V] dB(0.5 x) V ;  ~dB(dBV^2 / V^2)     # Reference = 1 V
+dBmV(x) [1;V] dB(0.5 x) mV ; ~dB(dBmV^2 / mV^2)   # Reference = 1 mV
+dBuV(x) [1;V] dB(0.5 x) microV ; ~dB(dBuV^2 / microV^2) # Ref = 1 microvolt
+
+# Referenced to the voltage that causes 1 mW dissipation in a 600 ohm load.
+# Originally defined as dBv but changed to prevent confusion with dBV. 
+# The "u" is for unloaded. 
+dBu(x)  [1;V] dB(0.5 x) sqrt(mW 600 ohm) ; ~dB(dBu^2 / mW 600 ohm)
+dBv(x)  [1;V] dBu(x) ;   ~dBu(dBv)  # Synonym for dBu
+
+
+# Measurements for sound in air, referenced to the threshold of human hearing
+# Note that sound in other media typically uses 1 micropascal as a reference
+# for sound pressure.  Units dBA, dBB, dBC, refer to different frequency
+# weightings meant to approximate the human ear's response. 
+
+dBSPL(x) [1;Pa] dB(0.5 x) 20 microPa ; ~dB(dBSPL^2 / (20 microPa)^2) # pressure
+dBSIL(x) [1;W/m^2] dB(x) 1e-12 W/m^2; ~dB(dBSIL / (1e-12 W/m^2)) # intensity
+dBSWL(x) [1;W] dB(x) 1e-12 W; ~dB(dBSWL/1e-12 W)
+
+
 
 # Misc other measures
 
@@ -2737,6 +2870,7 @@ point                   computerpoint
 computerpica            12 computerpoint  # to an even 1|72 inch by computer
 postscriptpoint         computerpoint     # people at some point. 
 pspoint                 postscriptpoint
+twip                    1|20 point        # TWentieth of an Imperial Point
 Q                       1|4 mm            # Used in Japanese phototypesetting
                                           # Q is for quarter
 frenchprinterspoint     olddidotpoint     
@@ -3024,6 +3158,8 @@ megalerg                megaerg    # 'L' added to make it pronounceable [18].
 $                       dollar
 mark                    germanymark
 bolivar                 venezuelabolivar
+bolivarfuerte           bolivar        # The currency was revalued by 
+oldbolivar              1|1000 bolivar # a factor of 1000.
 peseta                  spainpeseta
 rand                    southafricarand
 escudo                  portugalescudo
@@ -3042,7 +3178,7 @@ yuan                    chinayuan
 
 # Some European currencies have permanent fixed exchange rates with
 # the Euro.  These rates were taken from the EC's web site:
-# http://europa.eu.int/euro/entry.html
+# http://ec.europa.eu/economy_finance/euro/adoption/conversion/index_en.htm
 
 austriaschilling        1|13.7603 euro
 belgiumfranc            1|40.3399 euro
@@ -3057,298 +3193,344 @@ luxembourgfranc         1|40.3399 euro
 netherlandsguilder      1|2.20371 euro
 portugalescudo          1|200.482 euro
 spainpeseta             1|166.386 euro
+cypruspound             1|0.585274 euro
+maltalira               1|0.429300 euro
+sloveniatolar           1|239.640 euro
+slovakiakoruna          1|30.1260 euro
 
-# Currencey exchange rates for 26 Sep 2007
+# Currencey exchange rates for 10 Feb 2010
 
-unitedarabemiratesdirham 0.2724 US$
-albanialek              0.01147 US$
+unitedarabemiratesdirham 0.2722 US$
+afghanistanafghani     0.02224 US$
+albanialek             0.009902 US$
+armeniadram            0.00264 US$
 netherlandsantillesguilder 0.5587 US$
-angolakwanza            0.01179 US$
-argentinapeso           0.3177 US$
-australiadollar         0.8766 US$
-arubaguilder            0.5585 US$
-bosniamarka             0.7097 US$
-barbadosdollar          0.5 US$
-bangladeshtaka          0.0146 US$
-bulgarialev             0.722 US$
-bahraindinar            2.6539 US$
-burundifranc            0.0009029 US$
-bermudadollar           0.999 US$
-bruneidollar            0.6679 US$
-boliviaboliviano        0.1303 US$
-brazilreal              0.5405 US$
-bahamasdollar           1 US$
-bhutanngultrum          0.02186 US$
-belarusruble            0.0004663 US$
-belizedollar            0.5076 US$
-canadadollar            0.9959 US$
-switzerlandfranc        0.8548 US$
-chilepeso               0.001954 US$
-chinayuan               0.133 US$
-colombiapeso            0.0004944 US$
-costaricacolon          0.001931 US$
-cubapeso                1 US$
-cypruspound             2.4155 US$
-czechrepublickoruna     0.05117 US$
-denmarkkrone            0.1895 US$
-dominicanrepublicpeso   0.03025 US$
-algeriadinar            0.01499 US$
-egyptpound              0.1789 US$
-ethiopiabirr            0.1101 US$
-euro                    1.4128 US$
-fijidollar              0.6355 US$
-greatbritainpound       2.0157 US$
-georgialari             0.5557 US$
-ghanacedi               1.0662 US$
-gambiadalasi            0.04566 US$
-guineafranc             0.000241 US$
-guatemalaquetzal        0.1297 US$
-hongkongdollar          0.1288 US$
-honduraslempira         0.05294 US$
-croatiakuna             0.1938 US$
-haitigourde             0.02805 US$
-hungaryforint           0.005633 US$
-indonesiarupiah         0.0001092 US$
-israelnewshekel         0.2478 US$
-indiarupee              0.02527 US$
-iraqdinar               0.0008097 US$
-iranrial                0.0001073 US$
-icelandkrona            0.01608 US$
-jamaicadollar           0.01427 US$
-jordandinar             1.4115 US$
-japanyen                0.008663 US$
-kenyashilling           0.0149 US$
-kyrgyzstansom           0.02449 US$
-comorosfranc            0.002865 US$
-southkoreawon           0.001086 US$
-kuwaitdinar             3.5667 US$
-caymanislandsdollar     1.2195 US$
-kazakhstantenge         0.007791 US$
-lebanonpound            0.0006612 US$
-srilankarupee           0.008813 US$
-lesotholoti             0.1434 US$
-lithuanialitas          0.409 US$
-latvialat               2.0016 US$
-moroccodirham           0.1253 US$
-moldovaleu              0.08681 US$
-madagascarariary        0.0005435 US$
-macedoniadenar          0.02296 US$
-mongoliatughrik         0.0008421 US$
-macaupataca             0.1247 US$
-mauritaniaouguiya       0.003983 US$
-maltalira               3.2787 US$
-mauritiusrupee          0.03279 US$
-maldivesrufiyaa         0.07813 US$
-malawikwacha            0.007153 US$
-mexicopeso              0.09157 US$
-malaysiaringgit         0.2918 US$
-mozambiquemetical       0.03845 US$
-namibiadollar           0.1428 US$
-nigerianaira            0.007991 US$
-nicaraguacordoba        0.05546 US$
-norwaykrone             0.1818 US$
-nepalrupee              0.01407 US$
-newzealanddollar        0.7448 US$
-omanrial                2.5991 US$
-panamabalboa            1 US$
-perunuevosol            0.32 US$
-papuanewguineakina      0.3312 US$
-philippinespeso         0.02214 US$
-pakistanrupee           0.01649 US$
-polandzloty             0.3737 US$
-paraguayguarani         0.0001986 US$
-qatarriyal              0.2749 US$
-romanianewleu           0.4182 US$
-russiaruble             0.04002 US$
-rwandafranc             0.001829 US$
-saudiarabiariyal        0.2677 US$
-solomonislandsdollar    0.1429 US$
-seychellesrupee         0.1417 US$
-swedenkrona             0.1529 US$
-singaporedollar         0.6676 US$
-slovakiakoruna          0.04165 US$
-sierraleoneleone        0.0003373 US$
-sãotomeandprincipedobra 7.281e-05 US$
-elsalvadorcolon         0.1143 US$
-swazilandlilangeni      0.1434 US$
-thailandbaht            0.0317 US$
-tunisiadinar            0.7968 US$
-tongapa'anga            0.5095 US$
-turkeynewlira           0.8203 US$
-trinidadandtobagodollar 0.1595 US$
-taiwannewdollar         0.03035 US$
-tanzaniashilling        0.000814 US$
-ukrainehryvna           0.1987 US$
-ugandashilling          0.0005762 US$
-uruguaypeso             0.04107 US$
-uzbekistansom           0.0008657 US$
-unitedstatesdollar      US$
-venezuelabolivar        0.0004652 US$
-vietnamdong             6.213e-05 US$
-vanuatuvatu             0.01013 US$
-samoatala               0.3989 US$
-equatorialguineacfafrancbeac 0.002157 US$
-silverounce             13.416 US$
-goldounce               728.1 US$
-eastcaribbeandollar     0.3704 US$
-palladiumounce          344.8 US$
-platinumounce           1347 US$
-yemenrial               0.005048 US$
-southafricarand         0.144 US$
-zambiakwacha            0.0002618 US$
-zimbabwedollar          3.333e-05 US$
+angolakwanza           0.01108 US$
+argentinapeso          0.2603 US$
+australiadollar        0.8855 US$
+arubaguilders          0.5587 US$
+azerbaijannewmanat     1.2449 US$
+bosniamarka            0.7028 US$
+barbadosdollar         0.4988 US$
+bangladeshtaka         0.01445 US$
+bulgarialev            0.7 US$
+bahraindinar           2.652 US$
+burundifranc           0.000823 US$
+bermudadollar          1 US$
+bruneidollar           0.7066 US$
+boliviaboliviano       0.1425 US$
+brazilreal             0.5404 US$
+bahamasdollar          1 US$
+bhutanngultrum         0.02151 US$
+botswanapula           0.1455 US$
+belarusruble           0.000345 US$
+belizedollar           0.5128 US$
+canadadollar           0.9444 US$
+congofranc             0.001099 US$
+switzerlandfranc       0.9391 US$
+chilepeso              0.001871 US$
+chinayuan              0.1465 US$
+colombiapeso           0.000511 US$
+costaricacolon         0.001803 US$
+cubapeso               1 US$
+capeverdeescudo        0.01351 US$
+czechkoruny            5.2772 US$
+djiboutifranc          0.005595 US$
+denmarkkroner          18.498 US$
+dominicanrepublicpeso  0.02755 US$
+algeriadinar           0.01371 US$
+egyptpound             0.1822 US$
+eritreanakfa           0.06622 US$
+ethiopiabirr           0.07469 US$
+euro                   1.3774 US$
+fijidollar             0.5099 US$
+falklandislandspound   1.5628 US$
+greatbritainpound      1.5626 US$
+georgialari            0.5856 US$
+ghanacedi              0.703 US$
+gibraltarpound         1.5628 US$
+gambiadalasi           0.03737 US$
+guineafranc            0.000199 US$
+guatemalaquetzal       0.1221 US$
+guyanadollar           0.004862 US$
+hongkongdollar         0.1287 US$
+honduraslempira        0.05292 US$
+croatiakuna            0.1883 US$
+haitigourdes           0.02516 US$
+hungaryforint          0.005075 US$
+indonesiarupiah        0.01068 US$
+israelnewshekel        0.2667 US$
+indiarupee             0.02157 US$
+iraqdinar              0.000858 US$
+iranrial               0.000102 US$
+icelandkrona           0.007822 US$
+jamaicadollar          0.01122 US$
+jordandinar            1.4085 US$
+japanyen               0.0111 US$
+kenyashilling          0.0131 US$
+kyrgyzstansom          0.02239 US$
+cambodiariel           0.00024 US$
+comorosfranc           0.002799 US$
+northkoreawon          0.001111 US$
+kuwaitdinar            3.4697 US$
+caymanislandsdollar    1.2183 US$
+kazakhstantenge        0.006747 US$
+laoskip                0.000118 US$
+lebanonpound           0.000666 US$
+srilankarupee          0.008715 US$
+liberiadollar          0.01405 US$
+lesothomaloti          0.1297 US$
+lithuanialitai         0.399 US$
+latvialatas            1.9421 US$
+libyadinar             0.7977 US$
+moroccodirham          0.1226 US$
+moldovaleu             0.07803 US$
+madagascarariary       0.000468 US$
+macedoniadenar         0.02231 US$
+myanmarkyat            0.1536 US$
+mongoliatugrik         0.000693 US$
+macaupataca            0.125 US$
+mauritaniaouguiya      0.003824 US$
+mauritiusrupee         0.03279 US$
+maldivesrufiyaa        0.07813 US$
+malawikwacha           0.006632 US$
+mexicopeso             0.07639 US$
+malaysiaringgit        0.2921 US$
+mozambiquemeticai      0.0316 US$
+namibiadollar          0.1296 US$
+nigerianaira           0.006631 US$
+nicaraguacordoba       0.0477 US$
+norwaykrone            0.1695 US$
+nepalnepalrupee        0.01342 US$
+newzealanddollar       0.6967 US$
+omanrial               2.5971 US$
+panamabalboa           1 US$
+perusol                0.3486 US$
+papuanewguineakina     0.3754 US$
+philippinespeso        0.02157 US$
+pakistanrupee          0.01179 US$
+polandzloty            0.3389 US$
+paraguayguarani        0.000213 US$
+qatarrial              0.2747 US$
+romanialeu             0.3338 US$
+serbiadinar            0.01393 US$
+russiaruble            0.03304 US$
+rwandafranc            0.001745 US$
+saudiarabiariyal       0.2667 US$
+solomonislandsdollar   0.1273 US$
+seychellesrupee        0.08753 US$
+sudanpound             0.4464 US$
+swedenkronor           13.719 US$
+singaporedollar        0.7065 US$
+sainthelenapound       1.5627 US$
+sierraleoneleone       0.000255 US$
+somaliashilling        0.000669 US$
+surinamedollar         0.3635 US$
+saotomedobra           6.427e-05 US$
+elsalvadorcolon        0.1143 US$
+syriapound             0.02179 US$
+swazilandemalangeni    0.1297 US$
+thailandbaht           0.03016 US$
+tajikistansomoni       0.229 US$
+tunisiadinar           0.7275 US$
+tongapa'anga           0.517 US$
+turkeynewlira          0.6597 US$
+trinidadandtobagodollar 0.1579 US$
+taiwandollars          0.03119 US$
+tanzaniashilling       0.000741 US$
+ukrainehryvnia         0.1239 US$
+ugandashilling         0.000505 US$
+unitedstatesdollar     1 US$
+uruguaypeso            0.05079 US$
+uzbekistansum          0.000653 US$
+venezuelabolivar       0.233 US$
+vietnamdong            5.4e-05 US$
+vanuatuvatu            0.01008 US$
+samoatala              0.3885 US$
+silverounce            13.344 US$
+goldounce              1076.6 US$
+eastcaribbeandollar    0.3824 US$
+palladiumounce         207.4 US$
+platinumounce          1117.7 US$
+yemenrial              0.004855 US$
+southafricarand        0.1297 US$
+zambiakwacha           0.000214 US$
+zimbabwedollar         0.002641 US$
 
 # ISO Currency Codes
 
-AED                     unitedarabemiratesdirham
-ALL                     albanialek
-ANG                     netherlandsantillesguilder
-AOA                     angolakwanza
-ARS                     argentinapeso
-AUD                     australiadollar
-AWG                     arubaguilder
-BAM                     bosniamarka
-BBD                     barbadosdollar
-BDT                     bangladeshtaka
-BGN                     bulgarialev
-BHD                     bahraindinar
-BIF                     burundifranc
-BMD                     bermudadollar
-BND                     bruneidollar
-BOB                     boliviaboliviano
-BRL                     brazilreal
-BSD                     bahamasdollar
-BTN                     bhutanngultrum
-BYR                     belarusruble
-BZD                     belizedollar
-CAD                     canadadollar
-CHF                     switzerlandfranc
-CLP                     chilepeso
-CNY                     chinayuan
-COP                     colombiapeso
-CRC                     costaricacolon
-CUP                     cubapeso
-CYP                     cypruspound
-CZK                     czechrepublickoruna
-DKK                     denmarkkrone
-DOP                     dominicanrepublicpeso
-DZD                     algeriadinar
-EEK                     estoniakroon
-EGP                     egyptpound
-ETB                     ethiopiabirr
-EUR                     euro
-FJD                     fijidollar
-GBP                     greatbritainpound
-GEL                     georgialari
-GHS                     ghanacedi
-GMD                     gambiadalasi
-GNF                     guineafranc
-GTQ                     guatemalaquetzal
-HKD                     hongkongdollar
-HNL                     honduraslempira
-HRK                     croatiakuna
-HTG                     haitigourde
-HUF                     hungaryforint
-IDR                     indonesiarupiah
-ILS                     israelnewshekel
-INR                     indiarupee
-IQD                     iraqdinar
-IRR                     iranrial
-ISK                     icelandkrona
-JMD                     jamaicadollar
-JOD                     jordandinar
-JPY                     japanyen
-KES                     kenyashilling
-KGS                     kyrgyzstansom
-KMF                     comorosfranc
-KRW                     southkoreawon
-KWD                     kuwaitdinar
-KYD                     caymanislandsdollar
-KZT                     kazakhstantenge
-LBP                     lebanonpound
-LKR                     srilankarupee
-LSL                     lesotholoti
-LTL                     lithuanialitas
-LVL                     latvialat
-MAD                     moroccodirham
-MDL                     moldovaleu
-MGA                     madagascarariary
-MKD                     macedoniadenar
-MNT                     mongoliatughrik
-MOP                     macaupataca
-MRO                     mauritaniaouguiya
-MTL                     maltalira
-MUR                     mauritiusrupee
-MVR                     maldivesrufiyaa
-MWK                     malawikwacha
-MXN                     mexicopeso
-MYR                     malaysiaringgit
-MZN                     mozambiquemetical
-NAD                     namibiadollar
-NGN                     nigerianaira
-NIO                     nicaraguacordoba
-NOK                     norwaykrone
-NPR                     nepalrupee
-NZD                     newzealanddollar
-OMR                     omanrial
-PAB                     panamabalboa
-PEN                     perunuevosol
-PGK                     papuanewguineakina
-PHP                     philippinespeso
-PKR                     pakistanrupee
-PLN                     polandzloty
-PYG                     paraguayguarani
-QAR                     qatarriyal
-RON                     romanianewleu
-RUB                     russiaruble
-RWF                     rwandafranc
-SAR                     saudiarabiariyal
-SBD                     solomonislandsdollar
-SCR                     seychellesrupee
-SEK                     swedenkrona
-SGD                     singaporedollar
-SKK                     slovakiakoruna
-SLL                     sierraleoneleone
-STD                     sãotomeandprincipedobra
-SVC                     elsalvadorcolon
-SZL                     swazilandlilangeni
-THB                     thailandbaht
-TND                     tunisiadinar
-TOP                     tongapa'anga
-TRY                     turkeynewlira
-TTD                     trinidadandtobagodollar
-TWD                     taiwannewdollar
-TZS                     tanzaniashilling
-UAH                     ukrainehryvna
-UGX                     ugandashilling
-USD                     unitedstatesdollar
-UYU                     uruguaypeso
-UZS                     uzbekistansom
-VEB                     venezuelabolivar
-VND                     vietnamdong
-VUV                     vanuatuvatu
-WST                     samoatala
-XAF                     equatorialguineacfafrancbeac
-XAG                     silverounce
-XAU                     goldounce
-XCD                     eastcaribbeandollar
-XPD                     palladiumounce
-XPT                     platinumounce
-YER                     yemenrial
-ZAR                     southafricarand
-ZMK                     zambiakwacha
-ZWD                     zimbabwedollar
+AED                     	unitedarabemiratesdirham
+AFN                     	afghanistanafghani
+ALL                     	albanialek
+AMD                     	armeniadram
+ANG                     	netherlandsantillesguilder
+AOA                     	angolakwanza
+ARS                     	argentinapeso
+AUD                     	australiadollar
+AWG                     	arubaguilders
+AZN                     	azerbaijannewmanat
+BAM                     	bosniamarka
+BBD                     	barbadosdollar
+BDT                     	bangladeshtaka
+BGN                     	bulgarialev
+BHD                     	bahraindinar
+BIF                     	burundifranc
+BMD                     	bermudadollar
+BND                     	bruneidollar
+BOB                     	boliviaboliviano
+BRL                     	brazilreal
+BSD                     	bahamasdollar
+BTN                     	bhutanngultrum
+BWP                     	botswanapula
+BYR                     	belarusruble
+BZD                     	belizedollar
+CAD                     	canadadollar
+CDF                     	congofranc
+CHF                     	switzerlandfranc
+CLP                     	chilepeso
+CNY                     	chinayuan
+COP                     	colombiapeso
+CRC                     	costaricacolon
+CUP                     	cubapeso
+CVE                     	capeverdeescudo
+CZK                     	czechkoruny
+DJF                     	djiboutifranc
+DKK                     	denmarkkroner
+DOP                     	dominicanrepublicpeso
+DZD                     	algeriadinar
+EEK                     	estoniakroon
+EGP                     	egyptpound
+ERN                     	eritreanakfa
+ETB                     	ethiopiabirr
+EUR                     	euro
+FJD                     	fijidollar
+FKP                     	falklandislandspound
+GBP                     	greatbritainpound
+GEL                     	georgialari
+GHS                     	ghanacedi
+GIP                     	gibraltarpound
+GMD                     	gambiadalasi
+GNF                     	guineafranc
+GTQ                     	guatemalaquetzal
+GYD                     	guyanadollar
+HKD                     	hongkongdollar
+HNL                     	honduraslempira
+HRK                     	croatiakuna
+HTG                     	haitigourdes
+HUF                     	hungaryforint
+IDR                     	indonesiarupiah
+ILS                     	israelnewshekel
+INR                     	indiarupee
+IQD                     	iraqdinar
+IRR                     	iranrial
+ISK                     	icelandkrona
+JMD                     	jamaicadollar
+JOD                     	jordandinar
+JPY                     	japanyen
+KES                     	kenyashilling
+KGS                     	kyrgyzstansom
+KHR                     	cambodiariel
+KMF                     	comorosfranc
+KPW                     	northkoreawon
+KWD                     	kuwaitdinar
+KYD                     	caymanislandsdollar
+KZT                     	kazakhstantenge
+LAK                     	laoskip
+LBP                     	lebanonpound
+LKR                     	srilankarupee
+LRD                     	liberiadollar
+LSL                     	lesothomaloti
+LTL                     	lithuanialitai
+LVL                     	latvialatas
+LYD                     	libyadinar
+MAD                     	moroccodirham
+MDL                     	moldovaleu
+MGA                     	madagascarariary
+MKD                     	macedoniadenar
+MMK                     	myanmarkyat
+MNT                     	mongoliatugrik
+MOP                     	macaupataca
+MRO                     	mauritaniaouguiya
+MUR                     	mauritiusrupee
+MVR                     	maldivesrufiyaa
+MWK                     	malawikwacha
+MXN                     	mexicopeso
+MYR                     	malaysiaringgit
+MZN                     	mozambiquemeticai
+NAD                     	namibiadollar
+NGN                     	nigerianaira
+NIO                     	nicaraguacordoba
+NOK                     	norwaykrone
+NPR                     	nepalnepalrupee
+NZD                     	newzealanddollar
+OMR                     	omanrial
+PAB                     	panamabalboa
+PEN                     	perusol
+PGK                     	papuanewguineakina
+PHP                     	philippinespeso
+PKR                     	pakistanrupee
+PLN                     	polandzloty
+PYG                     	paraguayguarani
+QAR                     	qatarrial
+RON                     	romanialeu
+RSD                     	serbiadinar
+RUB                     	russiaruble
+RWF                     	rwandafranc
+SAR                     	saudiarabiariyal
+SBD                     	solomonislandsdollar
+SCR                     	seychellesrupee
+SDG                     	sudanpound
+SEK                     	swedenkronor
+SGD                     	singaporedollar
+SHP                     	sainthelenapound
+SLL                     	sierraleoneleone
+SOS                     	somaliashilling
+SRD                     	surinamedollar
+STD                     	saotomedobra
+SVC                     	elsalvadorcolon
+SYP                     	syriapound
+SZL                     	swazilandemalangeni
+THB                     	thailandbaht
+TJS                     	tajikistansomoni
+TND                     	tunisiadinar
+TOP                     	tongapa'anga
+TRY                     	turkeynewlira
+TTD                     	trinidadandtobagodollar
+TWD                     	taiwandollars
+TZS                     	tanzaniashilling
+UAH                     	ukrainehryvnia
+UGX                     	ugandashilling
+USD                     	unitedstatesdollar
+UYU                     	uruguaypeso
+UZS                     	uzbekistansum
+VEF                     	venezuelabolivar  # bolivar fuerte
+VND                     	vietnamdong
+VUV                     	vanuatuvatu
+WST                     	samoatala
+XAG                     	silverounce
+XAU                     	goldounce
+XCD                     	eastcaribbeandollar
+XPD                     	palladiumounce
+XPT                     	platinumounce
+YER                     	yemenrial
+ZAR                     	southafricarand
+ZMK                     	zambiakwacha
+ZWD                     	zimbabwedollar
 
 # Precious metals
 
-silverprice             US$ 13.416 / troyounce
-goldprice               US$ 728.1 / troyounce
-palladiumprice          US$ 344.8 / troyounce
-platinumprice           US$ 1347 / troyounce
+silverprice             silverounce / troyounce
+goldprice               goldounce / troyounce
+palladiumprice          palladiumounce / troyounce
+platinumprice           platinumounce / troyounce
 
 
 UKP                     GBP        # Not an ISO code, but looks like one, and
                                    # sometimes used on usenet.
+VEB                     1|1000 VEF # old venezuelan bolivar
+
+
+
 
 # Money on the gold standard, used in the late 19th century and early
 # 20th century.
@@ -3653,6 +3835,310 @@ zincgauge[in]    \
 
 screwgauge(g) [;m] (.06 + .013 g) in ; (screwgauge/in + (-.06)) / .013
 
+# 
+# Abrasive grit size
+#
+# Standards governing abrasive grit sizes are complicated, specifying
+# fractions of particles that are passed or retained by different mesh
+# sizes.  As a result, it is not possible to make precise comparisons
+# of different grit standards.  The tables below allow the
+# determination of rough equivlants by using median particle size.  
+#
+# Standards in the USA are determined by the Unified Abrasives
+# Manufacturers' Association (UAMA), which resulted from the merger of
+# several previous organizations.  One of the old organizations was
+# CAMI (Coated Abrasives Manufacturers' Institute).  
+#
+# UAMA has a web page with plots showing abrasve particle ranges for
+# various different grits and comparisons between standards.  
+#
+# http://www.uama.org/Abrasives101/101Standards.html
+#
+# Abrasives are grouped into "bonded" abrasives for use with grinding
+# wheels and "coated" abrasives for sandpapers and abrasive films.
+# The industry uses different grit standards for these two
+# categories.  
+#
+# Another division is between "macrogrits", grits below 240 and
+# "microgrits", which are above 240.  Standards differ, as do methods
+# for determining particle size.  In the USA, ANSI B74.12 is the
+# standard governing macrogrits.  ANSI B74.10 covers bonded microgrit
+# abrasives, and ANSI B74.18 covers coated microgrit abrasives.  It
+# appears that the coated standard is identical to the bonded standard
+# for grits up through 600 but then diverges significantly.  
+#
+# European grit sizes are determined by the Federation of European
+# Producers of Abrasives.  http://www.fepa-abrasives.org
+#
+# They give two standards, the "F" grit for bonded abrasives and the
+# "P" grit for coated abrasives.  This data is taken directly from
+# their web page.  
+
+# FEPA P grit for coated abrasives is commonly seen on sandpaper in
+# the USA where the paper will be marked P600, for example.  FEPA P
+# grits are said to be more tightly constrained than comparable ANSI
+# grits so that the particles are more uniform in size and hence give
+# a better finish.
+
+grit_P[micron] \
+        12 1815 \
+        16 1324 \
+	20 1000 \
+	24 764 \
+	30 642 \
+	36 538 \
+	40 425 \
+	50 336 \
+	60 269 \
+	80 201 \
+	100 162 \
+	120 125 \
+	150 100 \
+	180 82 \
+	220 68 \
+	240 58.5 \
+	280 52.2 \
+	320 46.2 \
+	360 40.5 \
+	400 35 \
+	500 30.2 \
+	600 25.8 \
+	800 21.8 \
+	1000 18.3 \
+	1200 15.3 \
+	1500 12.6 \
+	2000 10.3 \
+	2500 8.4
+
+grit_F[micron] \
+        4 4890 \
+    	5 4125 \
+    	6 3460 \
+    	7 2900 \
+    	8 2460 \
+    	10 2085 \
+    	12 1765 \
+    	14 1470 \
+    	16 1230 \
+    	20 1040 \
+    	22 885 \
+    	24 745 \
+    	30 625 \
+    	36 525 \
+    	40 438 \
+    	46 370 \
+    	54 310 \
+    	60 260 \
+    	70 218 \
+    	80 185 \
+    	90 154 \
+    	100 129 \
+    	120 109 \
+    	150 82 \
+    	180 69 \
+    	220 58 \
+    	230 53 \
+    	240 44.5 \
+    	280 36.5 \
+    	320 29.2 \
+    	360 22.8 \
+    	400 17.3 \
+    	500 12.8 \
+    	600 9.3 \
+    	800 6.5 \
+    	1000 4.5 \
+    	1200 3 \
+    	1500 2.0 \
+    	2000 1.2
+
+# According to the UAMA web page, the ANSI bonded and ANSI coated standards
+# are identical to FEPA F in the macrogrit range (under 240 grit), so these
+# values are taken from the FEPA F table.  The values for 240 and above are
+# from the UAMA web site and represent the average of the "d50" range
+# endpoints listed there.
+
+grit_ansibonded[micron] \
+    4 4890 \
+    5 4125 \
+    6 3460 \
+    7 2900 \
+    8 2460 \
+    10 2085 \
+    12 1765 \
+    14 1470 \
+    16 1230 \
+    20 1040 \
+    22 885 \
+    24 745 \
+    30 625 \
+    36 525 \
+    40 438 \
+    46 370 \
+    54 310 \
+    60 260 \
+    70 218 \
+    80 185 \
+    90 154 \
+    100 129 \
+    120 109 \
+    150 82 \
+    180 69 \
+    220 58 \
+    240 50 \
+    280 39.5 \
+    320 29.5 \
+    360 23 \
+    400 18.25 \
+    500 13.9 \
+    600 10.55 \
+    800 7.65 \
+    1000 5.8 \
+    1200 3.8 
+
+# Like the bonded grit, the coated macrogrits below 240 are taken from the
+# FEPA F table.  Data above this is from the UAMA site.  Note that the coated
+# and bonded standards are evidently the same from 240 up to 600 grit, but
+# starting at 800 grit, the coated standard diverges.  The data from UAMA show
+# that 800 grit coated has an average size slightly larger than the average
+# size of 600 grit coated/bonded.  However, the 800 grit has a significantly
+# smaller particle size variation.
+
+ansicoated[micron] \
+    4 4890 \
+    5 4125 \
+    6 3460 \
+    7 2900 \
+    8 2460 \
+    10 2085 \
+    12 1765 \
+    14 1470 \
+    16 1230 \
+    20 1040 \
+    22 885 \
+    24 745 \
+    30 625 \
+    36 525 \
+    40 438 \
+    46 370 \
+    54 310 \
+    60 260 \
+    70 218 \
+    80 185 \
+    90 154 \
+    100 129 \
+    120 109 \
+    150 82 \
+    180 69 \
+    220 58 \
+    240 50 \
+    280 39.5 \
+    320 29.5 \
+    360 23 \
+    400 18.25 \
+    500 13.9 \
+    600 10.55 \
+    800 11.5 \
+    1000 9.5 \
+    2000 7.2 \
+    2500 5.5 \
+    3000 4 \
+    4000 3 \
+    6000 2 \
+    8000 1.2
+
+#
+# Is this correct?  This is the JIS Japanese standard used on waterstones
+#
+jisgrit[micron] \
+     150 75 \
+     180 63 \
+     220 53 \
+     280 48 \
+     320 40 \
+     360 35 \
+     400 30 \
+     600 20 \
+     700 17 \
+     800 14 \
+     1000 11.5 \
+     1200 9.5 \
+     1500 8 \
+     2000 6.7 \
+     2500 5.5 \
+     3000 4 \
+     4000 3 \
+     6000 2 \
+     8000 1.2
+
+# The "Finishing Scale" marked with an A (e.g. A75).  This information
+# is from the web page of the sand paper manufacturer Klingspor 
+# http://www.klingspor.com/gritgradingsystems.htm
+#
+# I have no information about what this scale is used for. 
+
+grit_A[micron]\
+     16 15.3 \
+     25 21.8 \
+     30 23.6 \
+     35 25.75 \
+     45 35 \
+     60 46.2 \
+     65 53.5 \
+     75 58.5 \
+     90 65 \
+     110 78 \
+     130 93 \
+     160 127 \
+     200 156 
+#
+# Grits for DMT brand diamond sharpening stones from 
+# http://dmtsharp.com/products/colorcode.htm
+#
+
+dmtxxcoarse  120 micron    # 120 mesh
+dmtsilver    dmtxxcoarse
+dmtxx        dmtxxcoarse
+dmtxcoarse   60 micron     # 220 mesh
+dmtx         dmtxcoarse
+dmtblack     dmtxcoarse
+dmtcoarse    45 micron     # 325 mesh
+dmtc         dmtcoarse
+dmtblue      dmtcoarse
+dmtfine      25 micron     # 600 mesh
+dmtred       dmtfine
+dmtf         dmtfine
+dmtefine     9 micron      # 1200 mesh
+dmte         dmtefine
+dmtgreen     dmtefine
+dmtceramic   7 micron      # 2200 mesh
+dmtcer       dmtceramic
+dmtwhite     dmtceramic
+dmteefine    3 micron      # 8000 mesh
+dmttan       dmteefine
+dmtee        dmteefine
+
+#
+# The following values come from a page in the Norton Stones catalog,
+# available at their web page, http://www.nortonstones.com.  
+#
+
+hardtranslucentarkansas  6 micron     # Natural novaculite (silicon quartz)
+softarkansas             22 micron    #   stones
+
+extrafineindia		 22 micron    # India stones are Norton's manufactured
+fineindia		 35 micron    #   aluminum oxide product
+mediumindia		 53.5 micron
+coarseindia		 97 micron
+
+finecrystolon		 45 micron    # Crystolon stones are Norton's  
+mediumcrystalon		 78 micron    #   manufactured silicon carbide product
+coarsecrystalon		 127 micron
+
+# The following are not from the Norton catalog
+hardblackarkansas        6 micron
+hardwhitearkansas        11 micron
+washita                  35 micron
+
 #
 # Ring size. All ring sizes are given as the circumference of the ring.
 #
@@ -3738,7 +4224,7 @@ ccf                     100 ft^3     # used for selling water [18]
 Mcf                     1000 ft^3    # not million cubic feet [18]
 kp                      kilopond
 kpm                     kp meter
-kWh                     kW hour
+Wh                      W hour
 hph                     hp hour
 plf                     lb / foot    # pounds per linear foot
 
@@ -3751,7 +4237,6 @@ ev                      eV
 hg                      Hg
 oe                      Oe
 mh                      mH
-us                      microsec
 rd                      rod
 pf                      pF
 gr                      grain
@@ -4636,6 +5121,7 @@ minim                   minimvolume
 pony                    ponyvolume
 grand                   usgrand
 firkin                  usfirkin
+hogshead                ushogshead
 acre                    usacre
 acrefoot                usacrefoot
 !endlocale
@@ -4661,6 +5147,7 @@ minim                   minimnote
 pony                    brpony
 grand                   brgrand
 firkin                  brfirkin
+hogshead                brhogshead
 acre                    intacre
 acrefoot                intacrefoot
 !endlocale
@@ -4687,3 +5174,7 @@ acrefoot                intacrefoot
 #                 a single channel occupied for one hour.
 #
 ############################################################################
+
+
+
+
