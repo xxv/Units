@@ -8,23 +8,25 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import net.sourceforge.unitsinjava.EvalError;
-import net.sourceforge.unitsinjava.Util;
 import net.sourceforge.unitsinjava.Value;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.InputType;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -41,7 +43,6 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -52,12 +53,15 @@ import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView.OnEditorActionListener;
 
-// TODO high: either implement history database or persist it in memory on activity state save
+// TODO high: show keyboard icon for 2nd tap
+// TODO high: fix temperature conversion
 // TODO high: fix mdpi app icon on Android 1.6
+// TODO med: add date headers for history, to consolidate items ("yesterday", "1 week ago", etc.)
 // TODO med: add function parenthesis auto complete
 // TODO low: longpress on unit for description (look in unit addition error message for hints)
 // TODO low: Auto-scale text for display (square)
 public class Units extends Activity implements OnClickListener, OnEditorActionListener, OnTouchListener, OnLongClickListener {
+	@SuppressWarnings("unused")
 	private final static String TAG = Units.class.getSimpleName();
 
 	private MultiAutoCompleteTextView wantEditText;
@@ -71,10 +75,13 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 	private UnitUsageDBHelper unitUsageDBHelper;
 	private SQLiteDatabase unitUsageDB;
 
+    private HistoryAdapter mHistoryAdapter;
+
+    public final static String STATE_RESULT_TEXT = "info.staticfree.android.units.RESULT_TEXT";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate()");
         setContentView(R.layout.main);
 
         wantEditText = ((MultiAutoCompleteTextView)findViewById(R.id.want));
@@ -89,16 +96,14 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         historyClose = ((Button)findViewById(R.id.history_close));
         numberpad = ((LinearLayout)findViewById(R.id.numberpad));
 
-        // TODO move history to a database, provide settings to clear/disable.
-		historyAdapter = new ArrayAdapter<HistoryEntry>(this, android.R.layout.simple_list_item_1);
-		history.setAdapter(historyAdapter);
+        mHistoryAdapter = new HistoryAdapter(this, managedQuery(HistoryEntry.CONTENT_URI, HistoryAdapter.PROJECTION, null, null, HistoryEntry.SORT_DEFAULT));
+        history.setAdapter(mHistoryAdapter);
 		// TODO consolidate listeners
 		history.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-            	final HistoryEntry entry = historyAdapter.getItem(position);
 
-            	setCurrentEntry(entry);
+            	setCurrentEntry(ContentUris.withAppendedId(HistoryEntry.CONTENT_URI, mHistoryAdapter.getItemId(position)));
 
             	setHistoryVisible(false);
 			}
@@ -111,7 +116,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
 		findViewById(R.id.swap_inputs).setOnClickListener(buttonListener);
 
-		Log.d(TAG, "setting listeners");
 		// Go through the numberpad and add all the onClick listeners.
 		// Make sure to update if the layout changes.
 		final int rows = numberpad.getChildCount();
@@ -124,8 +128,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 				button.setOnLongClickListener(buttonListener);
 			}
 		}
-		Log.d(TAG, "Done.");
-
 
 		unitUsageDBHelper = new UnitUsageDBHelper(this);
 
@@ -136,6 +138,10 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		wantEditText.setTokenizer(tokenizer);
 		haveEditText.setOnTouchListener(this);
 		wantEditText.setOnTouchListener(this);
+
+		if (savedInstanceState != null){
+			resultView.setText(savedInstanceState.getCharSequence(STATE_RESULT_TEXT));
+		}
     }
 
     @Override
@@ -159,9 +165,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-    	// TODO Auto-generated method stub
     	super.onSaveInstanceState(outState);
-
+    	outState.putCharSequence(STATE_RESULT_TEXT, resultView.getText());
     }
 
     private void setHistoryVisible(boolean visible){
@@ -175,20 +180,31 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	}
     }
 
-    private class HistoryEntry {
-    	public String haveExpr;
-    	public String wantExpr;
-    	public double result;
-    	public HistoryEntry(String haveExpr, String wantExpr, double result) {
+    /**
+     * Adds the given entry to the history database.
+     *
+     * @author steve
+     *
+     */
+    private class AddToHistoryRunnable implements Runnable {
+    	private final String haveExpr, wantExpr;
+    	private final double result;
+
+    	public AddToHistoryRunnable(String haveExpr, String wantExpr, double result) {
     		this.haveExpr = haveExpr;
     		this.wantExpr = wantExpr;
     		this.result = result;
 		}
+		public void run() {
+			final ContentValues cv = new ContentValues();
+	    	cv.put(HistoryEntry._HAVE, haveExpr);
+	    	cv.put(HistoryEntry._WANT, wantExpr);
+	    	cv.put(HistoryEntry._RESULT, result);
 
-    	@Override
-    	public String toString() {
-    		return haveExpr + " = " + Util.shownumber(result) + " " + wantExpr;
-    	}
+	    	getContentResolver().insert(HistoryEntry.CONTENT_URI, cv);
+
+		}
+
     }
 
     // TODO make reciprocal notice better animated so it doesn't modify main layout
@@ -196,13 +212,14 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	haveExpr = haveExpr.trim();
     	wantExpr = wantExpr.trim();
     	new AddToUsageTask().execute(haveExpr, wantExpr);
-    	final HistoryEntry histEnt = new HistoryEntry(reciprocal ? "1÷(" + haveExpr + ")" : haveExpr, wantExpr, result);
-    	resultView.setText(histEnt.toString());
-    	historyAdapter.add(histEnt);
+    	haveExpr = reciprocal ? "1÷(" + haveExpr + ")" : haveExpr;
+    	resultView.setText(HistoryEntry.toCharSequence(haveExpr, wantExpr, result));
+
+    	// done on a new thread to avoid hanging the UI while the DB is being updated.
+    	new Thread(new AddToHistoryRunnable(haveExpr, wantExpr, result)).start();
 
     	final View reciprocalNotice = findViewById(R.id.reciprocal_notice);
     	if (reciprocal){
-    		//resultView.setError("reciprocal conversion");
     		resultView.requestFocus();
 
     		reciprocalNotice.setVisibility(View.VISIBLE);
@@ -213,12 +230,38 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	}
     }
 
-    private void setCurrentEntry(HistoryEntry entry){
-    	haveEditText.setText(entry.haveExpr + " ");// extra space is to prevent auto-complete from triggering.
-    	wantEditText.setText(entry.wantExpr + (entry.wantExpr.length() > 0 ? " " : ""));
-    	haveEditText.requestFocus();
-    	haveEditText.setSelection(haveEditText.length());
 
+    private final static String[] PROJECTION_LOAD_FROM_HISTORY = {HistoryEntry._HAVE, HistoryEntry._WANT, HistoryEntry._RESULT};
+
+    private void setCurrentEntry(Uri entry){
+    	final Cursor c = managedQuery(entry, PROJECTION_LOAD_FROM_HISTORY, null, null, null);
+    	if (c.moveToFirst()){
+			setCurrentEntry(c.getString(c.getColumnIndex(HistoryEntry._HAVE)), c.getString(c.getColumnIndex(HistoryEntry._WANT)));
+			c.close();
+    	}else{
+    		// why can't we load the history?
+    	}
+    }
+
+    private void setCurrentEntry(String have, String want){
+		haveEditText.setText(have + " ");// extra space is to prevent auto-complete from triggering.
+		wantEditText.setText(want + (want.length() > 0 ? " " : ""));
+
+		haveEditText.requestFocus();
+		haveEditText.setSelection(haveEditText.length());
+    }
+
+    private CharSequence getEntryAsCharSequence(Uri entry){
+    	final Cursor c = managedQuery(entry, PROJECTION_LOAD_FROM_HISTORY, null, null, null);
+    	if (c.moveToFirst()){
+
+			final CharSequence text = HistoryEntry.toCharSequence(c, c.getColumnIndex(HistoryEntry._HAVE), c.getColumnIndex(HistoryEntry._WANT), c.getColumnIndex(HistoryEntry._RESULT));
+			c.close();
+			return text;
+    	}else{
+    		// why can't we load the history?
+    		return null;
+    	}
     }
 
     // TODO there's got to be a translate function that's more efficient than this...
@@ -357,34 +400,40 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		if (ctxMenuInfo instanceof AdapterContextMenuInfo){
 			position = ((AdapterContextMenuInfo) ctxMenuInfo).position;
 		}
-		final HistoryEntry historyItem = (HistoryEntry) history.getItemAtPosition(position);
-		final String historyItemString = historyItem.toString();
+		final Uri itemUri = ContentUris.withAppendedId(HistoryEntry.CONTENT_URI, mHistoryAdapter.getItemId(position));
 
 		switch (item.getItemId()){
 		case MENU_COPY: {
+			final CharSequence itemText = getEntryAsCharSequence(itemUri);
 			final ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-			clipboard.setText(historyItemString);
-			Toast.makeText(this, getString(R.string.toast_copy, historyItemString),
+			clipboard.setText(itemText);
+			Toast.makeText(this, getString(R.string.toast_copy, itemText),
 					Toast.LENGTH_SHORT).show();
 		} break;
 
 		case MENU_REEDIT: {
-			setCurrentEntry(historyItem);
+			setCurrentEntry(itemUri);
 			setHistoryVisible(false);
 		}break;
 
 		case MENU_SEND: {
+			final CharSequence itemText = getEntryAsCharSequence(itemUri);
 			startActivity(Intent.createChooser(
 					new Intent(Intent.ACTION_SEND)
 						.setType("text/plain")
 						.putExtra(Intent.EXTRA_TEXT,
-								historyItemString),
+								itemText),
 					getText(R.string.ctx_menu_send_title)));
 		}break;
 
 		case MENU_USE_RESULT: {
-			setCurrentEntry(new HistoryEntry(historyItem.result + " " + historyItem.wantExpr, "", 0));
-			setHistoryVisible(false);
+			final Cursor c = managedQuery(itemUri, PROJECTION_LOAD_FROM_HISTORY, null, null, null);
+			if (c.moveToFirst()){
+				setCurrentEntry(c.getDouble(c.getColumnIndex(HistoryEntry._RESULT))
+							+ " " + c.getString(c.getColumnIndex(HistoryEntry._WANT)), "");
+				setHistoryVisible(false);
+				c.close();
+			}
 		}break;
 		}
 
@@ -411,13 +460,12 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			return true;
 
 		case R.id.clear_history:
-			historyAdapter.clear();
+			getContentResolver().delete(HistoryEntry.CONTENT_URI, null, null);
 			resultView.setText(null);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
-
 	}
 
     /**
@@ -477,8 +525,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		}
 		return null;
 	}
-
-    private ArrayAdapter<HistoryEntry> historyAdapter;
 
 	private void swapInputs(EditText focused, EditText unfocused){
 
@@ -573,7 +619,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 	private int defaultInputType;
 	// make sure to reset the input type when losing focus.
 	private final OnFocusChangeListener inputBoxOnFocusChange = new OnFocusChangeListener() {
-
 		public void onFocusChange(View v, boolean hasFocus) {
 			if (!hasFocus){
 				((MultiAutoCompleteTextView)v).setInputType(defaultInputType);
