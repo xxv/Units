@@ -53,9 +53,14 @@ import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView.OnEditorActionListener;
 
-// TODO high: show keyboard icon for 2nd tap
+// TODO high: remove Swap button. Move functionality to menu.
+// TODO high: have Units button pop up list of all units, grouped by convertibility, sorted by popularity. Use collapsible list.
+// TODO high: find more useful button to put in place of swap. Maybe use? Clear? Maybe just keep simple.
+// TODO high: redo graphics to better visually integrate with keypad. Maybe go with white-on-black theme?
+// TODO high: show keyboard icon for 2nd tap (can't do this easily, as one can't detect if soft keyboard is shown or not). May need to scrap this idea.
 // TODO high: fix temperature conversion
 // TODO high: fix mdpi app icon on Android 1.6
+// TODO med: look into performance bug on ADP device. Slows down considerably when backspacing whole entry.
 // TODO med: add date headers for history, to consolidate items ("yesterday", "1 week ago", etc.)
 // TODO med: add function parenthesis auto complete
 // TODO low: longpress on unit for description (look in unit addition error message for hints)
