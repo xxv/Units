@@ -53,7 +53,6 @@ import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView.OnEditorActionListener;
 
-// TODO high: remove Swap button. Move functionality to menu.
 // TODO high: have Units button pop up list of all units, grouped by convertibility, sorted by popularity. Use collapsible list.
 // TODO high: find more useful button to put in place of swap. Maybe use? Clear? Maybe just keep simple.
 // TODO high: redo graphics to better visually integrate with keypad. Maybe go with white-on-black theme?
@@ -118,8 +117,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		resultView.setOnClickListener(this);
 		resultView.setOnCreateContextMenuListener(this);
 		historyClose.setOnClickListener(this);
-
-		findViewById(R.id.swap_inputs).setOnClickListener(buttonListener);
 
 		// Go through the numberpad and add all the onClick listeners.
 		// Make sure to update if the layout changes.
@@ -456,6 +453,17 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()){
+		case R.id.swap_inputs:{
+			if (getCurrentFocus() == haveEditText){
+				swapInputs(haveEditText, wantEditText);
+
+			}else if (getCurrentFocus() == wantEditText){
+				swapInputs(wantEditText, haveEditText);
+			}else{
+				swapInputs(null, null);
+			}
+			return true;
+		}
 		case R.id.about:
 			showDialog(DIALOG_ABOUT);
 			return true;
@@ -564,21 +572,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			case R.id.equal:
 				go();
 				break;
-			case R.id.swap_inputs:{
 
-
-				if (getCurrentFocus() == haveEditText){
-					swapInputs(haveEditText, wantEditText);
-
-				}else if (getCurrentFocus() == wantEditText){
-					swapInputs(wantEditText, haveEditText);
-				}else{
-					swapInputs(null, null);
-				}
-
-
-
-			}break;
 
 			case R.id.unit_entry:
 				if (currentFocus instanceof MultiAutoCompleteTextView){

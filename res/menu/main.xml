@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/swap_inputs" android:title="@string/menu_swap_input" android:icon="@drawable/ic_menu_import_export" />
 	<item android:id="@+id/about" android:title="@string/menu_about" android:icon="@android:drawable/ic_menu_info_details" />
 	<item android:id="@+id/show_history" android:title="@string/menu_show_history" android:icon="@android:drawable/ic_menu_recent_history" />
 	<item android:id="@+id/clear_history" android:title="@string/menu_clear_history" android:icon="@drawable/clear_history" />

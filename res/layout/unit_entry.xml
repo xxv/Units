@@ -15,7 +15,6 @@
 			android:hint="@string/have_hint"
 			android:inputType="text"
 			android:imeOptions="actionNext"
-			android:background="@drawable/input_top"
 			android:layout_margin="0dip"
 			
 			 />
@@ -26,21 +25,9 @@
 			android:hint="@string/want_hint" android:layout_width="fill_parent"
 			android:inputType="text"
 			android:imeOptions="actionGo"
-			android:background="@drawable/input_bottom"
 			android:layout_margin="0dip"
 			 />
 		</LinearLayout>
 
-		<Button android:id="@+id/swap_inputs"
-			
-			android:background="@drawable/swap"
-			android:scaleType="fitCenter"
-			android:layout_width="60dip"
-			android:layout_height="fill_parent"
-			
-			android:layout_alignParentRight="true"
-			android:layout_alignParentTop="true"
-			 
-			 />
 	</LinearLayout> 
 </merge>
