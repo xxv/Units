@@ -45,12 +45,15 @@ import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.SimpleCursorTreeAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.TextView.OnEditorActionListener;
 
 // TODO high: have Units button pop up list of all units, grouped by convertibility, sorted by popularity. Use collapsible list.
@@ -147,17 +150,20 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     }
 
     @Override
-    protected void onResume() {
-    	super.onResume();
-
+    protected void onStart() {
+    	super.onStart();
 		unitUsageDB = unitUsageDBHelper.getWritableDatabase();
 		haveEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(Units.this, wantEditText));
 		wantEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(Units.this, haveEditText));
+    }
+
+    @Override
+    protected void onResume() {
+    	super.onResume();
 
     	if (unitUsageDBHelper.getUnitUsageDbCount() == 0){
     		new LoadInitialUnitUsageTask().execute();
     	}
-
     }
 
     @Override
@@ -506,9 +512,23 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
             return buf.toString();
     }
 
+    private void sendTextAsSoftKeyboard(String text){
+    	dispatchKeyEvent(new KeyEvent(SystemClock.uptimeMillis(), text, Units.class.hashCode(), KeyEvent.FLAG_SOFT_KEYBOARD));
+    }
+
+    private final OnChildClickListener allUnitChildClickListener = new OnChildClickListener() {
+
+		public boolean onChildClick(ExpandableListView parent, View v,
+				int groupPosition, int childPosition, long id) {
+			sendTextAsSoftKeyboard(((TextView)v).getText().toString() + " ");
+			dismissDialog(DIALOG_ALL_UNITS);
+			return true;
+		}
+	};
 
 	private static final int
-		DIALOG_ABOUT = 0;
+		DIALOG_ABOUT = 0,
+		DIALOG_ALL_UNITS = 1;
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id){
@@ -536,8 +556,33 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
             });
             return builder.create();
 
+		case DIALOG_ALL_UNITS:{
+			final Builder b = new Builder(Units.this);
+			b.setTitle(R.string.dialog_all_units_title);
+			final ExpandableListView unitExpandList = new ExpandableListView(Units.this);
+			final String[] groupProjection = {UsageEntry._ID, UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};
+
+			// Below is a sub-query needed in order to have the GROUP BY -reduced items
+			// be the most used unit with the given fingerprint. The last item in the list is the one that's used.
+			final Cursor cursor = unitUsageDB.query(
+					"(SELECT "+UsageEntry._ID+","+UsageEntry._UNIT+","+UsageEntry._FACTOR_FPRINT+","+UsageEntry._USE_COUNT+
+						" FROM "+UnitUsageDBHelper.DB_USAGE_TABLE + " ORDER BY "+UsageEntry._USE_COUNT+" ASC, "+UsageEntry._UNIT+" DESC)",
+					groupProjection, null, null, UsageEntry._FACTOR_FPRINT, null, UnitUsageDBHelper.USAGE_SORT);
+
+			unitExpandList.setAdapter(new UnitsExpandableListAdapter(cursor, Units.this,
+					android.R.layout.simple_expandable_list_item_1, android.R.layout.simple_expandable_list_item_1,
+					new String[] {UsageEntry._UNIT},
+	                new int[] {android.R.id.text1},
+	                new String[] {UsageEntry._UNIT}, new int[] {android.R.id.text1}));
+			unitExpandList.setCacheColorHint(0);
+			unitExpandList.setOnChildClickListener(allUnitChildClickListener);
+			b.setView(unitExpandList);
+			return b.create();
 		}
-		return null;
+
+		default:
+			throw new IllegalArgumentException("Unknown dialog ID:" +id);
+		}
 	}
 
 	private void swapInputs(EditText focused, EditText unfocused){
@@ -556,6 +601,35 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			unfocused.setSelection(start, end);
 		}
 	}
+
+	// XXX ./android-7/ApiDemos/src/com/example/android/apis/view/ExpandableList2.java
+
+    public class UnitsExpandableListAdapter extends SimpleCursorTreeAdapter {
+    	private final int factorFprintColumn;
+    	private final String[] childProjection = {UsageEntry._ID, UsageEntry._UNIT};
+
+        public UnitsExpandableListAdapter(Cursor cursor, Activity context, int groupLayout,
+                int childLayout, String[] groupFrom, int[] groupTo, String[] childrenFrom,
+                int[] childrenTo) {
+
+            super(context, cursor, groupLayout, groupFrom, groupTo, childLayout, childrenFrom,
+                    childrenTo);
+            factorFprintColumn = cursor.getColumnIndex(UsageEntry._FACTOR_FPRINT);
+        }
+
+        @Override
+        protected Cursor getChildrenCursor(Cursor groupCursor) {
+            // Given the group, we return a cursor for all the children within that group
+
+        	final String factorFprint = groupCursor.getString(factorFprintColumn);
+
+            // The returned Cursor MUST be managed by us, so we use Activity's helper
+            // functionality to manage it for us.
+        	final String[] selectionArgs = {factorFprint};
+        	return managedQuery(UsageEntry.CONTENT_URI, childProjection, UsageEntry._FACTOR_FPRINT+"=?", selectionArgs, UnitUsageDBHelper.USAGE_SORT);
+        }
+    }
+
 	private final ButtonEventListener buttonListener = new ButtonEventListener();
 	private class ButtonEventListener implements OnClickListener, OnLongClickListener {
 
@@ -574,16 +648,19 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 				go();
 				break;
 
-
-			case R.id.unit_entry:
+			case R.id.unit_entry:{
 				if (currentFocus instanceof MultiAutoCompleteTextView){
-					((MultiAutoCompleteTextView) currentFocus).setError(null);
-					((MultiAutoCompleteTextView)currentFocus).showDropDown();
+					if (((MultiAutoCompleteTextView) currentFocus).getAdapter().getCount() > 2000){
+						showDialog(DIALOG_ALL_UNITS);
+					}else{
+						((MultiAutoCompleteTextView) currentFocus).setError(null);
+						((MultiAutoCompleteTextView)currentFocus).showDropDown();
+					}
 				}
-				break;
+			}break;
 
 			default:
-				dispatchKeyEvent(new KeyEvent(SystemClock.uptimeMillis(), ((Button)v).getText().toString(), Units.class.hashCode(), KeyEvent.FLAG_SOFT_KEYBOARD));
+				sendTextAsSoftKeyboard(((Button)v).getText().toString());
 			}
 
 		}
