@@ -167,8 +167,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     }
 
     @Override
-    protected void onPause() {
-    	super.onPause();
+    protected void onStop() {
+    	super.onStop();
     	unitUsageDB.close();
     }
 

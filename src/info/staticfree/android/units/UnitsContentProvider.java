@@ -173,7 +173,7 @@ public class UnitsContentProvider extends ContentProvider {
 			return db.query(
 					"(SELECT "+UsageEntry._ID+","+UsageEntry._UNIT+","+UsageEntry._FACTOR_FPRINT+","+UsageEntry._USE_COUNT+
 						" FROM "+UnitUsageDBHelper.DB_USAGE_TABLE + " ORDER BY "+UsageEntry._USE_COUNT+" ASC, "+UsageEntry._UNIT+" DESC)",
-					projection, selection, selectionArgs, UsageEntry._FACTOR_FPRINT, null, sortOrder);
+					projection, selection, selectionArgs, UsageEntry._FACTOR_FPRINT, UsageEntry._FACTOR_FPRINT+" NOTNULL", sortOrder);
 		}
 
 			default:
