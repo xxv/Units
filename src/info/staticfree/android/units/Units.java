@@ -561,15 +561,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			b.setTitle(R.string.dialog_all_units_title);
 			final ExpandableListView unitExpandList = new ExpandableListView(Units.this);
 			final String[] groupProjection = {UsageEntry._ID, UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};
-
-			// Below is a sub-query needed in order to have the GROUP BY -reduced items
-			// be the most used unit with the given fingerprint. The last item in the list is the one that's used.
-			final Cursor cursor = unitUsageDB.query(
-					"(SELECT "+UsageEntry._ID+","+UsageEntry._UNIT+","+UsageEntry._FACTOR_FPRINT+","+UsageEntry._USE_COUNT+
-						" FROM "+UnitUsageDBHelper.DB_USAGE_TABLE + " ORDER BY "+UsageEntry._USE_COUNT+" ASC, "+UsageEntry._UNIT+" DESC)",
-					groupProjection, null, null, UsageEntry._FACTOR_FPRINT, null, UnitUsageDBHelper.USAGE_SORT);
-
-			unitExpandList.setAdapter(new UnitsExpandableListAdapter(cursor, Units.this,
+			final Cursor cursor = managedQuery(UsageEntry.CONTENT_URI_CONFORM_TOP, groupProjection, null, null, UnitUsageDBHelper.USAGE_SORT);
+			unitExpandList.setAdapter(new UnitsExpandableListAdapter(cursor, this,
 					android.R.layout.simple_expandable_list_item_1, android.R.layout.simple_expandable_list_item_1,
 					new String[] {UsageEntry._UNIT},
 	                new int[] {android.R.id.text1},
@@ -602,8 +595,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		}
 	}
 
-	// XXX ./android-7/ApiDemos/src/com/example/android/apis/view/ExpandableList2.java
-
     public class UnitsExpandableListAdapter extends SimpleCursorTreeAdapter {
     	private final int factorFprintColumn;
     	private final String[] childProjection = {UsageEntry._ID, UsageEntry._UNIT};
@@ -619,12 +610,9 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
         @Override
         protected Cursor getChildrenCursor(Cursor groupCursor) {
-            // Given the group, we return a cursor for all the children within that group
-
+            // Given the group, we return a cursor for all the children within that group.
         	final String factorFprint = groupCursor.getString(factorFprintColumn);
 
-            // The returned Cursor MUST be managed by us, so we use Activity's helper
-            // functionality to manage it for us.
         	final String[] selectionArgs = {factorFprint};
         	return managedQuery(UsageEntry.CONTENT_URI, childProjection, UsageEntry._FACTOR_FPRINT+"=?", selectionArgs, UnitUsageDBHelper.USAGE_SORT);
         }
@@ -650,6 +638,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
 			case R.id.unit_entry:{
 				if (currentFocus instanceof MultiAutoCompleteTextView){
+					// 2000 is just a magic number that is less than the total number of units,
+					// but greater than the number of possibly conforming units. Discovered empirically.
 					if (((MultiAutoCompleteTextView) currentFocus).getAdapter().getCount() > 2000){
 						showDialog(DIALOG_ALL_UNITS);
 					}else{

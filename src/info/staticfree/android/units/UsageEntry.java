@@ -10,8 +10,10 @@ public class UsageEntry implements BaseColumns {
 		_FACTOR_FPRINT = "factors";
 
 	public static final String
-		PATH = "units";
+		PATH = "units",
+		PATH_CONFORM_TOP = "units_by_conform";
 
 	public final static Uri
-		CONTENT_URI = Uri.parse("content://" + UnitsContentProvider.AUTHORITY + "/" + PATH);
+		CONTENT_URI = Uri.parse("content://" + UnitsContentProvider.AUTHORITY + "/" + PATH),
+		CONTENT_URI_CONFORM_TOP = Uri.parse("content://" + UnitsContentProvider.AUTHORITY + "/" + PATH_CONFORM_TOP);
 }

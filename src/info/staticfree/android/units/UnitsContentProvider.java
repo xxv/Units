@@ -23,7 +23,8 @@ public class UnitsContentProvider extends ContentProvider {
 		MATCHER_HISTORY_ENTRY_ITEM = 1,
 		MATCHER_HISTORY_ENTRY_DIR  = 2,
 		MATCHER_UNIT_USAGE_ITEM    = 3,
-		MATCHER_UNIT_USAGE_DIR     = 4;
+		MATCHER_UNIT_USAGE_DIR     = 4,
+		MATCHER_UNIT_USAGE_CONFORM_TOP_DIR = 5;
 
     private static UriMatcher uriMatcher;
     static {
@@ -33,6 +34,8 @@ public class UnitsContentProvider extends ContentProvider {
 
         uriMatcher.addURI(AUTHORITY, UsageEntry.PATH, MATCHER_UNIT_USAGE_DIR);
         uriMatcher.addURI(AUTHORITY, UsageEntry.PATH + "/#", MATCHER_UNIT_USAGE_ITEM);
+
+        uriMatcher.addURI(AUTHORITY, UsageEntry.PATH_CONFORM_TOP, MATCHER_UNIT_USAGE_CONFORM_TOP_DIR);
     }
 
 	public final static String
@@ -91,6 +94,8 @@ public class UnitsContentProvider extends ContentProvider {
 			return TYPE_UNIT_USAGE_DIR;
 		case MATCHER_UNIT_USAGE_ITEM:
 			return TYPE_UNIT_USAGE_ITEM;
+		case MATCHER_UNIT_USAGE_CONFORM_TOP_DIR:
+			return TYPE_UNIT_USAGE_DIR;
 
         default:
                 throw new IllegalArgumentException("Cannot get type for URI "+uri);
@@ -159,6 +164,17 @@ public class UnitsContentProvider extends ContentProvider {
             qb.appendWhere(UsageEntry._ID + "="+id);
 	        c = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
 		}break;
+
+		case MATCHER_UNIT_USAGE_CONFORM_TOP_DIR:{
+			final SQLiteDatabase db = unitDbHelper.getWritableDatabase();
+
+			// Below is a sub-query needed in order to have the GROUP BY -reduced items
+			// be the most used unit with the given fingerprint. The last item in the list is the one that's used.
+			return db.query(
+					"(SELECT "+UsageEntry._ID+","+UsageEntry._UNIT+","+UsageEntry._FACTOR_FPRINT+","+UsageEntry._USE_COUNT+
+						" FROM "+UnitUsageDBHelper.DB_USAGE_TABLE + " ORDER BY "+UsageEntry._USE_COUNT+" ASC, "+UsageEntry._UNIT+" DESC)",
+					projection, selection, selectionArgs, UsageEntry._FACTOR_FPRINT, null, sortOrder);
+		}
 
 			default:
 				throw new IllegalArgumentException("Cannot query "+uri);
