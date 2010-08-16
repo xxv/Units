@@ -79,7 +79,8 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		db.execSQL("CREATE INDEX 'factor_fprints' ON "+DB_USAGE_TABLE + " (" +UsageEntry._FACTOR_FPRINT+ ")");
 	}
 
-	public int getUnitUsageDbCount(SQLiteDatabase db){
+	public int getUnitUsageDbCount(){
+		final SQLiteDatabase db = getReadableDatabase();
 		final String[] proj = {UsageEntry._ID};
 		if (!db.isOpen()){
 			return -1;
@@ -122,7 +123,8 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		return fpr;
 	}
 
-	public void loadInitialUnitUsage(SQLiteDatabase db){
+	public void loadInitialUnitUsage(){
+		final SQLiteDatabase db = getWritableDatabase();
 		// load the initial table in
 		final ContentValues cv = new ContentValues();
 
@@ -254,8 +256,8 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 	 * @param db the unit usage database
 	 * @return an Adapter that uses the Simple Dropdown Item view
 	 */
-	public UnitCursorAdapter getUnitPrefixAdapter(Activity context, SQLiteDatabase db, TextView otherEntry){
-
+	public UnitCursorAdapter getUnitPrefixAdapter(Activity context, TextView otherEntry){
+		final SQLiteDatabase db = getWritableDatabase();
 		final Cursor dbCursor = db.query(DB_USAGE_TABLE, null, null, null, null, null, USAGE_SORT);
 
 		context.startManagingCursor(dbCursor);

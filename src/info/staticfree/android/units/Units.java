@@ -150,13 +150,14 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     protected void onResume() {
     	super.onResume();
 
-    	unitUsageDB = unitUsageDBHelper.getWritableDatabase();
-		haveEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(this, unitUsageDB, wantEditText));
-		wantEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(this, unitUsageDB, haveEditText));
+		unitUsageDB = unitUsageDBHelper.getWritableDatabase();
+		haveEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(Units.this, wantEditText));
+		wantEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(Units.this, haveEditText));
 
-    	if (unitUsageDBHelper.getUnitUsageDbCount(unitUsageDB) == 0){
+    	if (unitUsageDBHelper.getUnitUsageDbCount() == 0){
     		new LoadInitialUnitUsageTask().execute();
     	}
+
     }
 
     @Override
@@ -677,7 +678,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		}
 		@Override
 		protected Void doInBackground(Void... params) {
-			unitUsageDBHelper.loadInitialUnitUsage(unitUsageDB);
+			unitUsageDBHelper.loadInitialUnitUsage();
 
 			return null;
 		}
