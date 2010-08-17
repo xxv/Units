@@ -23,6 +23,8 @@ import org.json.JSONObject;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -53,8 +55,8 @@ import android.widget.TextView;
 public class UnitUsageDBHelper extends SQLiteOpenHelper {
 	public final static String TAG = UnitUsageDBHelper.class.getSimpleName();
 	public static final String
-	DB_NAME = "units",
-	DB_USAGE_TABLE = "usage";
+		DB_NAME = "units",
+		DB_USAGE_TABLE = "usage";
 	private final Context context;
 
 	// TODO add a preference that remembers the last loaded version. Load new
@@ -115,7 +117,6 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		try {
 			final Value unit = ValueGui.fromString(unitName);
 
-
 			fpr = ValueGui.getFingerprint(unit);
 		}catch (final EvalError e){
 			// skip things we can't handle
@@ -166,6 +167,10 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		db.setTransactionSuccessful();
 		db.endTransaction();
 
+		context.getContentResolver().notifyChange(UsageEntry.CONTENT_URI, null);
+
+		// If we have the right permissons, save the fingerprints file to a JSON file
+		// which can then be imported into the app to speed up initial fingerpint loading.
 		if (context.checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
 			final File externalStorage = Environment.getExternalStorageDirectory();
 			final File fprintsOutput = new File(externalStorage, "units_fingerprints.json");
@@ -247,29 +252,6 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 	public final static String USAGE_SORT =  UsageEntry._USE_COUNT + " DESC, "+UsageEntry._UNIT + " ASC";
 	private static final String CONFORMING_SELECTION = UsageEntry._FACTOR_FPRINT + " = ?";
 
-
-
-	/**
-	 * Creates an Adapter that looks for the start of a unit string from the database.
-	 * For use with the MultiAutoCompleteTextView
-	 *
-	 * @param db the unit usage database
-	 * @return an Adapter that uses the Simple Dropdown Item view
-	 */
-	public UnitCursorAdapter getUnitPrefixAdapter(Activity context, TextView otherEntry){
-		final SQLiteDatabase db = getWritableDatabase();
-		final Cursor dbCursor = db.query(DB_USAGE_TABLE, null, null, null, null, null, USAGE_SORT);
-
-		context.startManagingCursor(dbCursor);
-
-		final UnitCursorAdapter adapter = new UnitCursorAdapter(context, dbCursor, db, otherEntry);
-
-
-
-
-		return adapter;
-	}
-
 	private static String cachedEntryText;
 	private static String[] cachedEntryFprintArgs;
 
@@ -295,33 +277,40 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
-	public class UnitCursorAdapter extends SimpleCursorAdapter {
-		private final SQLiteDatabase db;
+	public static class UnitCursorAdapter extends SimpleCursorAdapter {
 
 		private static final int MSG_REQUERY = 0;
 		private boolean runningQuery;
 		private final Activity mActivity;
 		private final Handler mHandler = new Handler(){
+			private int retryCount = 0;
 			@Override
 			public void handleMessage(Message msg) {
 				switch (msg.what){
 				case MSG_REQUERY:
-					if (!runningQuery && db.isOpen()){
+					if (!runningQuery){
 						changeCursor(getFilterQueryProvider().runQuery(null));
 						notifyDataSetInvalidated();
+						retryCount = 0;
+					}else{
+						// XXX hack to work around race condition when clearing
+						// both fields at the same time.
+						if (retryCount < 2){
+							mHandler.sendEmptyMessageDelayed(MSG_REQUERY, 100);
+							retryCount++;
+						}
 					}
 					break;
 				}
 			};
 		};
-		public UnitCursorAdapter (Activity context, Cursor dbCursor, SQLiteDatabase db, TextView otherEntry){
+		public UnitCursorAdapter (Activity context, Cursor dbCursor, TextView otherEntry){
 			super(context, android.R.layout.simple_dropdown_item_1line,
 					dbCursor,
 					new String[] {UsageEntry._UNIT},
 					new int[] {android.R.id.text1});
 
 			this.mActivity = context;
-			this.db = db;
 			setStringConversionColumn(dbCursor.getColumnIndex(UsageEntry._UNIT));
 
 			final TextUpdateWatcher tuw = new TextUpdateWatcher(this);
@@ -329,16 +318,16 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 			otherEntry.setOnFocusChangeListener(tuw);
 
 			// a filter that searches for units starting with the given constraint
-			setFilterQueryProvider(new UnitMatcherFilterQueryProvider(db, otherEntry));
+			setFilterQueryProvider(new UnitMatcherFilterQueryProvider(otherEntry));
 		}
 
-		public void otherEntryUpdated(){
+		public synchronized void otherEntryUpdated(){
 			if (!mHandler.hasMessages(MSG_REQUERY)){
 				mHandler.sendEmptyMessage(MSG_REQUERY);
 			}
 		}
 
-		private Cursor queryWithConforming(SQLiteDatabase db, TextView otherEntry, String selection, String[] selectionArgs){
+		private Cursor queryWithConforming(TextView otherEntry, String selection, String[] selectionArgs){
 			String conformingSelection = null;
 			String[] conformingSelectionArgs = getConformingSelectionArgs(otherEntry);
 
@@ -356,28 +345,25 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 			}else if (conformingSelectionArgs != null){
 				conformingSelection = CONFORMING_SELECTION;
 			}
-			Cursor c = db.query(DB_USAGE_TABLE, null, conformingSelection, conformingSelectionArgs, null, null, USAGE_SORT);
+			Cursor c = mActivity.managedQuery(UsageEntry.CONTENT_URI, null, conformingSelection, conformingSelectionArgs, USAGE_SORT);
 			// If we don't get anything by conforming, the user may be attempting to ask for
 			// a complex result and we should just return everything.
 			if (c.getCount() == 0){
 				c.close();
-				c = db.query(DB_USAGE_TABLE, null, selection, selectionArgs, null, null, USAGE_SORT);
+				c = mActivity.managedQuery(UsageEntry.CONTENT_URI, null, selection, selectionArgs, USAGE_SORT);
 			}
 			return c;
 		}
 
 		private class UnitMatcherFilterQueryProvider implements FilterQueryProvider {
-			private final SQLiteDatabase db;
 			// matches a unit being entered in-progress (at the end of the expression)
 			// intentionally does not match single-letter units (what's the point for autocompleting these?)
 
 			TextView otherEntry;
 
-			public UnitMatcherFilterQueryProvider(SQLiteDatabase db, TextView otherEntry){
-				this.db = db;
+			public UnitMatcherFilterQueryProvider(TextView otherEntry){
 				this.otherEntry = otherEntry;
 			}
-
 
 			public synchronized Cursor runQuery(CharSequence constraint) {
 				runningQuery = true;
@@ -387,25 +373,24 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 				Cursor c = null;
 
 				if (constraint == null || constraint.length() == 0){
-					c = queryWithConforming(db, otherEntry, selection, selectionArgs);
+					c = queryWithConforming(otherEntry, selection, selectionArgs);
 				}else{
 					final Matcher m = UNIT_EXTRACT_REGEX.matcher(constraint);
 					String modConstraint;
 					if (m.matches()){
 						modConstraint = m.group(1);
-						c = queryWithConforming(db, otherEntry, UsageEntry._UNIT +" GLOB ?", new String[] {modConstraint+"*"});
+						c = queryWithConforming(otherEntry, UsageEntry._UNIT +" GLOB ?", new String[] {modConstraint+"*"});
 					}else{
-						c = queryWithConforming(db, otherEntry, null, null);
+						c = queryWithConforming(otherEntry, null, null);
 					}
 				}
-				mActivity.startManagingCursor(c);
 				runningQuery = false;
 				return c;
 			}
 
 		}
 
-		private class TextUpdateWatcher implements TextWatcher, OnFocusChangeListener {
+		private static class TextUpdateWatcher implements TextWatcher, OnFocusChangeListener {
 			private boolean dirty = false;
 
 			private final UnitCursorAdapter adapter;
@@ -427,7 +412,6 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 				}else{
 					dirty = true;
 				}
-
 			}
 
 			public void onFocusChange(View v, boolean hasFocus) {
@@ -435,7 +419,6 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 					dirty = false;
 					adapter.otherEntryUpdated();
 				}
-
 			}
 		}
 	}
@@ -444,33 +427,37 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 	private static final Pattern UNIT_EXTRACT_REGEX = Pattern.compile(".*?([a-zA-Z]\\w+)");
 
 
-	private final static String[] INCREMENT_QUERY_PROJECTION = {UsageEntry._UNIT};
+	private final static String[] INCREMENT_QUERY_PROJECTION = {UsageEntry._ID, UsageEntry._USE_COUNT, UsageEntry._UNIT};
 	/**
 	 * Increments the usage counter for the given unit.
 	 * @param unit name of the unit
 	 * @param db the unit usage database
 	 */
-	public static void logUnitUsed(String unit, SQLiteDatabase db){
-
+	public static void logUnitUsed(String unit, ContentResolver cr){
 		final String[] selectionArgs = {unit};
-		final Cursor c = db.query(DB_USAGE_TABLE, INCREMENT_QUERY_PROJECTION, UsageEntry._UNIT + "=?", selectionArgs, null, null, null);
+		final Cursor c = cr.query(UsageEntry.CONTENT_URI, INCREMENT_QUERY_PROJECTION, UsageEntry._UNIT + "=?", selectionArgs, null);
 		if (c.getCount() > 0){
-			// TODO efficient, but should probably be sanity checked.
-			db.execSQL("UPDATE " + DB_USAGE_TABLE + " SET " + UsageEntry._USE_COUNT + "=" + UsageEntry._USE_COUNT + " + 1 WHERE " + UsageEntry._UNIT + "='" + unit + "'" );
+			c.moveToFirst();
+			final int useCount = c.getInt(c.getColumnIndex(UsageEntry._USE_COUNT));
+			final int id = c.getInt(c.getColumnIndex(UsageEntry._ID));
+			final ContentValues cv = new ContentValues();
+			cv.put(UsageEntry._USE_COUNT, useCount+1);
+
+			cr.update(ContentUris.withAppendedId(UsageEntry.CONTENT_URI, id), cv, null, null);
 		}else{
 			final ContentValues cv = new ContentValues();
 			cv.put(UsageEntry._UNIT, unit);
 			cv.put(UsageEntry._USE_COUNT, 1);
 			cv.put(UsageEntry._FACTOR_FPRINT, getFingerprint(unit));
-			db.insert(DB_USAGE_TABLE, null, cv);
+			cr.insert(UsageEntry.CONTENT_URI, cv);
 		}
 		c.close();
 	}
 
-	public static void logUnitsInExpression(String expression, SQLiteDatabase db){
+	public static void logUnitsInExpression(String expression, ContentResolver cr){
 		final Matcher m = UNIT_REGEX.matcher(expression);
 		while(m.find()){
-			logUnitUsed(m.group(1), db);
+			logUnitUsed(m.group(1), cr);
 		}
 	}
 

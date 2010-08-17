@@ -19,7 +19,6 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -56,7 +55,6 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.TextView.OnEditorActionListener;
 
-// TODO high: have Units button pop up list of all units, grouped by convertibility, sorted by popularity. Use collapsible list.
 // TODO high: find more useful button to put in place of swap. Maybe use? Clear? Maybe just keep simple.
 // TODO high: redo graphics to better visually integrate with keypad. Maybe go with white-on-black theme?
 // TODO high: show keyboard icon for 2nd tap (can't do this easily, as one can't detect if soft keyboard is shown or not). May need to scrap this idea.
@@ -80,7 +78,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 	private LinearLayout numberpad;
 
 	private UnitUsageDBHelper unitUsageDBHelper;
-	private SQLiteDatabase unitUsageDB;
 
     private HistoryAdapter mHistoryAdapter;
 
@@ -152,9 +149,12 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     @Override
     protected void onStart() {
     	super.onStart();
-		unitUsageDB = unitUsageDBHelper.getWritableDatabase();
-		haveEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(Units.this, wantEditText));
-		wantEditText.setAdapter(unitUsageDBHelper.getUnitPrefixAdapter(Units.this, haveEditText));
+		haveEditText.setAdapter(new UnitUsageDBHelper.UnitCursorAdapter(this,
+				managedQuery(UsageEntry.CONTENT_URI, null, null, null, UnitUsageDBHelper.USAGE_SORT),
+				wantEditText));
+		wantEditText.setAdapter(new UnitUsageDBHelper.UnitCursorAdapter(this,
+				managedQuery(UsageEntry.CONTENT_URI, null, null, null, UnitUsageDBHelper.USAGE_SORT),
+				haveEditText));
     }
 
     @Override
@@ -164,12 +164,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	if (unitUsageDBHelper.getUnitUsageDbCount() == 0){
     		new LoadInitialUnitUsageTask().execute();
     	}
-    }
-
-    @Override
-    protected void onStop() {
-    	super.onStop();
-    	unitUsageDB.close();
     }
 
     @Override
@@ -725,7 +719,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		@Override
 		protected Void doInBackground(String... params) {
 			for (final String param: params){
-				UnitUsageDBHelper.logUnitsInExpression(param, unitUsageDB);
+				UnitUsageDBHelper.logUnitsInExpression(param, getContentResolver());
 			}
 			return null;
 		}
