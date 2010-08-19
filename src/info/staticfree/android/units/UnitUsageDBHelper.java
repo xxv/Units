@@ -115,7 +115,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
 		String fpr = null;
 		try {
-			final Value unit = ValueGui.fromString(unitName);
+			final Value unit = ValueGui.fromUnicodeString(unitName);
 
 			fpr = ValueGui.getFingerprint(unit);
 		}catch (final EvalError e){
@@ -266,7 +266,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 				return cachedEntryFprintArgs;
 			}
 			try {
-				final String[] conformingSelectionArgs = {ValueGui.getFingerprint(ValueGui.fromString(Units.unicodeToAscii(otherEntryText)))};
+				final String[] conformingSelectionArgs = {ValueGui.getFingerprint(ValueGui.fromUnicodeString(otherEntryText))};
 				cachedEntryText = otherEntryText;
 				cachedEntryFprintArgs = conformingSelectionArgs;
 				return conformingSelectionArgs;

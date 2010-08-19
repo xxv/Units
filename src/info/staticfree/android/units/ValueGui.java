@@ -31,6 +31,13 @@ public class ValueGui extends Value {
 	        return v;
 	    }
 
+	  public static Value fromUnicodeString(final String s) throws EvalError
+	    {
+	        final Value v = parse(Units.unicodeToAscii(s));
+	        v.completereduce();
+	        return v;
+	    }
+
 	  public static Value getReciprocal(Value inval){
 		    final Value inv = new Value();
 		    inv.factor = 1/inval.factor;

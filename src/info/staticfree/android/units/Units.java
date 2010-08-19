@@ -55,6 +55,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.TextView.OnEditorActionListener;
 
+// TODO high: add functions from BuiltInFunctions.table
 // TODO high: find more useful button to put in place of swap. Maybe use? Clear? Maybe just keep simple.
 // TODO high: redo graphics to better visually integrate with keypad. Maybe go with white-on-black theme?
 // TODO high: show keyboard icon for 2nd tap (can't do this easily, as one can't detect if soft keyboard is shown or not). May need to scrap this idea.
@@ -288,7 +289,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     				haveEditText.setError(getText(R.string.err_have_empty));
     				return;
     			}
-    			have = ValueGui.fromString(unicodeToAscii(haveStr));
+    			have = ValueGui.fromUnicodeString(haveStr);
 
     		}catch (final EvalError e){
     			haveEditText.requestFocus();
@@ -298,7 +299,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     		Value want = null;
     		try {
-    			want = ValueGui.fromString(unicodeToAscii(wantStr));
+    			want = ValueGui.fromUnicodeString(wantStr);
 
     		}catch (final EvalError e){
     			wantEditText.requestFocus();

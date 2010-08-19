@@ -41,15 +41,34 @@
 "Calorie": 1,
 "horsepower": 1,
 
+"-- other SI base units --": 0,
+"candela": 1,
+
 "-- common technical units --": 0,
-"volt": 1,
-"watt": 1,
+
 "ampere": 1,
 "milliampere": 1,
+
+"mole": 1,
+"kW÷hr": 1,
+
+"-- derived SI units --": 0,
+"newton": 1,
+"pascal": 1,
 "kilojoule": 1,
 "joule": 1,
-"mole": 1,
-"kW/hr": 1,
+"watt": 1,
+"coulomb": 1,
+"volt": 1,
+"ohm": 1,
+"siemens": 1,
+"farad": 1,
+"weber": 1,
+"henry": 1,
+"tesla": 1,
+
+"-- misc  units --": 0,
+"inch Hg": 1,
 
 "radian": 1,
 "degree": 1,
@@ -96,6 +115,7 @@
 "mach": 2,
 "fps": 1,
 "knot": 1,
+"light": 2,
 
 "-- numbers --": 0,
 "googol": 1,
@@ -106,7 +126,6 @@
 "million": 2,
 "thousand": 2,
 "pi": 2,
-"light": 2,
 
 "-- functions --": 0,
 "sqrt(": 1,
