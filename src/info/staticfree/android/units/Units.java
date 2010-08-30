@@ -741,6 +741,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		@Override
 		protected Void doInBackground(Void... params) {
 			unitUsageDBHelper.loadInitialUnitUsage();
+			unitUsageDBHelper.loadUnitClassifications();
 
 			return null;
 		}

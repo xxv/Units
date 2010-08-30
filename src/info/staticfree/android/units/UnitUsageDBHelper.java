@@ -56,13 +56,18 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 	public final static String TAG = UnitUsageDBHelper.class.getSimpleName();
 	public static final String
 		DB_NAME = "units",
-		DB_USAGE_TABLE = "usage";
+		DB_USAGE_TABLE = "usage",
+		DB_CLASSIFICATION_TABLE = "classification",
+
+		DB_USAGE_INDEX = "factor_fprints",
+		DB_CLASSIFICATION_INDEX = "factor_fprints_classification";
+
 	private final Context context;
 
 	// TODO add a preference that remembers the last loaded version. Load new
 	// units and fingerprints.
 	private static final String UNITS_DAT_VERSION = "1.50";
-	private static final int DB_VERSION = 3;
+	private static final int DB_VERSION = 4;
 
 	public UnitUsageDBHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
@@ -72,13 +77,32 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL("CREATE TABLE '"+DB_USAGE_TABLE+
-				"' ('"   + UsageEntry._ID + "' INTEGER PRIMARY KEY," +
-				"'" + UsageEntry._UNIT+"' VARCHAR(255)," +
-				"'" + UsageEntry._USE_COUNT + "' INTEGER," +
-				"'" + UsageEntry._FACTOR_FPRINT + "' TEXT," +
-				"CONSTRAINT unit_unique UNIQUE ("+UsageEntry._UNIT+") ON CONFLICT IGNORE" +
-		")");
-		db.execSQL("CREATE INDEX 'factor_fprints' ON "+DB_USAGE_TABLE + " (" +UsageEntry._FACTOR_FPRINT+ ")");
+				"' ("+
+				"'" + UsageEntry._ID 			+ "' INTEGER PRIMARY KEY," +
+				"'" + UsageEntry._UNIT			+ "' TEXT UNIQUE ON CONFLICT IGNORE," +
+				"'" + UsageEntry._USE_COUNT 	+ "' INTEGER," +
+				"'" + UsageEntry._FACTOR_FPRINT + "' TEXT" +
+				")");
+		db.execSQL("CREATE INDEX '"+DB_USAGE_INDEX+"' ON "+DB_USAGE_TABLE + " (" +UsageEntry._FACTOR_FPRINT+ ")");
+
+		db.execSQL("CREATE TABLE '"+DB_CLASSIFICATION_TABLE+
+				"' ("+
+				"'" + ClassificationEntry._ID 				+ "' INTEGER PRIMARY KEY," +
+				"'" + ClassificationEntry._DESCRIPTION 		+ "' TEXT," +
+				"'"	+ ClassificationEntry._FACTOR_FPRINT 	+ "' TEXT UNIQUE"+
+				")");
+		db.execSQL("CREATE UNIQUE INDEX '"+DB_CLASSIFICATION_INDEX+"' ON "+DB_CLASSIFICATION_TABLE + " (" +ClassificationEntry._FACTOR_FPRINT+ ")");
+	}
+
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		db.execSQL("DROP TABLE IF EXISTS "+ DB_USAGE_TABLE);
+		db.execSQL("DROP TABLE IF EXISTS "+ DB_CLASSIFICATION_TABLE);
+
+		db.execSQL("DROP INDEX IF EXISTS "+ DB_USAGE_INDEX);
+		db.execSQL("DROP INDEX IF EXISTS "+ DB_CLASSIFICATION_INDEX);
+		onCreate(db);
+
 	}
 
 	public int getUnitUsageDbCount(){
@@ -189,6 +213,26 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 	}
 
 	@SuppressWarnings("unchecked")
+	public void loadUnitClassifications(){
+		final SQLiteDatabase db = getWritableDatabase();
+		final JSONObject jo = loadInitialWeights(R.raw.unit_classification);
+
+		db.beginTransaction();
+		final ContentValues cv = new ContentValues();
+		for (final Iterator i = jo.keys(); i.hasNext(); ){
+			final String unit = (String)i.next();
+			final String description = jo.optString(unit);
+			final String fprint = getFingerprint(unit);
+			cv.put(ClassificationEntry._FACTOR_FPRINT, fprint);
+			cv.put(ClassificationEntry._DESCRIPTION, description);
+			db.insert(DB_CLASSIFICATION_TABLE, null, cv);
+		}
+		db.setTransactionSuccessful();
+		db.endTransaction();
+		Log.d(TAG, "Successfully added "+jo.length()+" classification entries.");
+	}
+
+	@SuppressWarnings("unchecked")
 	private void addAll(JSONObject unitWeights, HashMap<String, Integer> allWeights){
 		for (final Iterator i = unitWeights.keys(); i.hasNext(); ){
 			final String key = (String)i.next();
@@ -198,13 +242,6 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 				allWeights.put(key, unitWeights.optInt(key));
 			}
 		}
-	}
-
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE IF EXISTS "+ DB_USAGE_TABLE);
-		onCreate(db);
-
 	}
 
 	/**
@@ -232,8 +269,8 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
 		}catch (final Exception e){
 			e.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 
 	private static JSONObject loadJsonObjectFromRawResource(Context context, int resourceId) throws IOException, JSONException{

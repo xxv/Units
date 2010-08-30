@@ -11,7 +11,7 @@ public class UsageEntry implements BaseColumns {
 
 	public static final String
 		PATH = "units",
-		PATH_CONFORM_TOP = "units_by_conform";
+		PATH_CONFORM_TOP = PATH+"/by_conform";
 
 	public final static Uri
 		CONTENT_URI = Uri.parse("content://" + UnitsContentProvider.AUTHORITY + "/" + PATH),

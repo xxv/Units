@@ -115,7 +115,8 @@ public class UnitsContentProvider extends ContentProvider {
 		case MATCHER_UNIT_USAGE_DIR:{
 			final SQLiteDatabase db = unitDbHelper.getWritableDatabase();
 			newItem = ContentUris.withAppendedId(UsageEntry.CONTENT_URI, db.insert(UnitUsageDBHelper.DB_USAGE_TABLE, null, cv));
-		}
+		}break;
+
         default:
                 throw new IllegalArgumentException("Cannot insert into "+uri);
 		}
@@ -170,11 +171,26 @@ public class UnitsContentProvider extends ContentProvider {
 
 			// Below is a sub-query needed in order to have the GROUP BY -reduced items
 			// be the most used unit with the given fingerprint. The last item in the list is the one that's used.
-			return db.query(
-					"(SELECT "+UsageEntry._ID+","+UsageEntry._UNIT+","+UsageEntry._FACTOR_FPRINT+","+UsageEntry._USE_COUNT+
-						" FROM "+UnitUsageDBHelper.DB_USAGE_TABLE + " ORDER BY "+UsageEntry._USE_COUNT+" ASC, "+UsageEntry._UNIT+" DESC)",
+			final String tables =
+				"(SELECT "+
+				UnitUsageDBHelper.DB_USAGE_TABLE +"."+UsageEntry._ID+" AS "+UsageEntry._ID+","+
+				UnitUsageDBHelper.DB_USAGE_TABLE +"."+UsageEntry._FACTOR_FPRINT+" AS "+UsageEntry._FACTOR_FPRINT+","+
+				UsageEntry._USE_COUNT+","+
+				"IFNULL("+ClassificationEntry._DESCRIPTION +
+				"|| ' (' || " + UsageEntry._UNIT + "|| ')'" +
+				"," + UsageEntry._UNIT + ") AS " +UsageEntry._UNIT+
+					" FROM "+UnitUsageDBHelper.DB_USAGE_TABLE +
+				" LEFT JOIN " + UnitUsageDBHelper.DB_CLASSIFICATION_TABLE + " ON " +
+					UnitUsageDBHelper.DB_USAGE_TABLE + "." + UsageEntry._FACTOR_FPRINT+
+					"=" +
+					UnitUsageDBHelper.DB_CLASSIFICATION_TABLE + "." + ClassificationEntry._FACTOR_FPRINT+
+				" ORDER BY "+UsageEntry._USE_COUNT+" ASC, "+UnitUsageDBHelper.DB_USAGE_TABLE +"."+UsageEntry._UNIT+" DESC)";
+			c = db.query(
+					tables,
 					projection, selection, selectionArgs, UsageEntry._FACTOR_FPRINT, UsageEntry._FACTOR_FPRINT+" NOTNULL", sortOrder);
-		}
+			// an extra watcher to keep list in sync with the units
+			//c.setNotificationUri(getContext().getContentResolver(), UsageEntry.CONTENT_URI);
+		}break;
 
 			default:
 				throw new IllegalArgumentException("Cannot query "+uri);
