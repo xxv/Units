@@ -105,6 +105,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     private HistoryAdapter mHistoryAdapter;
 
     public final static String
+    	ACTION_USE_UNIT = "info.staticfree.android.units.ACTION_USE_UNIT",
     	EXTRA_UNIT_NAME = "info.staticfree.android.units.EXTRA_UNIT_NAME";
 
     public final static String STATE_RESULT_TEXT = "info.staticfree.android.units.RESULT_TEXT";
@@ -177,8 +178,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		handleIntent(intent);
     }
 
-
-
     private void handleIntent(Intent intent){
 		final String action = intent.getAction();
 		if (Intent.ACTION_SEARCH.equals(action)){
@@ -187,6 +186,13 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			pickUnit.putExtra(UnitList.EXTRA_UNIT_QUERY, query);
 
 			startActivityForResult(pickUnit, REQUEST_PICK_UNIT);
+
+		}else if(ACTION_USE_UNIT.equals(action)){
+			final String[] projection = {UsageEntry._ID, UsageEntry._UNIT};
+			final Cursor c = managedQuery(intent.getData(), projection, null, null, null);
+			if (c.moveToFirst()){
+				sendTextAsSoftKeyboard(c.getString(c.getColumnIndex(UsageEntry._UNIT)) + " ");
+			}
 		}
     }
 

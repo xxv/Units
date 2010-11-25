@@ -81,25 +81,24 @@ public class UnitList extends ListActivity implements OnClickListener {
 		final Cursor c;
 		String query = null;
 
-		final String action = intent.getAction();
 		Uri data = intent.getData();
 		if (data == null){
 			data = UsageEntry.CONTENT_URI;
 		}
+		final Bundle extras = intent.getExtras();
+		if (extras.containsKey(SearchManager.QUERY)){
+			query = extras.getString(SearchManager.QUERY);
+		}else{
+			query = extras.getString(EXTRA_UNIT_QUERY);
+		}
+		if (query != null){
 
-		if (Intent.ACTION_PICK.equals(action) || Intent.ACTION_SEARCH.equals(action) || Intent.ACTION_VIEW.equals(action)){
-			final Bundle extras = intent.getExtras();
-			if (extras.containsKey(SearchManager.QUERY)){
-				query = extras.getString(SearchManager.QUERY);
-			}else{
-				query = extras.getString(EXTRA_UNIT_QUERY);
-			}
 			query = query.toLowerCase();
+
 			final String[] selectionArgs = {"%"+query+"%"};
 			c = managedQuery(data, projection, UsageEntry._UNIT+" LIKE ?", selectionArgs, UsageEntry.SORT_DEFAULT);
 
 			setTitle(getString(R.string.search_title_unit, query));
-
 		}else{
 			c = managedQuery(data, projection, null, null, UsageEntry.SORT_DEFAULT);
 		}

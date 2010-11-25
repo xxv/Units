@@ -2,5 +2,9 @@
 <searchable
   xmlns:android="http://schemas.android.com/apk/res/android"
    android:label="@string/app_name"
-   android:hint="@string/search_hint">
+   android:hint="@string/search_hint"
+   android:searchSuggestAuthority="info.staticfree.android.units"
+   android:searchMode="queryRewriteFromText"
+   android:searchSuggestIntentAction="info.staticfree.android.units.ACTION_USE_UNIT"
+   >
 </searchable>

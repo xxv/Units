@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -33,7 +34,9 @@ public class UnitsContentProvider extends ContentProvider {
 		MATCHER_UNIT_USAGE_CONFORM_TOP_DIR = 5,
 		MATCHER_CLASSIFICATION_ITEM = 6,
 		MATCHER_CLASSIFICATION_DIR  = 7,
-		MATCHER_CLASSIFICATION_ITEM_FPRINT = 8;
+		MATCHER_CLASSIFICATION_ITEM_FPRINT = 8,
+		MATCHER_SEARCH_DIR = 9,
+		MATCHER_SEARCH_ITEM = 10;
 
     private static UriMatcher uriMatcher;
     static {
@@ -49,6 +52,10 @@ public class UnitsContentProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, ClassificationEntry.PATH, MATCHER_CLASSIFICATION_DIR);
         uriMatcher.addURI(AUTHORITY, ClassificationEntry.PATH + "/#", MATCHER_CLASSIFICATION_ITEM);
         uriMatcher.addURI(AUTHORITY, ClassificationEntry.PATH + "/" + ClassificationEntry.PATH_BY_FPRINT + "/*", MATCHER_CLASSIFICATION_ITEM_FPRINT);
+
+        uriMatcher.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY, MATCHER_SEARCH_DIR);
+        uriMatcher.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY+"/*", MATCHER_SEARCH_ITEM);
+
     }
 
 	public final static String
@@ -242,6 +249,21 @@ public class UnitsContentProvider extends ContentProvider {
             }
             selectionArgs2.add(0, fprint);
 			c = qb.query(db, projection, selection, selectionArgs2.toArray(new String[]{}), null, null, sortOrder);
+
+		}break;
+
+		case MATCHER_SEARCH_DIR:
+		case MATCHER_SEARCH_ITEM:{
+			final SQLiteDatabase db = unitDbHelper.getReadableDatabase();
+			final String[] queryProjection = {UsageEntry._ID,
+					UsageEntry._UNIT + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1,
+					UsageEntry._FACTOR_FPRINT + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_2,
+					"\"" + UsageEntry.CONTENT_URI + "\" AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA,
+					UsageEntry._ID + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID
+			};
+			final String query = uri.getLastPathSegment().toLowerCase();
+			final String[] querySelectionArgs = {"%"+query+"%"};
+			c = db.query(UnitUsageDBHelper.DB_USAGE_TABLE, queryProjection, UsageEntry._UNIT + " LIKE ?", querySelectionArgs, null, null, UsageEntry.SORT_DEFAULT);
 		}break;
 
 			default:
