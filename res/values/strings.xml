@@ -22,6 +22,10 @@
     <string name="dialog_about_title">About Units</string>
     <string name="dialog_all_units_title">All Units</string>
     
+    <string name="search_hint">Search unit names</string>
+    <string name="search_no_results">No units found.</string>
+    <string name="search_title_unit">Units matching \"%s\"</string>
+    
     <!-- user-facing alerts -->
     <string name="dialog_loading_units">Loading initial unit usage database...</string>
     <string name="err_have_empty">What do you want to convert from?</string>

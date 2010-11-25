@@ -1,5 +1,9 @@
 package info.staticfree.android.units;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -17,14 +21,19 @@ public class UnitsContentProvider extends ContentProvider {
     	TYPE_HISTORY_ENTRY_ITEM = "vnd.android.cursor.item/vnd.info.staticfree.android.units.history_entry",
     	TYPE_HISTORY_ENTRY_DIR  = "vnd.android.cursor.dir/vnd.info.staticfree.android.units.history_entry",
     	TYPE_UNIT_USAGE_ITEM    = "vnd.android.cursor.item/vnd.info.staticfree.android.units.unit_usage",
-    	TYPE_UNIT_USAGE_DIR     = "vnd.android.cursor.dir/vnd.info.staticfree.android.units.unit_usage";
+    	TYPE_UNIT_USAGE_DIR     = "vnd.android.cursor.dir/vnd.info.staticfree.android.units.unit_usage",
+    	TYPE_CLASSIFICATION_ITEM = "vnd.android.cursor.item/vnd.info.staticfree.android.units.classification",
+    	TYPE_CLASSIFICATION_DIR  = "vnd.android.cursor.dir/vnd.info.staticfree.android.units.classification";
 
 	private final static int
 		MATCHER_HISTORY_ENTRY_ITEM = 1,
 		MATCHER_HISTORY_ENTRY_DIR  = 2,
 		MATCHER_UNIT_USAGE_ITEM    = 3,
 		MATCHER_UNIT_USAGE_DIR     = 4,
-		MATCHER_UNIT_USAGE_CONFORM_TOP_DIR = 5;
+		MATCHER_UNIT_USAGE_CONFORM_TOP_DIR = 5,
+		MATCHER_CLASSIFICATION_ITEM = 6,
+		MATCHER_CLASSIFICATION_DIR  = 7,
+		MATCHER_CLASSIFICATION_ITEM_FPRINT = 8;
 
     private static UriMatcher uriMatcher;
     static {
@@ -36,6 +45,10 @@ public class UnitsContentProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, UsageEntry.PATH + "/#", MATCHER_UNIT_USAGE_ITEM);
 
         uriMatcher.addURI(AUTHORITY, UsageEntry.PATH_CONFORM_TOP, MATCHER_UNIT_USAGE_CONFORM_TOP_DIR);
+
+        uriMatcher.addURI(AUTHORITY, ClassificationEntry.PATH, MATCHER_CLASSIFICATION_DIR);
+        uriMatcher.addURI(AUTHORITY, ClassificationEntry.PATH + "/#", MATCHER_CLASSIFICATION_ITEM);
+        uriMatcher.addURI(AUTHORITY, ClassificationEntry.PATH + "/" + ClassificationEntry.PATH_BY_FPRINT + "/*", MATCHER_CLASSIFICATION_ITEM_FPRINT);
     }
 
 	public final static String
@@ -96,6 +109,12 @@ public class UnitsContentProvider extends ContentProvider {
 			return TYPE_UNIT_USAGE_ITEM;
 		case MATCHER_UNIT_USAGE_CONFORM_TOP_DIR:
 			return TYPE_UNIT_USAGE_DIR;
+
+		case MATCHER_CLASSIFICATION_DIR:
+			return TYPE_CLASSIFICATION_DIR;
+		case MATCHER_CLASSIFICATION_ITEM:
+		case MATCHER_CLASSIFICATION_ITEM_FPRINT:
+			return TYPE_CLASSIFICATION_ITEM;
 
         default:
                 throw new IllegalArgumentException("Cannot get type for URI "+uri);
@@ -190,6 +209,39 @@ public class UnitsContentProvider extends ContentProvider {
 					projection, selection, selectionArgs, UsageEntry._FACTOR_FPRINT, UsageEntry._FACTOR_FPRINT+" NOTNULL", sortOrder);
 			// an extra watcher to keep list in sync with the units
 			//c.setNotificationUri(getContext().getContentResolver(), UsageEntry.CONTENT_URI);
+		}break;
+
+		case MATCHER_CLASSIFICATION_DIR:{
+			final SQLiteDatabase db = unitDbHelper.getReadableDatabase();
+			c = db.query(UnitUsageDBHelper.DB_CLASSIFICATION_TABLE, projection, selection, selectionArgs, null, null, sortOrder);
+		}break;
+
+		case MATCHER_CLASSIFICATION_ITEM:{
+			final SQLiteDatabase db = unitDbHelper.getReadableDatabase();
+	        final SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+			qb.setTables(UnitUsageDBHelper.DB_CLASSIFICATION_TABLE);
+            id = ContentUris.parseId(uri);
+            qb.appendWhere(ClassificationEntry._ID + "="+id);
+			c = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+		}
+
+		case MATCHER_CLASSIFICATION_ITEM_FPRINT:{
+			final SQLiteDatabase db = unitDbHelper.getReadableDatabase();
+	        final SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+			qb.setTables(UnitUsageDBHelper.DB_CLASSIFICATION_TABLE);
+            final String fprint = uri.getLastPathSegment();
+            qb.appendWhere(ClassificationEntry._FACTOR_FPRINT + "=?");
+
+            List<String> selectionArgs2;
+            if (selectionArgs == null){
+            	selectionArgs2 = new ArrayList<String>();
+            }else{
+            	selectionArgs2 = Arrays.asList(selectionArgs);
+            }
+            selectionArgs2.add(0, fprint);
+			c = qb.query(db, projection, selection, selectionArgs2.toArray(new String[]{}), null, null, sortOrder);
 		}break;
 
 			default:
