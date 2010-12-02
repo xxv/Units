@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
-	<LinearLayout android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content"
+	android:orientation="vertical">
 
-	<LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:orientation="vertical">
-				
 		<MultiAutoCompleteTextView android:id="@+id/have"
 			android:completionThreshold="2" 
 			android:layout_height="wrap_content"
@@ -15,8 +11,7 @@
 			android:hint="@string/have_hint"
 			android:inputType="text"
 			android:imeOptions="actionNext"
-			android:layout_margin="0dip"
-			
+			android:layout_margin="0dip"			
 			 />
 
 		<MultiAutoCompleteTextView android:id="@+id/want"
@@ -27,7 +22,4 @@
 			android:imeOptions="actionGo"
 			android:layout_margin="0dip"
 			 />
-		</LinearLayout>
-
-	</LinearLayout> 
-</merge>
+</LinearLayout>

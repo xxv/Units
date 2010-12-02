@@ -1,5 +1,21 @@
 package info.staticfree.android.units;
-
+/*
+ * Units.java
+ * Copyright (C) 2010  Steve Pomeroy <steve@staticfree.info>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 import info.staticfree.android.units.ValueGui.ConversionException;
 import info.staticfree.android.units.ValueGui.ReciprocalException;
 
@@ -13,6 +29,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.app.AlertDialog.Builder;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -55,7 +72,6 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.TextView.OnEditorActionListener;
 
-// TODO high: add search to pop-up menu
 // TODO high: add functions from BuiltInFunctions.table
 // TODO high: find more useful button to put in place of swap. Maybe use? Clear? Maybe just keep simple.
 // TODO high: redo graphics to better visually integrate with keypad. Maybe go with white-on-black theme?
@@ -88,7 +104,13 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     private HistoryAdapter mHistoryAdapter;
 
+    public final static String
+    	ACTION_USE_UNIT = "info.staticfree.android.units.ACTION_USE_UNIT",
+    	EXTRA_UNIT_NAME = "info.staticfree.android.units.EXTRA_UNIT_NAME";
+
     public final static String STATE_RESULT_TEXT = "info.staticfree.android.units.RESULT_TEXT";
+
+    private static final int REQUEST_PICK_UNIT = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -151,6 +173,33 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		if (savedInstanceState != null){
 			resultView.setText(savedInstanceState.getCharSequence(STATE_RESULT_TEXT));
 		}
+
+		final Intent intent = getIntent();
+		handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent){
+		final String action = intent.getAction();
+		if (Intent.ACTION_SEARCH.equals(action)){
+			final Intent pickUnit = new Intent(Intent.ACTION_PICK, UsageEntry.CONTENT_URI);
+			final String query = intent.getExtras().getString(SearchManager.QUERY);
+			pickUnit.putExtra(UnitList.EXTRA_UNIT_QUERY, query);
+
+			startActivityForResult(pickUnit, REQUEST_PICK_UNIT);
+
+		}else if(ACTION_USE_UNIT.equals(action)){
+			final String[] projection = {UsageEntry._ID, UsageEntry._UNIT};
+			final Cursor c = managedQuery(intent.getData(), projection, null, null, null);
+			if (c.moveToFirst()){
+				sendTextAsSoftKeyboard(c.getString(c.getColumnIndex(UsageEntry._UNIT)) + " ");
+			}
+		}
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+    	super.onNewIntent(intent);
+    	handleIntent(intent);
     }
 
     @Override
@@ -177,6 +226,18 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     protected void onSaveInstanceState(Bundle outState) {
     	super.onSaveInstanceState(outState);
     	outState.putCharSequence(STATE_RESULT_TEXT, resultView.getText());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	super.onActivityResult(requestCode, resultCode, data);
+    	switch (requestCode){
+	    	case REQUEST_PICK_UNIT:{
+	    		if (resultCode == RESULT_OK){
+	    			sendTextAsSoftKeyboard(data.getExtras().getString(EXTRA_UNIT_NAME) + " ");
+	    		}
+	    	}break;
+    	}
     }
 
     private void setHistoryVisible(boolean visible){
@@ -487,6 +548,10 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			getContentResolver().delete(HistoryEntry.CONTENT_URI, null, null);
 			resultView.setText(null);
 			return true;
+
+		case R.id.search:
+			onSearchRequested();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -566,7 +631,9 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			b.setTitle(R.string.dialog_all_units_title);
 			final ExpandableListView unitExpandList = new ExpandableListView(Units.this);
 			final String[] groupProjection = {UsageEntry._ID, UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};
+			// any selection below will select from the grouping description
 			final Cursor cursor = managedQuery(UsageEntry.CONTENT_URI_CONFORM_TOP, groupProjection, null, null, UnitUsageDBHelper.USAGE_SORT);
+
 			unitExpandList.setAdapter(new UnitsExpandableListAdapter(cursor, this,
 					android.R.layout.simple_expandable_list_item_1, android.R.layout.simple_expandable_list_item_1,
 					new String[] {UsageEntry._UNIT},
