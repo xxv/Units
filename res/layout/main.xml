@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
-
-
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 	<LinearLayout android:orientation="vertical"
 		android:layout_width="fill_parent" android:layout_height="fill_parent">
 		
 		<include layout="@layout/result" />
 		<include layout="@layout/unit_entry" />
-			
 		<include layout="@layout/keypad" />
 		
 	</LinearLayout>
 	
 	<include layout="@layout/history" />
-</FrameLayout>
+</merge>
