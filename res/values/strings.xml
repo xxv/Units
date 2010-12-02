@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
     <string name="app_name">Units</string>
     
-    <string name="button_go">Go!</string>
     <string name="have_hint">you have</string>
     <string name="want_hint">you want</string>
     
@@ -13,6 +11,7 @@
     <string name="ctx_menu_use_result">Use result</string>
     
     <string name="toast_copy">\"%s\" copied to clipboard.</string>
+
     
     <string name="menu_swap_input">Swap inputs</string>
     <string name="menu_about">About</string>
@@ -26,8 +25,8 @@
     <string name="dialog_loading_units">Loading initial unit usage database...</string>
     <string name="err_have_empty">What do you want to convert from?</string>
     <string name="err_no_conform">Could not convert to this unit.</string>
+    <string name="err_no_load_about">Error: could not load about page.</string>
     
     <!-- calculator buttons -->
     <string name="unit_entry">unit</string>
-    <string name="backspace">\u232b</string>
 </resources>

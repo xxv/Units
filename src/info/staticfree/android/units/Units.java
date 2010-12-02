@@ -536,7 +536,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id){
-		case DIALOG_ABOUT:
+		case DIALOG_ABOUT:{
             final Builder builder = new AlertDialog.Builder(this);
 
             builder.setTitle(R.string.dialog_about_title);
@@ -549,7 +549,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 				wv.setBackgroundColor(0);
 				builder.setView(wv);
 			} catch (final IOException e) {
-				builder.setMessage("Error: could not load README.xhtml");
+				builder.setMessage(R.string.err_no_load_about);
 				e.printStackTrace();
 			}
 
@@ -559,6 +559,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
                     }
             });
             return builder.create();
+		}
 
 		case DIALOG_ALL_UNITS:{
 			final Builder b = new Builder(Units.this);
@@ -760,5 +761,4 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			pd.dismiss();
 		}
 	}
-
 }
