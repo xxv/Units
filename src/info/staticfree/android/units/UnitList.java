@@ -25,12 +25,16 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 /**
  * Displays a list of units, with an optional search query to search a
@@ -58,6 +62,9 @@ public class UnitList extends ListActivity implements OnClickListener {
 		((Button)findViewById(R.id.search)).setOnClickListener(this);
 
 		loadFromIntent(getIntent());
+
+        registerForContextMenu(this.getListView());
+
 	}
 
 	// This exists mostly for the search interaction to allow searching from within this activity.
@@ -74,17 +81,15 @@ public class UnitList extends ListActivity implements OnClickListener {
 	 * @param intent
 	 */
 	private void loadFromIntent(Intent intent){
-		final String[] from = {UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};
+		final String[] from = {UsageEntry._UNIT, ClassificationEntry._DESCRIPTION};
 		final int[] to = {android.R.id.text1, android.R.id.text2};
-		final String[] projection = {UsageEntry._ID, UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};
+		final String[] projection = {UsageEntry._ID, UsageEntry._UNIT, ClassificationEntry._DESCRIPTION};
 
 		final Cursor c;
 		String query = null;
 
-		Uri data = intent.getData();
-		if (data == null){
-			data = UsageEntry.CONTENT_URI;
-		}
+		final Uri data = UsageEntry.CONTENT_URI_WITH_CLASSIFICATION;
+
 		final Bundle extras = intent.getExtras();
 		if (extras.containsKey(SearchManager.QUERY)){
 			query = extras.getString(SearchManager.QUERY);
@@ -121,19 +126,64 @@ public class UnitList extends ListActivity implements OnClickListener {
 
 		final Intent intent = getIntent();
 		if (Intent.ACTION_PICK.equals(intent.getAction())){
-			final Intent pickedUnit = new Intent();
-			pickedUnit.setData(ContentUris.withAppendedId(UsageEntry.CONTENT_URI, id));
-
-			pickedUnit.putExtra(Units.EXTRA_UNIT_NAME, unitName);
-			setResult(RESULT_OK, pickedUnit);
-			finish();
+			pickUnit(ContentUris.withAppendedId(UsageEntry.CONTENT_URI, id), unitName);
 
 		}else{
-			final Intent viewUnit = new Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(UsageEntry.CONTENT_URI, id));
-
-			viewUnit.putExtra(Units.EXTRA_UNIT_NAME, unitName);
-			startActivity(viewUnit);
+			viewUnit(ContentUris.withAppendedId(UsageEntry.CONTENT_URI, id), unitName);
 		}
+	}
+
+	private void pickUnit(Uri unit, String unitName){
+		final Intent pickedUnit = new Intent();
+		pickedUnit.setData(unit);
+
+		pickedUnit.putExtra(Units.EXTRA_UNIT_NAME, unitName);
+		setResult(RESULT_OK, pickedUnit);
+		finish();
+	}
+
+	private void viewUnit(Uri unit, String unitName){
+		final Intent viewUnit = new Intent(Intent.ACTION_VIEW, unit);
+
+		viewUnit.putExtra(Units.EXTRA_UNIT_NAME, unitName);
+		startActivity(viewUnit);
+	}
+
+	private static final int
+		MENU_PICK_UNIT = 0,
+		MENU_UNIT_DETAILS = 1;
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+
+		if (Intent.ACTION_PICK.equals(getIntent().getAction())){
+			menu.add(0, MENU_PICK_UNIT, 0, R.string.menu_pick_unit);
+		}
+		menu.add(0, MENU_UNIT_DETAILS, 0, R.string.menu_unit_details);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+        final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        final Uri data = ContentUris.withAppendedId(UsageEntry.CONTENT_URI, info.id);
+
+		final Cursor c = (Cursor) adapter.getItem(info.position);
+		final String unitName = c.getString(c.getColumnIndex(UsageEntry._UNIT));
+
+        switch (item.getItemId()) {
+        case MENU_PICK_UNIT:
+        	pickUnit(data, unitName);
+        	return true;
+
+        case MENU_UNIT_DETAILS:
+        	viewUnit(data, unitName);
+        	return true;
+
+    	default:
+        		return super.onContextItemSelected(item);
+        }
 	}
 
 	/**
@@ -161,6 +211,7 @@ public class UnitList extends ListActivity implements OnClickListener {
 			super(context, layout, c, from, to);
 			this.searchedId = searchedTextView;
 		}
+
 
 		@Override
 		public void setViewText(TextView v, String text) {

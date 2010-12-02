@@ -548,6 +548,10 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			getContentResolver().delete(HistoryEntry.CONTENT_URI, null, null);
 			resultView.setText(null);
 			return true;
+
+		case R.id.search:
+			onSearchRequested();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}

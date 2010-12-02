@@ -36,9 +36,10 @@ public class UnitsContentProvider extends ContentProvider {
 		MATCHER_CLASSIFICATION_DIR  = 7,
 		MATCHER_CLASSIFICATION_ITEM_FPRINT = 8,
 		MATCHER_SEARCH_DIR = 9,
-		MATCHER_SEARCH_ITEM = 10;
+		MATCHER_SEARCH_ITEM = 10,
+		MATCHER_UNIT_USAGE_WITH_CLASSIFICATION = 11;
 
-    private static UriMatcher uriMatcher;
+    public static UriMatcher uriMatcher;
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(AUTHORITY, HistoryEntry.PATH, MATCHER_HISTORY_ENTRY_DIR);
@@ -48,6 +49,7 @@ public class UnitsContentProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, UsageEntry.PATH + "/#", MATCHER_UNIT_USAGE_ITEM);
 
         uriMatcher.addURI(AUTHORITY, UsageEntry.PATH_CONFORM_TOP, MATCHER_UNIT_USAGE_CONFORM_TOP_DIR);
+        uriMatcher.addURI(AUTHORITY, UsageEntry.PATH_WITH_CLASSIFICATION, MATCHER_UNIT_USAGE_WITH_CLASSIFICATION);
 
         uriMatcher.addURI(AUTHORITY, ClassificationEntry.PATH, MATCHER_CLASSIFICATION_DIR);
         uriMatcher.addURI(AUTHORITY, ClassificationEntry.PATH + "/#", MATCHER_CLASSIFICATION_ITEM);
@@ -111,11 +113,11 @@ public class UnitsContentProvider extends ContentProvider {
 			return TYPE_HISTORY_ENTRY_ITEM;
 
 		case MATCHER_UNIT_USAGE_DIR:
+		case MATCHER_UNIT_USAGE_CONFORM_TOP_DIR:
+		case MATCHER_UNIT_USAGE_WITH_CLASSIFICATION:
 			return TYPE_UNIT_USAGE_DIR;
 		case MATCHER_UNIT_USAGE_ITEM:
 			return TYPE_UNIT_USAGE_ITEM;
-		case MATCHER_UNIT_USAGE_CONFORM_TOP_DIR:
-			return TYPE_UNIT_USAGE_DIR;
 
 		case MATCHER_CLASSIFICATION_DIR:
 			return TYPE_CLASSIFICATION_DIR;
@@ -218,6 +220,24 @@ public class UnitsContentProvider extends ContentProvider {
 			//c.setNotificationUri(getContext().getContentResolver(), UsageEntry.CONTENT_URI);
 		}break;
 
+		case MATCHER_UNIT_USAGE_WITH_CLASSIFICATION:{
+			final SQLiteDatabase db = unitDbHelper.getReadableDatabase();
+			final String tbPfxUnit = UnitUsageDBHelper.DB_USAGE_TABLE + ".";
+			final String tbPfxClass = UnitUsageDBHelper.DB_CLASSIFICATION_TABLE + ".";
+
+			final ArrayList<String> projection2 = new ArrayList<String>(Arrays.asList(projection));
+			final int idIdx = projection2.indexOf(UsageEntry._ID);
+			if (idIdx != -1){
+				projection2.remove(idIdx);
+				projection2.add(idIdx, tbPfxUnit + UsageEntry._ID +" AS "+UsageEntry._ID);
+			}
+
+			c = db.query(UnitUsageDBHelper.DB_USAGE_TABLE +
+					" LEFT JOIN " + UnitUsageDBHelper.DB_CLASSIFICATION_TABLE +
+					" ON ("+tbPfxUnit + UsageEntry._FACTOR_FPRINT + "=" + tbPfxClass+ ClassificationEntry._FACTOR_FPRINT+")",
+					projection2.toArray(new String[]{}), selection, selectionArgs, null, null, UsageEntry.SORT_DEFAULT);
+		}break;
+
 		case MATCHER_CLASSIFICATION_DIR:{
 			final SQLiteDatabase db = unitDbHelper.getReadableDatabase();
 			c = db.query(UnitUsageDBHelper.DB_CLASSIFICATION_TABLE, projection, selection, selectionArgs, null, null, sortOrder);
@@ -255,15 +275,21 @@ public class UnitsContentProvider extends ContentProvider {
 		case MATCHER_SEARCH_DIR:
 		case MATCHER_SEARCH_ITEM:{
 			final SQLiteDatabase db = unitDbHelper.getReadableDatabase();
-			final String[] queryProjection = {UsageEntry._ID,
-					UsageEntry._UNIT + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1,
-					UsageEntry._FACTOR_FPRINT + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_2,
+			final String tbPfxUnit = UnitUsageDBHelper.DB_USAGE_TABLE + ".";
+			final String tbPfxClass = UnitUsageDBHelper.DB_CLASSIFICATION_TABLE + ".";
+			// the search manager is expecting specific column names, so we can map them here.
+			final String[] queryProjection = { tbPfxUnit + UsageEntry._ID +" AS "+UsageEntry._ID,
+					tbPfxUnit + UsageEntry._UNIT + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1,
+					tbPfxClass+ ClassificationEntry._DESCRIPTION + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_2,
 					"\"" + UsageEntry.CONTENT_URI + "\" AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA,
-					UsageEntry._ID + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID
+					tbPfxUnit + UsageEntry._ID + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID
 			};
 			final String query = uri.getLastPathSegment().toLowerCase();
 			final String[] querySelectionArgs = {"%"+query+"%"};
-			c = db.query(UnitUsageDBHelper.DB_USAGE_TABLE, queryProjection, UsageEntry._UNIT + " LIKE ?", querySelectionArgs, null, null, UsageEntry.SORT_DEFAULT);
+			c = db.query(UnitUsageDBHelper.DB_USAGE_TABLE +
+					" LEFT JOIN " + UnitUsageDBHelper.DB_CLASSIFICATION_TABLE +
+					" ON ("+tbPfxUnit + UsageEntry._FACTOR_FPRINT + "=" + tbPfxClass+ ClassificationEntry._FACTOR_FPRINT+")",
+					queryProjection, UsageEntry._UNIT + " LIKE ?", querySelectionArgs, null, null, UsageEntry.SORT_DEFAULT);
 		}break;
 
 			default:

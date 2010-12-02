@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
     <string name="app_name">Units</string>
     
     <string name="button_go">Go!</string>
@@ -18,6 +17,10 @@
     <string name="menu_about">About</string>
     <string name="menu_show_history">Show history</string>
     <string name="menu_clear_history">Clear history</string>
+    
+    <string name="menu_pick_unit">Pick unit</string>
+    <string name="menu_unit_details">Unit details</string>
+    
     
     <string name="dialog_about_title">About Units</string>
     <string name="dialog_all_units_title">All Units</string>

@@ -12,9 +12,11 @@ public class UsageEntry implements BaseColumns {
 	public static final String
 		PATH = "units",
 		PATH_CONFORM_TOP = PATH+"/by_conform",
+		PATH_WITH_CLASSIFICATION = PATH + "/with_classification",
 		SORT_DEFAULT = _USE_COUNT + " DESC";
 
 	public final static Uri
 		CONTENT_URI = Uri.parse("content://" + UnitsContentProvider.AUTHORITY + "/" + PATH),
-		CONTENT_URI_CONFORM_TOP = Uri.parse("content://" + UnitsContentProvider.AUTHORITY + "/" + PATH_CONFORM_TOP);
+		CONTENT_URI_CONFORM_TOP = Uri.parse("content://" + UnitsContentProvider.AUTHORITY + "/" + PATH_CONFORM_TOP),
+		CONTENT_URI_WITH_CLASSIFICATION = Uri.parse("content://" + UnitsContentProvider.AUTHORITY + "/" + PATH_WITH_CLASSIFICATION);
 }
