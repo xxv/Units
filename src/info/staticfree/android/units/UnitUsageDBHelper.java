@@ -86,7 +86,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 	// units and fingerprints.
 	@SuppressWarnings("unused")
 	private static final String UNITS_DAT_VERSION = "1.50";
-	private static final int DB_VERSION = 4;
+	private static final int DB_VERSION = 5;
 
 	public UnitUsageDBHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
