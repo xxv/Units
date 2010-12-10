@@ -227,7 +227,7 @@ import java.util.Vector;
   //  These methods, defined in Entity and Function classes,
   //  are never invoked for a BuiltInFunction.
   //=====================================================================
-  void applyInverseTo(Value v)
+  public void applyInverseTo(Value v)
     { throw new Error("Program Error"); }
 
   String showdef()

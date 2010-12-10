@@ -95,7 +95,9 @@
 "rpm": 1,
 "rps": 1,
 
-"degC": 1,
+"tempC(": 2,
+"tempF(": 2,
+"tempK": 1,
 
 "-- other misc distances --": 0,
 "astronomicalunit": 1,

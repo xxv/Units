@@ -45,7 +45,7 @@ package net.sourceforge.unitsinjava;
  *  A function (built-in, computed, or tabular).
  */
 
-abstract class Function extends Entity
+public abstract class Function extends Entity
 {
   //=====================================================================
   //  Construct object for function 'nam' defined at 'loc'.
@@ -63,7 +63,7 @@ abstract class Function extends Entity
   //=====================================================================
   //  Apply inverse of the function to Value 'v' (with result in 'v').
   //=====================================================================
-  abstract void applyInverseTo(Value v);
+  public abstract void applyInverseTo(Value v);
 
 
   //=====================================================================

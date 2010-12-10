@@ -30,6 +30,8 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sourceforge.unitsinjava.BuiltInFunction;
+import net.sourceforge.unitsinjava.DefinedFunction;
 import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Unit;
 import net.sourceforge.unitsinjava.Value;
@@ -156,9 +158,24 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
 		String fpr = null;
 		try {
-			final Value unit = ValueGui.fromUnicodeString(unitName);
+			Value unit;
+			// this is done here to allow for unicode that maps to functions
+			unitName = Units.unicodeToAscii(unitName);
+			if (unitName.endsWith("(")){
+				final DefinedFunction f = DefinedFunction.table.get(unitName.substring(0, unitName.length()-1));
+				if (f != null){
+					unit = f.getConformability();
+				}else{
+					// non-DefinedFunctions are built in and compatible with numbers.
+					unit = Value.fromString("0");
+				}
+			}else{
+				unit = ValueGui.fromUnicodeString(unitName);
 
-			fpr = ValueGui.getFingerprint(unit);
+			}
+			if (unit != null){
+				fpr = ValueGui.getFingerprint(unit);
+			}
 		}catch (final EvalError e){
 			// skip things we can't handle
 		}
@@ -179,6 +196,19 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 			if (! unitName.toUpperCase().equals(unitName)){
 				allUnitWeights.put(unitName, 0);
 			}
+		}
+		Log.d(TAG, "adding all known functions...");
+		for (final String functionName: BuiltInFunction.table.keySet()){
+			allUnitWeights.put(functionName + "(", 0);
+		}
+//		for (final String functionName: TabularFunction.table.keySet()){
+//			allUnitWeights.put(functionName + "(", 0);
+//		}
+//		for (final String functionName: ComputedFunction.table.keySet()){
+//			allUnitWeights.put(functionName + "(", 0);
+//		}
+		for (final String functionName: DefinedFunction.table.keySet()){
+			allUnitWeights.put(functionName + "(", 0);
 		}
 		Log.d(TAG, "adding common weights");
 		addAll(loadInitialWeights(R.raw.common_weights), allUnitWeights);
@@ -320,7 +350,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 				return cachedEntryFprintArgs;
 			}
 			try {
-				final String[] conformingSelectionArgs = {ValueGui.getFingerprint(ValueGui.fromUnicodeString(otherEntryText))};
+				final String[] conformingSelectionArgs = {ValueGui.getFingerprint(ValueGui.fromUnicodeString(ValueGui.closeParens(otherEntryText)))};
 				cachedEntryText = otherEntryText;
 				cachedEntryFprintArgs = conformingSelectionArgs;
 				return conformingSelectionArgs;
@@ -511,7 +541,12 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 	public static void logUnitsInExpression(String expression, ContentResolver cr){
 		final Matcher m = UNIT_REGEX.matcher(expression);
 		while(m.find()){
-			logUnitUsed(m.group(1), cr);
+			String unit = m.group(1);
+			// functions are noted by ending in an open paren.
+			if (DefinedFunction.table.containsKey(unit) || BuiltInFunction.table.containsKey(unit)){
+				unit += "(";
+			}
+			logUnitUsed(unit, cr);
 		}
 	}
 

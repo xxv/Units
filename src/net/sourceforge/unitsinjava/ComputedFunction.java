@@ -181,7 +181,7 @@ import java.util.Vector;
   //=====================================================================
   //  Apply inverse of the function to Value 'v' (with result in 'v').
   //=====================================================================
-  void applyInverseTo(Value v)
+  public void applyInverseTo(Value v)
     { inverse.applyTo(v,"~"); }
 
 
@@ -266,7 +266,9 @@ import java.util.Vector;
 
     }
 
-
+    public Value getConformability(){
+        return inverse.dimen != null ? Value.fromString(inverse.dimen) : null;
+    }
   //=====================================================================
   //  Return true if this function is compatible with Value 'v',
   //=====================================================================

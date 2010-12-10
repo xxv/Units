@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import net.sourceforge.unitsinjava.DefinedFunction;
 import net.sourceforge.unitsinjava.EvalError;
+import net.sourceforge.unitsinjava.Function;
 import net.sourceforge.unitsinjava.Value;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -259,9 +261,9 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
      */
     private class AddToHistoryRunnable implements Runnable {
     	private final String haveExpr, wantExpr;
-    	private final double result;
+    	private final Double result;
 
-    	public AddToHistoryRunnable(String haveExpr, String wantExpr, double result) {
+    	public AddToHistoryRunnable(String haveExpr, String wantExpr, Double result) {
     		this.haveExpr = haveExpr;
     		this.wantExpr = wantExpr;
     		this.result = result;
@@ -279,7 +281,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     }
 
     // TODO make reciprocal notice better animated so it doesn't modify main layout
-    public void addToHistory(String haveExpr, String wantExpr, double result, boolean reciprocal){
+    public void addToHistory(String haveExpr, String wantExpr, Double result, boolean reciprocal){
     	haveExpr = haveExpr.trim();
     	wantExpr = wantExpr.trim();
     	new AddToUsageTask().execute(haveExpr, wantExpr);
@@ -343,12 +345,31 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	replaceAll("²", "^2").
     	replaceAll("³", "^3").
     	replaceAll("⁴", "^4").
-    	replaceAll("−", "-");
+    	replaceAll("−", "-").
+    	replaceAll("µ", "micro").
+    	replaceAll("π", "pi").
+    	replaceAll("Π", "pi").
+    	replaceAll("€", "euro").
+    	replaceAll("¥", "japanyen").
+    	replaceAll("₤", "greatbritainpound").
+    	replaceAll("√", "sqrt(").
+    	replaceAll("∛", "cuberoot(").
+    	replaceAll("½", "(1/2)").
+    	replaceAll("⅓", "(1/3)").
+    	replaceAll("⅔", "(2/3)").
+    	replaceAll("¼", "(1/4)").
+    	replaceAll("⅕", "(1/5)").
+    	replaceAll("⅖", "(2/5)").
+    	replaceAll("⅗", "(3/5)").
+    	replaceAll("⅙", "(1/6)").
+    	replaceAll("⅛", "(1/8)").
+    	replaceAll("⅜", "(3/8)").
+    	replaceAll("⅝", "(5/8)");
     }
 
     // TODO filter error messages and output translate to unicode from engine. error msgs and Inifinity → ∞
     public void go(){
-    	final String haveStr = haveEditText.getText().toString().trim();
+    	String haveStr = haveEditText.getText().toString().trim();
     	String wantStr = wantEditText.getText().toString().trim();
 
     	try {
@@ -359,6 +380,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     				haveEditText.setError(getText(R.string.err_have_empty));
     				return;
     			}
+    			haveStr = ValueGui.closeParens(haveStr);
     			have = ValueGui.fromUnicodeString(haveStr);
 
     		}catch (final EvalError e){
@@ -368,8 +390,16 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     		}
 
     		Value want = null;
+    		Function func = null;
     		try {
-    			want = ValueGui.fromUnicodeString(wantStr);
+    			func = DefinedFunction.table.get(wantStr);
+    			if (func == null && wantStr.endsWith("(")){
+    				func = DefinedFunction.table.get(wantStr.subSequence(0, wantStr.length()-1));
+    			}
+    			if (func == null){
+    				wantStr = ValueGui.closeParens(wantStr);
+    				want = ValueGui.fromUnicodeString(wantStr);
+    			}
 
     		}catch (final EvalError e){
     			wantEditText.requestFocus();
@@ -377,7 +407,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     			return;
     		}
 
-    		double resultVal;
+    		Double resultVal;
     		boolean reciprocal = false;
 
     		try {
@@ -385,7 +415,14 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     			// if no want value is specified, provide a definition.
         		if (wantStr.length() > 0){
-        			resultVal = ValueGui.convertNonInteractive(have,  want);
+        			if (func != null){
+        				// functions are a special case and don't have a reciprocal, so the result
+        				// is just stored in the wantStr.
+        				resultVal = null;
+        				wantStr = ValueGui.convertNonInteractive(ValueGui.fromUnicodeString(haveStr), func);
+        			}else{
+        				resultVal = ValueGui.convertNonInteractive(have,  want);
+        			}
 
         		}else{
         			resultVal = have.factor;
@@ -503,8 +540,9 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		case MENU_USE_RESULT: {
 			final Cursor c = managedQuery(itemUri, PROJECTION_LOAD_FROM_HISTORY, null, null, null);
 			if (c.moveToFirst()){
-				setCurrentEntry(c.getDouble(c.getColumnIndex(HistoryEntry._RESULT))
-							+ " " + c.getString(c.getColumnIndex(HistoryEntry._WANT)), "");
+				final int resultCol = c.getColumnIndex(HistoryEntry._RESULT);
+				setCurrentEntry((c.isNull(resultCol) ? "" : (c.getDouble(resultCol)
+							+ " ")) + c.getString(c.getColumnIndex(HistoryEntry._WANT)), "");
 				setHistoryVisible(false);
 				c.close();
 			}

@@ -206,7 +206,7 @@ import java.util.Vector;
   //=====================================================================
   //  Apply inverse of the function to Value 'v' (with result in 'v').
   //=====================================================================
-  void applyInverseTo(Value v)
+  public void applyInverseTo(Value v)
     {
       Value dim = null;
       try
@@ -279,7 +279,9 @@ import java.util.Vector;
       return;
     }
 
-
+    public Value getConformability(){
+        return tableunit != null ? Value.fromString(tableunit) : null;
+    }
   //=====================================================================
   //  Return true if this function is compatible with Value 'v',
   //=====================================================================

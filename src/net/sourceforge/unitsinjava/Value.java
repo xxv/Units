@@ -236,7 +236,7 @@ package net.sourceforge.unitsinjava;
   /** Constructs printable string representing this Value.
    *  @return this Value as printable string. */
   //=====================================================================
-  String asString()
+  public String asString()
     {
       StringBuffer sb = new StringBuffer();
 

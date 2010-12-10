@@ -48,14 +48,14 @@ import java.util.Hashtable;
  *  A defined function (computed or tabular).
  */
 
-abstract class DefinedFunction extends Function
+public abstract class DefinedFunction extends Function
 {
   //-------------------------------------------------------------------
   /**  Table of defined functions. */
   //-------------------------------------------------------------------
   public static Hashtable<String,DefinedFunction> table = null;
 
-
+public abstract Value getConformability();
   //=====================================================================
   //  Construct object for function 'nam' appearing at 'loc'.
   //=====================================================================

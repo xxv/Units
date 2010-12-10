@@ -3,6 +3,7 @@ package info.staticfree.android.units;
 import net.sourceforge.unitsinjava.Env;
 import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Factor;
+import net.sourceforge.unitsinjava.Function;
 import net.sourceforge.unitsinjava.Value;
 
 /**
@@ -33,10 +34,37 @@ public class ValueGui extends Value {
 
 	  public static Value fromUnicodeString(final String s) throws EvalError
 	    {
-	        final Value v = parse(Units.unicodeToAscii(s));
+		  // closeParens is run twice in order to allow for unicode characters mapping to functions.
+	        final Value v = parse(closeParens(Units.unicodeToAscii(s)));
 	        v.completereduce();
 	        return v;
 	    }
+
+	/**
+	 * Close any open parentheses.
+	 * @param s
+	 * @return
+	 */
+	public static String closeParens(String s){
+		  final StringBuilder sb = new StringBuilder(s);
+		  final int len = s.length();
+		  int openParen = 0;
+		  int closedParen = 0;
+		  for (int i = 0; i < len; i++){
+			  final char ch = s.charAt(i);
+			  if (ch == '('){
+				  openParen++;
+			  }else if (ch == ')'){
+				  closedParen++;
+			  }
+		  }
+		  if (openParen > closedParen){
+			  for (int i = 0; i < openParen - closedParen; i++){
+				  sb.append(')');
+			  }
+		  }
+		  return sb.toString();
+	  }
 
 	  public static Value getReciprocal(Value inval){
 		    final Value inv = new Value();
@@ -99,6 +127,31 @@ public class ValueGui extends Value {
 
 	      return fromValue.factor / toValue.factor;
 	    }
+
+	  //=====================================================================
+	  //  convert to Function
+	  //=====================================================================
+	  /**
+	   *  Returns result of conversion of unit expression to function.
+	   *
+	   *  @param  fromExpr 'from' expression.
+	   *  @param  fromValue 'from' expression converted to completely reduced Value.
+	   *  @param  fun 'to' function.
+	   */
+	  public static String convertNonInteractive (Value fromValue, Function fun) throws ConversionException {
+	      try {
+	        fun.applyInverseTo(fromValue);
+	        fromValue.completereduce();
+	      }
+	      catch(final EvalError e)
+	      {
+	    	  final ConversionException ce = new ConversionException(e.getMessage());
+	    	  ce.initCause(e);
+	    	  throw ce;
+	      }
+	      return fun.name + "(" + fromValue.asString() + ")";
+	    }
+
 
 	  public static class ConversionException extends Exception {
 		/**
