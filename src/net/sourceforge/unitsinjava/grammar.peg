@@ -5,10 +5,10 @@
 //  Units is a program for unit conversion originally written in C
 //  by Adrian Mariano (adrian@cam.cornell.edu.).
 //  Copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004,
-//  2005, 2006, 2007 by Free Software Foundation, Inc.
+//  2005, 2006, 2007, 2010 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009 by Roman R Redziejowski (roman.redz@tele2.se).
+//  2009, 2010 by Roman R Redziejowski (roman.redz@tele2.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -28,10 +28,11 @@
 //  Change log
 //
 //    091024 Created for version 1.87.J01.
+//    101101 Version 1.88.J01: Removed superfluous '?' after 'space'.
 //
 //=========================================================================
 
-unitexpr = space? expr? EOT {unitexpr} ~{error};
+unitexpr = space expr? EOT {unitexpr} ~{error};
 
 expr     = term ((PLUS / MINUS) term)* {expr} 
          / (SLASH / PER) product {inverse} ;
@@ -52,7 +53,7 @@ primary  = numexpr {makeNumUnit}
            
 numexpr  = number (BAR number)* {numexpr};
 
-number   = mantissa exponent? space? {number} ; 
+number   = mantissa exponent? space {number} ; 
 
 mantissa = "." digits / digits ("." digits?)? ; 
 
@@ -70,21 +71,21 @@ namechar = ![\t\n^ +-*/|()]_ <more name> ;
 
 opttilde = TILDE? <~> ;
 
-unitname = word space? {&unitname} <unit name> ;
-bfunc    = word space? {&bfunc}    <function name> ;
-dfunc    = word space? {&ufunc}    <function name> ;
+unitname = word space {&unitname} <unit name> ;
+bfunc    = word space {&bfunc}    <function name> ;
+dfunc    = word space {&ufunc}    <function name> ;
 
-BAR      = "|" space?  <|> ;
-HAT      = "^" space?  <^> ;
-TILDE    = "~" space?  <~> ;
-LPAR     = "(" space?  <(> ;
-MINUS    = "-" space?  <-> ;
-PLUS     = "+" space?  <+> ;
-RPAR     = ")" space?  <)> ;
-SLASH    = "/" space?  </> ;
-STARSTAR = "**" space? <**> ;
-STAR     = "*" !"*" space? <*> ;
-PER      = "per" &[\t\n^ +-*/|()] space?  <'per'> ;
+BAR      = "|" space  <|> ;
+HAT      = "^" space  <^> ;
+TILDE    = "~" space  <~> ;
+LPAR     = "(" space  <(> ;
+MINUS    = "-" space  <-> ;
+PLUS     = "+" space  <+> ;
+RPAR     = ")" space  <)> ;
+SLASH    = "/" space  </> ;
+STARSTAR = "**" space <**> ;
+STAR     = "*" !"*" space <*> ;
+PER      = "per" &[\t\n^ +-*/|()] space  <'per'> ;
 
 space       = [ \t]* {space} ;
 

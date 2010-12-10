@@ -19,8 +19,8 @@
 //-------------------------------------------------------------------------
 //
 //  Change log
-//   20090701 License changed by the author to Apache v.2.
-//   20090717 Removed unused import of java.util.Vector.
+//    090701 License changed by the author to Apache v.2.
+//    090717 Removed unused import of java.util.Vector.
 //
 //=========================================================================
 

@@ -46,7 +46,7 @@ package net.sourceforge.unitsinjava;
  *  a unit or a prefix.
  */
 
-public abstract class Factor extends Entity
+abstract public class Factor extends Entity
 {
   //-------------------------------------------------------------------
   /**  Definition string. */
@@ -73,12 +73,8 @@ public abstract class Factor extends Entity
   //-------------------------------------------------------------------
   boolean ignoredIf(Ignore what)
     {
-      if (what==Ignore.PRIMITIVE && isPrimitive) {
-		return true;
-	}
-      if (what==Ignore.DIMLESS   && isDimless) {
-		return true;
-	}
+      if (what==Ignore.PRIMITIVE && isPrimitive) return true;
+      if (what==Ignore.DIMLESS   && isDimless) return true;
       return false;
     }
 
@@ -93,9 +89,8 @@ public abstract class Factor extends Entity
       super(nam,loc);
       def = df;
 
-      if (df.equals("!")) {
-		isPrimitive = true;
-	}
+      if (df.equals("!"))
+        isPrimitive = true;
 
       if (df.equals("!dimensionless"))
       {
@@ -114,38 +109,35 @@ public abstract class Factor extends Entity
   //  Return null if 'name' is not recognized.
   //  (Originally part of 'lookupunit'.)
   //=====================================================================
-  static Factor[] split(final String name)
+  public static Factor[] split(final String name)
     {
       //---------------------------------------------------------------
       //  If 'name' is a unit name, possibly in plural form,
       //  return its Unit object.
       //---------------------------------------------------------------
       Unit u = Unit.find(name);
-      if (u!=null) {
-		return new Factor[]{null,u};
-	}
+      if (u!=null)
+        return new Factor[]{null,u};
 
       //---------------------------------------------------------------
       //  The 'name' is not a unit name.
       //  See if it is a prefix or prefixed unit name.
       //---------------------------------------------------------------
-      final Prefix p = Prefix.find(name);
+      Prefix p = Prefix.find(name);
 
       //---------------------------------------------------------------
       //  Return null if not a prefix or prefixed unit name.
       //---------------------------------------------------------------
-      if (p==null) {
-		return null;
-	}
+      if (p==null)
+        return null;
 
       //---------------------------------------------------------------
       //  Get the prefix string.
       //  If it is all of 'name', return its Prefix object.
       //---------------------------------------------------------------
-      final String prefix = p.name;
-      if (name.equals(prefix)) {
-		return new Factor[]{p,null};
-	}
+      String prefix = p.name;
+      if (name.equals(prefix))
+        return new Factor[]{p,null};
 
       //---------------------------------------------------------------
       //  The 'name' has a known prefix 'prefix'.
@@ -153,11 +145,10 @@ public abstract class Factor extends Entity
       //  If 'rest' (or its singular form) is a unit name,
       //  return the Prefix and Unit objects.
       //---------------------------------------------------------------
-      final String rest = name.substring(prefix.length(),name.length());
+      String rest = name.substring(prefix.length(),name.length());
       u = Unit.find(rest);
-      if (u!=null) {
-		return new Factor[]{p,u};
-	}
+      if (u!=null)
+        return new Factor[]{p,u};
 
       //---------------------------------------------------------------
       //  Return null if 'rest' is not a unit name.
@@ -172,34 +163,28 @@ public abstract class Factor extends Entity
   //  Repeat this for the definition thus obtained.
   //  (Originally part of 'showdefinition'.)
   //=====================================================================
-  static void showdef(final String name)
+  public static void showdef(final String name)
     {
       String def = name;
 
       while(true)
       {
-        final Factor[] pu = split(def);
+        Factor[] pu = split(def);
 
-        if (pu==null) {
-			break; // Not a prefix-unit
-		}
+        if (pu==null) break; // Not a prefix-unit
 
-        final Factor pref = pu[0];
-        final Factor unit = pu[1];
+        Factor pref = pu[0];
+        Factor unit = pu[1];
 
         if (unit==null)      // Prefix only
         {
-          if (pref.isNumber) {
-			break;
-		}
+          if (pref.isNumber) break;
           def = pref.def;
         }
 
         else if (pref==null) // Unit only
         {
-          if (unit.isPrimitive || unit.isNumber) {
-			break;
-		}
+          if (unit.isPrimitive || unit.isNumber) break;
           def = unit.def;
         }
 

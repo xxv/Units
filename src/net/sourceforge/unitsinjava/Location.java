@@ -43,7 +43,7 @@ package net.sourceforge.unitsinjava;
 /**
  *  Identifies location of a piece of text in a file.
  */
-class Location
+ public class Location
 {
   final File file;     // File
   final int lineNum;   // Line number

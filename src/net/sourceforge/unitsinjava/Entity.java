@@ -38,6 +38,7 @@
 
 package net.sourceforge.unitsinjava;
 
+import java.util.Vector;
 
 
 
@@ -50,7 +51,7 @@ package net.sourceforge.unitsinjava;
  *  A unit, prefix, or function.
  */
 
-public abstract class Entity implements Comparable<Entity>
+abstract class Entity implements Comparable<Entity>
 {
   /** Name of this Entity. */
   public String name;
@@ -81,20 +82,20 @@ public abstract class Entity implements Comparable<Entity>
   //=====================================================================
   //  Check the definition.Used in 'checkunits'.
   //=====================================================================
-  public abstract void check();
+  abstract void check();
 
 
   //=====================================================================
   //  Return true this Entity is compatible with Value 'v',
   //=====================================================================
-  public abstract boolean isCompatibleWith(final Value v);
+  abstract boolean isCompatibleWith(final Value v);
 
 
   //=====================================================================
   //  Return short description of the defined object
   //  to be shown by 'tryallunits'.
   //=====================================================================
-  public abstract String desc();
+  abstract String desc();
 
 }
 

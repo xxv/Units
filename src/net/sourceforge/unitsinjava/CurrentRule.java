@@ -19,8 +19,8 @@
 //-------------------------------------------------------------------------
 //
 //  Change log
-//   20090701 License changed by the author to Apache v.2.
-//   20090717 Name changed from 'Parser' to 'CurrentRule'.
+//    090701 License changed by the author to Apache v.2.
+//    090717 Name changed from 'Parser' to 'CurrentRule'.
 //
 //=========================================================================
 

@@ -44,7 +44,7 @@ package net.sourceforge.unitsinjava;
  *  Exception thrown by evaluation of unit expression.
  */
 
-public class EvalError extends Error
+ public class EvalError extends Error
 {
   //-------------------------------------------------------------------
   //  Constructor
@@ -55,5 +55,5 @@ public class EvalError extends Error
   //-------------------------------------------------------------------
   //  Serial version UID. Unused: defined to eliminate compiler warning
   //-------------------------------------------------------------------
-  static final long serialVersionUID = 4711L;
+  public static final long serialVersionUID = 4711L;
 }

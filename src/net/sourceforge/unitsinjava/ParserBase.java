@@ -2,7 +2,7 @@
 //
 //  Part of PEG parser generator Mouse.
 //
-//  Copyright (C) 2009 by Roman R. Redziejowski (www.romanredz.se).
+//  Copyright (C) 2009, 2010 by Roman R. Redziejowski (www.romanredz.se).
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -19,12 +19,20 @@
 //-------------------------------------------------------------------------
 //
 //  Change log
-//   20090720 Created for Mouse 1.1.
+//    090720 Created for Mouse 1.1.
+//   Version 1.2
+//    100320 Bug fix in accept(): upgrade error info on success.
+//    100320 Bug fix in rejectNot(): backtrack before registering failure.
+//   Version 1.3
+//    100429 Bug fix in errMerge(Phrase): assignment to errText replaced
+//           by clear + addAll (assignment produced alias resulting in
+//           explosion of errText in memo version).
 //
 //=========================================================================
 
 package net.sourceforge.unitsinjava;
 
+import net.sourceforge.unitsinjava.Source;
 import java.util.Vector;
 
 
@@ -105,7 +113,7 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean failure()
     {
-      final String message = current.errMsg();
+      String message = current.errMsg();
       System.out.println(message.replace("\n","\\n").replace("\t","\\t").replace("\r","\\r"));
       return false;
     }
@@ -120,14 +128,14 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected void begin(final String name)
     {
-      final Phrase p = new Phrase(name,name,pos);
+      Phrase p = new Phrase(name,name,pos);
       p.parent = current;
       current = p;
     }
 
   protected void begin(final String name,final String diag)
     {
-      final Phrase p = new Phrase(name,diag,pos);
+      Phrase p = new Phrase(name,diag,pos);
       p.parent = current;
       current = p;
     }
@@ -137,8 +145,10 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean accept()
     {
-      final Phrase p = pop();                // Pop p from compile stack
+      Phrase p = pop();                // Pop p from compile stack
       p.rhs = null;                    // Remove right-hand side of p
+      if (p.errPos==p.start)           // Upgrade error info of p
+        p.errSet(p.diag,p.start);
       p.success = true;                // Indicate p successful
       current.end = pos;               // Update end of parent
       current.rhs.add(p);              // Attach p to rhs of parent
@@ -147,11 +157,25 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
     }
 
   //-------------------------------------------------------------------
+  //  Accept Rule by true return from boolean action
+  //-------------------------------------------------------------------
+  protected boolean acceptBoolean()
+    {
+      Phrase p = pop();                // Pop p from compile stack
+      p.rhs = null;                    // Remove right-hand side of p
+      p.errClear();
+      p.success = true;                // Indicate p successful
+      current.end = pos;               // Update end of parent
+      current.rhs.add(p);              // Attach p to rhs of parent
+      return true;
+    }
+
+  //-------------------------------------------------------------------
   //  Accept Inner
   //-------------------------------------------------------------------
   protected boolean acceptInner()
     {
-      final Phrase p = pop();                // Pop p from compile stack
+      Phrase p = pop();                // Pop p from compile stack
       p.success = true;                // Indicate p successful
       current.end = pos;               // Update end of parent
       current.rhs.addAll(p.rhs);       // Add rhs of p to rhs of parent
@@ -164,7 +188,7 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean acceptAnd()
     {
-      final Phrase p = pop();                // Pop p from compile stack
+      Phrase p = pop();                // Pop p from compile stack
       p.end = p.start;                 // Reset end of P
       p.rhs = null;                    // Remove right-hand side of p
       p.errClear();                    // Remove error info from p
@@ -178,7 +202,7 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean acceptNot()
     {
-      final Phrase p = pop();                // Pop p from compile stack
+      Phrase p = pop();                // Pop p from compile stack
       p.rhs = null;                    // Remove right-hand side of p
       p.errClear();                    // Remove error info from p
       p.success = true;                // Indicate p successful
@@ -192,12 +216,28 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean reject()
     {
-      final Phrase p = pop();                // Pop p from compile stack
+      Phrase p = pop();                // Pop p from compile stack
       p.end = p.start;                 // Reset end of p
       p.rhs = null;                    // Remove right-hand side of p
-      if (p.errPos==p.start) {
-		p.errSet(p.diag,p.start);
-	}
+      if (p.errPos==p.start)           // Upgrade error info of p
+        p.errSet(p.diag,p.start);
+      p.success = false;               // Indicate p failed
+      current.errMerge(p);             // Merge error info with parent
+      pos = p.start;                   // Backtrack to start of p
+      return false;
+    }
+
+  //-------------------------------------------------------------------
+  //  Reject Rule by false return from boolean action
+  //-------------------------------------------------------------------
+  protected boolean rejectBoolean()
+    {
+      Phrase p = pop();                // Pop p from compile stack
+      p.end = p.start;                 // Reset end of p
+      p.rhs = null;                    // Remove right-hand side of p
+      System.out.println(p.diag + " " + source.where(p.start));
+      System.out.println(current.errTxt + " " + current.errPos);
+      p.errSet(p.diag,p.start);
       p.success = false;               // Indicate p failed
       current.errMerge(p);             // Merge error info with parent
       pos = p.start;                   // Backtrack to start of p
@@ -209,7 +249,7 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean rejectInner()
     {
-      final Phrase p = pop();                // Pop p from compile stack
+      Phrase p = pop();                // Pop p from compile stack
       p.end = p.start;                 // Reset end of p
       p.rhs = null;                    // Remove right-hand side of p
       p.success = false;               // Indicate p failed
@@ -223,7 +263,7 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean rejectAnd()
     {
-      final Phrase p = pop();                // Pop p from compile stack
+      Phrase p = pop();                // Pop p from compile stack
       p.rhs = null;                    // Remove right-hand side of p
       p.errSet(p.diag,pos);            // Register 'xxx expected'
       p.success = false;               // Indicate p failed
@@ -236,12 +276,12 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean rejectNot()
     {
-      final Phrase p = pop();                // Pop p from compile stack
+      Phrase p = pop();                // Pop p from compile stack
       p.end = p.start;                 // Reset end of p
       p.rhs = null;                    // Remove right-hand side of p
+      pos = p.start;                   // Backtrack to start of p
       p.errSet(p.diag,pos);            // Register 'xxx not expected'
       p.success = false;               // Indicate p failed
-      pos = p.start;                   // Backtrack to start of p
       current.errMerge(p);             // Merge error info with parent
       return false;
     }
@@ -252,11 +292,8 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean next(char ch)
     {
-      if (pos<endpos && source.at(pos)==ch) {
-		return consume(1);
-	} else {
-		return fail("'" + ch + "'");
-	}
+      if (pos<endpos && source.at(pos)==ch) return consume(1);
+      else return fail("'" + ch + "'");
     }
 
   //-------------------------------------------------------------------
@@ -264,11 +301,8 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean ahead(char ch)
     {
-      if (pos<endpos && source.at(pos)==ch) {
-		return true;
-	} else {
-		return fail("'" + ch + "'");
-	}
+      if (pos<endpos && source.at(pos)==ch) return true;
+      else return fail("'" + ch + "'");
     }
 
   //-------------------------------------------------------------------
@@ -276,11 +310,8 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean aheadNot(char ch)
     {
-      if (pos<endpos && source.at(pos)==ch) {
-		return fail("not '" + ch + "'");
-	} else {
-		return true;
-	}
+      if (pos<endpos && source.at(pos)==ch) return fail("not '" + ch + "'");
+      else return true;
     }
 
 
@@ -289,12 +320,9 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean next(String s)
     {
-      final int lg = s.length();
-      if (pos+lg<=endpos && source.at(pos,pos+lg).equals(s)) {
-		return consume(lg);
-	} else {
-		return fail("'" + s + "'");
-	}
+      int lg = s.length();
+      if (pos+lg<=endpos && source.at(pos,pos+lg).equals(s)) return consume(lg);
+      else return fail("'" + s + "'");
     }
 
   //-------------------------------------------------------------------
@@ -302,12 +330,9 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean ahead(String s)
     {
-      final int lg = s.length();
-      if (pos+lg<=endpos && source.at(pos,pos+lg).equals(s)) {
-		return true;
-	} else {
-		return fail("'" + s + "'");
-	}
+      int lg = s.length();
+      if (pos+lg<=endpos && source.at(pos,pos+lg).equals(s)) return true;
+      else return fail("'" + s + "'");
     }
 
   //-------------------------------------------------------------------
@@ -315,12 +340,9 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean aheadNot(String s)
     {
-      final int lg = s.length();
-      if (pos+lg<=endpos && source.at(pos,pos+lg).equals(s)) {
-		return fail("not '" + s + "'");
-	} else {
-		return true;
-	}
+      int lg = s.length();
+      if (pos+lg<=endpos && source.at(pos,pos+lg).equals(s)) return fail("not '" + s + "'");
+      else return true;
     }
 
 
@@ -329,11 +351,8 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean nextIn(String s)
     {
-      if (pos<endpos && s.indexOf(source.at(pos))>=0) {
-		return consume(1);
-	} else {
-		return fail("[" + s + "]");
-	}
+      if (pos<endpos && s.indexOf(source.at(pos))>=0) return consume(1);
+      else return fail("[" + s + "]");
     }
 
   //-------------------------------------------------------------------
@@ -341,11 +360,8 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean aheadIn(String s)
     {
-      if (pos<endpos && s.indexOf(source.at(pos))>=0) {
-		return true;
-	} else {
-		return fail("[" + s + "]");
-	}
+      if (pos<endpos && s.indexOf(source.at(pos))>=0) return true;
+      else return fail("[" + s + "]");
     }
 
   //-------------------------------------------------------------------
@@ -353,11 +369,8 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean aheadNotIn(String s)
     {
-      if (pos<endpos && s.indexOf(source.at(pos))>=0) {
-		return fail("not [" + s + "]");
-	} else {
-		return true;
-	}
+      if (pos<endpos && s.indexOf(source.at(pos))>=0) return fail("not [" + s + "]");
+      else return true;
     }
 
 
@@ -366,11 +379,9 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean nextIn(char a, char z)
     {
-      if (pos<endpos && source.at(pos)>=a && source.at(pos)<=z) {
-		return consume(1);
-	} else {
-		return fail("[" + a + "-" + z + "]");
-	}
+      if (pos<endpos && source.at(pos)>=a && source.at(pos)<=z)
+        return consume(1);
+      else return fail("[" + a + "-" + z + "]");
     }
 
   //-------------------------------------------------------------------
@@ -378,11 +389,9 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean aheadIn(char a, char z)
     {
-      if (pos<endpos && source.at(pos)>=a && source.at(pos)<=z) {
-		return true;
-	} else {
-		return fail("[" + a + "-" + z + "]");
-	}
+      if (pos<endpos && source.at(pos)>=a && source.at(pos)<=z)
+        return true;
+      else return fail("[" + a + "-" + z + "]");
     }
 
   //-------------------------------------------------------------------
@@ -390,11 +399,9 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean aheadNotIn(char a, char z)
     {
-      if (pos<endpos && source.at(pos)>=a && source.at(pos)<=z) {
-		return fail("not [" + a + "-" + z + "]");
-	} else {
-		return true;
-	}
+      if (pos<endpos && source.at(pos)>=a && source.at(pos)<=z)
+        return fail("not [" + a + "-" + z + "]");
+      else return true;
     }
 
 
@@ -403,11 +410,8 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean next()
     {
-      if (pos<endpos) {
-		return consume(1);
-	} else {
-		return fail("any character");
-	}
+      if (pos<endpos) return consume(1);
+      else return fail("any character");
     }
 
   //-------------------------------------------------------------------
@@ -415,11 +419,8 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean ahead()
     {
-      if (pos<endpos) {
-		return true;
-	} else {
-		return fail("any character");
-	}
+      if (pos<endpos) return true;
+      else return fail("any character");
     }
 
   //-------------------------------------------------------------------
@@ -427,11 +428,8 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean aheadNot()
     {
-      if (pos<endpos) {
-		return fail("end of text");
-	} else {
-		return true;
-	}
+      if (pos<endpos) return fail("end of text");
+      else return true;
     }
 
 
@@ -440,7 +438,7 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   private Phrase pop()
     {
-      final Phrase p = current;
+      Phrase p = current;
       current = p.parent;
       p.parent = null;
       return p;
@@ -451,7 +449,7 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   private boolean consume(int n)
     {
-      final Phrase p = new Phrase("","",pos);
+      Phrase p = new Phrase("","",pos);
       pos += n;
       p.end = pos;
       current.rhs.add(p);
@@ -513,7 +511,7 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
 
     //===================================================================
     //
-    //  Interface 'net.sourceforge.unitsinjava.Phrase'
+    //  Interface 'units.Phrase'
     //
     //===================================================================
     //-----------------------------------------------------------------
@@ -557,9 +555,7 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
     //-----------------------------------------------------------------
     public String errMsg()
       {
-        if (errPos<0) {
-			return "";
-		}
+        if (errPos<0) return "";
         return source.where(errPos) + ": expected " + listErr();
       }
 
@@ -594,14 +590,12 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
           return;
         }
 
-        if (errPos>newPos) {
-			return;      // If new position older: forget
-		}
+        if (errPos>newPos) return;      // If new position older: forget
         if (errPos<newPos)              // If new position newer: replace all info
         {
           errTxt.clear();
-          errTxt.add(msg);
           errPos = newPos;
+          errTxt.add(msg);
           return;
         }
                                         // If error in p at same position: add
@@ -616,16 +610,13 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
           return;
         }
 
-        if (p.errPos<0) {
-			return;         // If no error in p: forget
-		}
-        if (errPos>p.errPos) {
-			return;    // If error in p older: forget
-		}
+        if (p.errPos<0) return;         // If no error in p: forget
+        if (errPos>p.errPos) return;    // If error in p older: forget
         if (errPos<p.errPos)            // If error in p newer: replace all info
         {
+          errTxt.clear();
           errPos = p.errPos;
-          errTxt = p.errTxt;
+          errTxt.addAll(p.errTxt);
           return;
         }
                                         // If error in p at same position
@@ -637,14 +628,12 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
     //-----------------------------------------------------------------
     private String listErr()
       {
-        final StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         String sp = "";
-        final Vector<String> done = new Vector<String>();
-        for (final String s: errTxt)
+        Vector<String> done = new Vector<String>();
+        for (String s: errTxt)
         {
-          if (done.contains(s)) {
-			continue;
-		}
+          if (done.contains(s)) continue;
           sb.append(sp + s);
           done.add(s);
           sp = " or ";

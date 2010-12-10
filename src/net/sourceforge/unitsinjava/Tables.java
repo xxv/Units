@@ -63,7 +63,7 @@ import java.util.Vector;
  *  Contains static methods for maintenance of tables.
  */
 
-public class Tables
+ public class Tables
 {
   //=====================================================================
   //  build
@@ -89,9 +89,8 @@ public class Tables
       //  Initialize all tables.
       //---------------------------------------------------------------
       if (Unit.table!=null || Prefix.table!=null ||
-          BuiltInFunction.table!=null || DefinedFunction.table!=null) {
-		Env.err.println("Multiple invocations. Warning for interference.");
-	}
+          BuiltInFunction.table!=null || DefinedFunction.table!=null)
+        Env.err.println("Multiple invocations. Warning for interference.");
 
       Unit.table            = new Hashtable<String,Unit>();
       Prefix.table          = new Hashtable<String,Prefix>();
@@ -104,14 +103,10 @@ public class Tables
       for (int i=0; i<Env.filenames.size(); i++)
       {
         String filename = Env.filenames.elementAt(i);
-        if (filename.length()==0) {
-			filename = Env.UNITSFILE;
-		}
-        final File file = new File(filename);
-        final boolean ok = file.readunits(0);
-        if (!ok) {
-			return false;
-		}
+        if (filename.length()==0) filename = Env.UNITSFILE;
+        File file = new File(filename);
+        boolean ok = file.readunits(0);
+        if (!ok) return false;
       }
 
       //---------------------------------------------------------------
@@ -128,7 +123,7 @@ public class Tables
   /**
    *  Remove all tables.
    */
-  static void clean()
+  public static void clean()
     {
       Unit.table = null;
       Prefix.table = null;
@@ -142,136 +137,11 @@ public class Tables
   /**
    *  Returns string showing numbers of different entities.
    */
-   static String stat()
+   public static String stat()
    {
      return Unit.table.size() + " units, " + Prefix.table.size() + " prefixes, "
             + DefinedFunction.table.size() + " nonlinear units.";
    }
-
-  //=====================================================================
-  //  showSource
-  //=====================================================================
-  /**
-   *  Shows portion of definition file containing definition
-   *  of named entity.
-   *
-   *  @param  name name of the entity
-   */
-  static void showSource(final String name)
-    {
-      Location loc;
-      final Function f = DefinedFunction.table.get(name);
-      final Unit u = Unit.table.get(name);
-      final Prefix p = Prefix.table.get(name);
-      if (f!=null) {
-		loc = f.location;
-	} else if (u!=null) {
-		loc = u.location;
-	} else if (p!=null) {
-		loc = p.location;
-	} else
-      {
-        Env.out.println("Unit '" + name + "' is unknown.");
-        return;
-      }
-
-     /* Browser.show(loc.file.name,
-                   loc.file.contents,
-                   loc.beginChar,
-                   loc.endChar,
-                   true);*/
-    }
-
-  //=====================================================================
-  //  showConformable
-  //=====================================================================
-  /**
-   *  Shows units and functions conformable to given Value.
-   *  (Originally part of 'tryallunits'.)
-   *
-   *  @param  have the Value
-   *  @param  havestr expression for the Value (used only in title)
-   */
-  static void showConformable(final Value have, final String havestr)
-    {
-      final Vector<Entity> list = new Vector<Entity>();
-
-      for (final Enumeration<Unit> enu=Unit.table.elements();enu.hasMoreElements();)
-      {
-        final Entity e = enu.nextElement();
-        if (e.isCompatibleWith(have)) {
-			list.add(e);
-		}
-      }
-
-      for(final Enumeration<DefinedFunction> enu=DefinedFunction.table.elements();enu.hasMoreElements();)
-      {
-        final Entity e = enu.nextElement();
-        if (e.isCompatibleWith(have)) {
-			list.add(e);
-		}
-      }
-
-      showListed(list,"Units conformable to " + havestr);
-    }
-
-
-  //=====================================================================
-  //  showMatching
-  //=====================================================================
-  /**
-   *  Shows units and functions with names containing a given substring.
-   *  (Originally part of 'tryallunits'.)
-   *
-   *  @param  havestr substring to match
-   */
-  static void showMatching(final String havestr)
-    {
-      final Vector<Entity> list = new Vector<Entity>();
-
-      for (final Enumeration<Unit> enu=Unit.table.elements();enu.hasMoreElements();)
-      {
-        final Entity e = enu.nextElement();
-        if (e.name.contains(havestr)) {
-			list.add(e);
-		}
-      }
-
-      for(final Enumeration<DefinedFunction> enu=DefinedFunction.table.elements();enu.hasMoreElements();)
-      {
-        final Entity e = enu.nextElement();
-        if (e.name.contains(havestr)) {
-			list.add(e);
-		}
-      }
-
-      showListed(list,"Search result for *" + havestr + "*");
-    }
-
-
-  //=====================================================================
-  //  showListed
-  //=====================================================================
-  /**
-   *  Shows given list of entities.
-   *
-   *  @param  list  of entities to show
-   *  @param  title to show in the window
-   */
-  private static void showListed(Vector<Entity> list, final String title)
-    {
-      Collections.sort(list);
-
-      final StringBuffer sb = new StringBuffer();
-
-      for (int i=0; i<list.size(); i++)
-      {
-        final Entity d = list.elementAt(i);
-        sb.append(d.name).append(" ").append(d.desc()).append("\n");
-      }
-
-      //Browser.show(title,sb.toString(),0,0,false);
-    }
 
 
   //=====================================================================
@@ -285,29 +155,26 @@ public class Tables
    *  to reduce each one to 1.
    *  Prints a message for all units which do not reduce to 1.
    */
-  static void check()
+  public static void check()
     {
       //---------------------------------------------------------------
       //  Check all functions for valid definition and correct inverse.
       //---------------------------------------------------------------
-      for(final Enumeration e=DefinedFunction.table.elements();e.hasMoreElements();) {
-		((Function)e.nextElement()).check();
-	}
+      for(Enumeration e=DefinedFunction.table.elements();e.hasMoreElements();)
+        ((Function)e.nextElement()).check();
 
       //---------------------------------------------------------------
       //  Now check all units for validity
       //---------------------------------------------------------------
-      for (final Enumeration e=Unit.table.elements();e.hasMoreElements();) {
-		((Unit)e.nextElement()).check();
-	}
+      for (Enumeration e=Unit.table.elements();e.hasMoreElements();)
+        ((Unit)e.nextElement()).check();
 
 
       //---------------------------------------------------------------
       //  Check prefixes
       //---------------------------------------------------------------
-      for (final Enumeration e=Prefix.table.elements();e.hasMoreElements();) {
-		((Prefix)e.nextElement()).check();
-	}
+      for (Enumeration e=Prefix.table.elements();e.hasMoreElements();)
+        ((Prefix)e.nextElement()).check();
     }
 
 

@@ -5,10 +5,10 @@
 //  Units is a program for unit conversion originally written in C
 //  by Adrian Mariano (adrian@cam.cornell.edu.).
 //  Copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004,
-//  2005, 2006, 2007 by Free Software Foundation, Inc.
+//  2005, 2006, 2007, 2010 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009 by Roman R Redziejowski (roman.redz@tele2.se).
+//  2009, 2010 by Roman R Redziejowski (roman.redz@tele2.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -33,28 +33,38 @@
 //    050207 Added 'propfile'.
 //    050226 Version 1.84.J06.
 //           Expanded examples to help text moved from 'GUI' and 'convert'.
-//    050315 Version 1.84.J07. Changed package name to "units".
+//    050315 Version 1.84.J07.
+//           Changed package name to "units".
 //           Removed 'Bug reports to.." from ABOUT.
-//    050731 Version 1.85. Changed version numbers and copyright.
-//    061228 Version 1.86. Changed version numbers and copyright.
+//    050731 Version 1.85.J01.
+//           Changed version numbers and copyright.
+//    061228 Version 1.86.J01.
+//           Changed version numbers and copyright.
 //    061229 Changed 'verbose' to indicate compact / normal / verbose.
 //           Removed 'terse'. Added 'oneline'.
 //    070103 Added method 'showAbout' and variable 'gui'.
-//    091024 Version 1.87.J01. Used generics for 'filenames'.
+//    091024 Version 1.87.J01.
+//           Used generics for 'filenames'.
 //    091028 Changed version numbers and copyright years in 'ABOUT'
 //           Added warning about obsolete currency rates.
 //    091103 Added method 'getPersonalUnits'.
+//    101031 Version 1.87.J01.
+//           Changed version numbers and copyright years.
+//           Renamed 'ABOUT' to 'COPYRIGHT' and removed version info.
+//           Changed 'showAbout' to show version and invocation info
+//           before copyright.
 //
 //=========================================================================
 
 package net.sourceforge.unitsinjava;
 
-import java.io.BufferedReader;
+import java.util.Vector;
+import java.util.Properties;
+
 import java.io.File;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Properties;
-import java.util.Vector;
 
 
 
@@ -70,43 +80,37 @@ import java.util.Vector;
  */
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
-public class Env
+ public class Env
 {
   //-------------------------------------------------------------------
   //  Constants
   //-------------------------------------------------------------------
-  static final String PROGNAME = "gnu.units";  // Used in error messages
-  static final String VERSION = "1.87.J01";    // Program version
-  static final String ORIGVER = "1.87";        // Original version
-  static final String UNITSFILE = "units.dat"; // Default units file
-  static final String FILEVER = "1.49 (24 September 2007)";
-  static final String PROPFILE = "units.opt";  // Properties file
-  static final String DEFAULTLOCALE = "en_US"; // Default locale
-  static final int    MAXFILES = 25;           // Max number of units files
-  static final int    MAXINCLUDE = 5;          // Max depth of include files
+  public static final String PROGNAME = "gnu.units";  // Used in error messages
+  public static final String VERSION = "1.88.J01";    // Program version
+  public static final String ORIGVER = "1.88";        // Original version
+  public static final String UNITSFILE = "units.dat"; // Default units file
+  public static final String FILEVER = "1.50 (14 February 2010)";
+  public static final String PROPFILE = "units.opt";  // Properties file
+  public static final String DEFAULTLOCALE = "en_US"; // Default locale
+  public static final int    MAXFILES = 25;           // Max number of units files
+  public static final int    MAXINCLUDE = 5;          // Max depth of include files
 
 
-  static final String ABOUT = ""
-    + "This is a Java imitation of GNU Units " + ORIGVER + ", a unit conversion\n"
-    + "program written in C by Adrian Mariano (adrian@cam.cornell.edu),\n"
-    + "copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004,\n"
-    + "2005, 2006, 2007 by Free Software Foundation, Inc.\n"
-    + "Java version copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,\n"
-    + "2009 by Roman R Redziejowski (roman.redz@tele2.se).\n\n"
-    + "This program is free software; you can redistribute it and/or modify\n"
-    + "under the terms of the GNU General Public License as published\n"
-    + "by the Free Software Foundation; either version 3 of the License\n"
-    + "or (at your option) any later version.\n"
-    + "The program is distributed in the hope that it will be useful,\n"
-    + "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-    + "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
-    + "For more details, see the GNU General Public License\n"
-    + "(http://www.gnu.org/licenses/).\n\n"
-    + "Version: " + VERSION + ".\n"
-    + UNITSFILE + " version " + FILEVER + ".\n"
-    + "WARNING: the currency conversions in " + UNITSFILE + " are out of date!";
+  public static final String COPYRIGHT = ""
+    + "This is an extended Java version of GNU Units " + ORIGVER + ", a program written in C\n"
+    + "by Adrian Mariano, copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003,\n"
+    + "2004, 2005, 2006, 2007, 2010 by Free Software Foundation, Inc.\n"
+    + "Java version copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010\n"
+    + "by Roman R Redziejowski.\n"
+    + "The program is free software; you can redistribute it and/or modify under\n"
+    + "the terms of the GNU General Public License as published by the Free Software\n"
+    + "Foundation; either version 3 of the License or (at your option) any later\n"
+    + "version. The program is distributed in the hope that it will be useful, but\n"
+    + "WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY\n"
+    + "or FITNESS FOR A PARTICULAR PURPOSE. For more details, see the GNU General\n"
+    + "Public License (http://www.gnu.org/licenses/).";
 
-  static final String EXAMPLES =
+  public static final String EXAMPLES =
      " Examples of conversions:\n\n"
      + " EXAMPLE 1. What is 6 feet 4 inches in meters?\n\n"
      + "   You have: 6 ft + 4 in\n"
@@ -165,11 +169,10 @@ public class Env
   public static Writer out;                // Standard output
   public static Writer err;                // Standard error
 
-
   //-------------------------------------------------------------------
   //  Access to file system
   //-------------------------------------------------------------------
-  public abstract static class FileAcc
+  abstract public static class FileAcc
   {
     public abstract BufferedReader open(final String name);
   }
@@ -177,7 +180,7 @@ public class Env
   //-------------------------------------------------------------------
   //  Output writer
   //-------------------------------------------------------------------
-  public abstract static class Writer
+  abstract public static class Writer
   {
     public abstract void print(final String s);
     public abstract void println(final String s);
@@ -191,7 +194,7 @@ public class Env
    *  Obtains options from properties file (if present).
    *  The file must be in the same directory as JAR.
    */
-  static void getProperties()
+  public static void getProperties()
     {
       propfile = null; // Property file not found yet.
 
@@ -201,9 +204,9 @@ public class Env
       //  To obtain full path of property file, we replace the JAR name
       //  by name of the property file.
       //---------------------------------------------------------------
-      final String classPath = System.getProperty("java.class.path");
-      final String filSep = System.getProperty("file.separator");
-      final String propPath = classPath.substring(0,classPath.lastIndexOf(filSep)+1) + PROPFILE;
+      String classPath = System.getProperty("java.class.path");
+      String filSep = System.getProperty("file.separator");
+      String propPath = classPath.substring(0,classPath.lastIndexOf(filSep)+1) + PROPFILE;
 
       //---------------------------------------------------------------
       //  Try to open property file. Return if not found.
@@ -211,20 +214,20 @@ public class Env
       FileInputStream propFile;
       try
       { propFile = new FileInputStream(propPath); }
-      catch (final FileNotFoundException e)
+      catch (FileNotFoundException e)
       { return; }
 
       //---------------------------------------------------------------
       //  Read properties from the file.
       //  Write message and return if file incorrect.
       //---------------------------------------------------------------
-      final Properties props = new Properties();
+      Properties props = new Properties();
       try
       {
         props.load(propFile);
         propFile.close();
       }
-      catch (final Exception e)
+      catch (Exception e)
       {
         Env.err.println(PROGNAME + ": error reading properties from '" + propPath +"'.\n" + e);
         return;
@@ -236,9 +239,7 @@ public class Env
       //  If LOCALE defined, store it as Env.locale.
       //---------------------------------------------------------------
       String prop = props.getProperty("LOCALE");
-      if (prop!=null) {
-		Env.locale = prop.trim();
-	}
+      if (prop!=null) Env.locale = prop.trim();
 
       //---------------------------------------------------------------
       //  If UNITSFILE defined, it is a semicolon-separated list
@@ -251,7 +252,7 @@ public class Env
         while(prop!=null)
         {
           String fileName;
-          final int i = prop.indexOf(';');
+          int i = prop.indexOf(';');
           if (i>=0)
           {
             fileName = prop.substring(0,i).trim();
@@ -274,15 +275,13 @@ public class Env
   //=====================================================================
   /**
    *  If 'user.home' directory contains file 'units.dat',
-   *  add its name (full path) to 'filenames'..
+   *  add its name (full path) to 'filenames'.
    */
-  static void getPersonalUnits()
+  public static void getPersonalUnits()
     {
-      final String home = System.getProperty("user.home");
-      final File personal = new File(home + File.separator + "units.dat");
-      if (personal.exists()) {
-		filenames.add(personal.getPath());
-	}
+      String home = System.getProperty("user.home");
+      File personal = new File(home + File.separator + "units.dat");
+      if (personal.exists()) filenames.add(personal.getPath());
     }
 
   //=====================================================================
@@ -291,30 +290,29 @@ public class Env
   /**
    *  Write ABOUT text with information about current invocation.
    */
-  static void showAbout()
+  public static void showAbout()
     {
-      Env.out.println(Env.ABOUT);
+      Env.out.println("Version: " + VERSION + ".");
 
-      Env.out.println("\nThis invocation is using:");
+      if (Env.propfile!=null)
+        Env.out.println("Property list " + Env.propfile + ".");
 
-      if (Env.propfile!=null) {
-		Env.out.println("Property list " + Env.propfile + ".");
-	}
-
-      Env.out.print("Units database");
-      final String sep = Env.filenames.size()==1? " ":"\n\t";
+      Env.out.print("Units database:");
+      String sep = Env.filenames.size()==1? " ":"\n\t";
       for (int i=0;i<Env.filenames.size();i++)
       {
-        final String name = Env.filenames.elementAt(i);
-        if (name.length()==0) {
-			Env.out.print(sep + Env.UNITSFILE);
-		} else {
-			Env.out.print(sep + name);
-		}
+        String name = Env.filenames.elementAt(i);
+        if (name.length()==0 || name.equals(Env.UNITSFILE))
+          Env.out.print(sep + Env.UNITSFILE + " version " + Env.FILEVER);
+        else Env.out.print(sep + name);
       }
 
       Env.out.println("\ncontaining " + Tables.stat());
 
-      Env.out.println("Locale " + Env.locale + ".");
+      Env.out.println("Locale: " + Env.locale + ".");
+
+      Env.out.println("\nWARNING: the currency conversions in " + UNITSFILE + " are out of date!");
+
+      Env.out.println("\n" + Env.COPYRIGHT);
     }
 }

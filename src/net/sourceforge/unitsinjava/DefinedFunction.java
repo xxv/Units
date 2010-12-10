@@ -53,7 +53,7 @@ abstract class DefinedFunction extends Function
   //-------------------------------------------------------------------
   /**  Table of defined functions. */
   //-------------------------------------------------------------------
-  static Hashtable<String,DefinedFunction> table = null;
+  public static Hashtable<String,DefinedFunction> table = null;
 
 
   //=====================================================================

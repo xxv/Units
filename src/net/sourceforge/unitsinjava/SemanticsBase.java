@@ -19,9 +19,9 @@
 //-------------------------------------------------------------------------
 //
 //  Change log
-//   20090701 License changed by the author to Apache v.2.
-//   20090717 Interface 'Parser' renamed to 'CurrentRule'.
-//   20090810 Name changed from 'Semantics'.
+//    090701 License changed by the author to Apache v.2.
+//    090717 Interface 'Parser' renamed to 'CurrentRule'.
+//    090810 Name changed from 'Semantics'.
 //
 //=========================================================================
 

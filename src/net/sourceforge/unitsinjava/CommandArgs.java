@@ -37,7 +37,7 @@
 //    091024 Version 1.87.J01.
 //           Used generics and modernized access to options.
 //    091103 Corrected bug: exception on empty string as option argument.
-//    091104 'String.isEmpty' not accepted by JDK1.5. Changet to length==0.
+//    091104 'String.isEmpty' not accepted by JDK1.5. Changed to length==0.
 //
 //=========================================================================
 

@@ -37,7 +37,7 @@ package net.sourceforge.unitsinjava;
  *  Holds procedures called by Parser to process unit expressions.
  */
 
-class Semantics extends SemanticsBase
+ public class Semantics extends net.sourceforge.unitsinjava.SemanticsBase
 {
   //=====================================================================
   //
@@ -54,7 +54,7 @@ class Semantics extends SemanticsBase
   //  Semantic values
   //
   //=====================================================================
-  static class SV
+  public static class SV
   {
     double   number;
     Value    value;

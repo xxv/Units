@@ -40,6 +40,7 @@
 package net.sourceforge.unitsinjava;
 
 import java.util.Hashtable;
+import java.util.Vector;
 
 
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
@@ -51,12 +52,12 @@ import java.util.Hashtable;
  *  A prefix.
  */
 
-class Prefix extends Factor
+ public class Prefix extends Factor
 {
   //-------------------------------------------------------------------
   //  Table of Prefixes
   //-------------------------------------------------------------------
-  static Hashtable<String,Prefix> table = null;
+  public static Hashtable<String,Prefix> table = null;
 
 
   //=====================================================================
@@ -73,16 +74,14 @@ class Prefix extends Factor
   //  construct a Prefix object defined by it, enter it into Prefix table,
   //  and return true. Otherwise return false.
   //=====================================================================
-  static boolean accept
+  public static boolean accept
     ( final String nam, final String df, Location loc)
     {
       //  If unitname ends with '-', we have a prefix definition.
 
-      if (!nam.endsWith("-")) {
-		return false;
-	}
+      if (!nam.endsWith("-")) return false;
 
-      final String prefname = nam.substring(0,nam.length()-1);
+      String prefname = nam.substring(0,nam.length()-1);
 
       // Is it redefinition?
 
@@ -104,21 +103,18 @@ class Prefix extends Factor
   //=====================================================================
   //  Check the prefix definition. Used in 'checkunits'.
   //=====================================================================
-  static Value one = new Value();
+  public static Value one = new Value();
 
-  @Override
-public void check()
+  void check()
     {
       // check for bad '/' character in prefix
       int plevel = 0;
       for (int i=0;i<def.length();i++)
       {
-        final int ch = def.charAt(i);
-        if (ch==')') {
-			plevel--;
-		} else if (ch=='(') {
-			plevel++;
-		} else if (plevel==0 && ch=='/')
+        int ch = def.charAt(i);
+        if (ch==')') plevel--;
+        else if (ch=='(') plevel++;
+        else if (plevel==0 && ch=='/')
         {
           Env.out.println
            ("'" + name + "-' defined as '"
@@ -128,15 +124,13 @@ public void check()
       }
 
       // check if can be reduced
-      if (Env.verbose==2) {
-		Env.out.println("doing '" + name + "'");
-	}
-      final Value v = Value.fromString(name);
-      if (v==null || !v.isCompatibleWith(one,Factor.Ignore.PRIMITIVE)) {
-		Env.out.println
+      if (Env.verbose==2)
+        Env.out.println("doing '" + name + "'");
+      Value v = Value.fromString(name);
+      if (v==null || !v.isCompatibleWith(one,Factor.Ignore.PRIMITIVE))
+        Env.out.println
           ("'" + name + "' defined as '"
            + def + "' is irreducible");
-	}
     }
 
 
@@ -144,12 +138,10 @@ public void check()
   //  These methods, defined in Entity class,
   //  are never called for a Prefix object.
   //=====================================================================
-  @Override
-public boolean isCompatibleWith(final Value v)
+  boolean isCompatibleWith(final Value v)
     { throw new Error("Program Error"); }
 
-  @Override
-public String desc()
+  String desc()
     { throw new Error("Program Error"); }
 
 
@@ -158,16 +150,14 @@ public String desc()
   //  and return that Prefix object. (The prefix may all of 'name'.)
   //  Return null if name does not have a known prefix.
   //=====================================================================
-  static Prefix find(final String name)
+  public static Prefix find(final String name)
     {
-      final int nlg = name.length();
+      int nlg = name.length();
       int plg;
       for (plg=nlg;plg>0;plg--)
       {
-        final Prefix p = table.get(name.substring(0,plg));
-        if (p!=null) {
-			return p;
-		}
+        Prefix p = table.get(name.substring(0,plg));
+        if (p!=null) return p;
       }
       return null;
     }

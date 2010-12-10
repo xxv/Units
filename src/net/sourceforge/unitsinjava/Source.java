@@ -19,8 +19,8 @@
 //-------------------------------------------------------------------------
 //
 //  Change log
-//   20090701 License changed by the author to Apache v.2.
-//   20090810 Package changed from 'units.sources'.
+//    090701 License changed by the author to Apache v.2.
+//    090810 Package name changed.
 //
 //=========================================================================
 

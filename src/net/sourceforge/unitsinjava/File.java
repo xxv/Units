@@ -35,11 +35,13 @@
 package net.sourceforge.unitsinjava;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.FileNotFoundException;
+
+import java.net.URL;
 
 
 
@@ -52,7 +54,7 @@ import java.io.InputStreamReader;
  *  A unit definition file.
  */
 
-class File
+ public class File
 {
   String name;
   String contents;
@@ -90,7 +92,7 @@ class File
       //---------------------------------------------------------------
       //  Open the file.
       //---------------------------------------------------------------
-      final BufferedReader reader = Env.files.open(name);
+      BufferedReader reader = Env.files.open(name);
       if (reader==null)
       {
         Env.err.println("File '" + name + "' not found.");
@@ -120,7 +122,7 @@ class File
       //---------------------------------------------------------------
       //  Buffer to accumulate the contents.
       //---------------------------------------------------------------
-      final StringBuffer fb = new StringBuffer();
+      StringBuffer fb = new StringBuffer();
 
       //---------------------------------------------------------------
       //  Reading loop.
@@ -134,22 +136,21 @@ class File
         linestart = linenum;
         startpos = pos;
         String line;
-        final StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         boolean haveLine = false;
         while (!haveLine)
         {
           try
             { line = reader.readLine(); }
-          catch (final IOException e)
+          catch (IOException e)
             {
               Env.err.println(e.toString());
               return false;
             }
           if (line==null) // End of file
             {
-              if (sb.length()==0) {
-				break readLoop;
-			}
+              if (sb.length()==0) // Not looking for continuation
+                break readLoop;
               Env.err.println("Missing continuation to last line of " +
                                  name + ".");
               return false;
@@ -158,9 +159,9 @@ class File
           linenum++;
           pos += (line.length()+1);
 
-          if (line.endsWith("\\")) {
-			sb.append(line.substring(0,line.length()-1).trim()).append(" ");
-		} else
+          if (line.endsWith("\\"))
+            sb.append(line.substring(0,line.length()-1).trim()).append(" ");
+          else
           {
             sb.append(line.trim());
             haveLine = true;
@@ -175,17 +176,13 @@ class File
         //-------------------------------------------------------------
         //  Remove comment at the end of line (if any).
         //-------------------------------------------------------------
-        final int cmt = line.indexOf('#');
-        if (cmt>=0) {
-			line = line.substring(0,cmt).trim();
-		}
+        int cmt = line.indexOf('#');
+        if (cmt>=0) line = line.substring(0,cmt).trim();
 
         //-------------------------------------------------------------
         //  Skip empty line.
         //-------------------------------------------------------------
-        if (line.length()==0) {
-			continue;
-		}
+        if (line.length()==0) continue;
 
         //-------------------------------------------------------------
         //  If line is a units.dat command, process it.
@@ -193,7 +190,7 @@ class File
         if (line.charAt(0)=='!')
         {
           int i = Util.indexOf(WHITE,line,1);
-          final String command = line.substring(1,i);
+          String command = line.substring(1,i);
 
           //-----------------------------------------------------------
           //  Process '!locale'
@@ -221,9 +218,8 @@ class File
             }
 
             inlocale = true;
-            if (!argument.equals(Env.locale)) {
-				wronglocale = true;
-			}
+            if (!argument.equals(Env.locale))
+              wronglocale = true;
             continue;
           }
 
@@ -250,9 +246,7 @@ class File
           //-----------------------------------------------------------
           if (command.equals("include"))
           {
-            if (wronglocale) {
-				continue;
-			}
+            if (wronglocale) continue;
 
             String argument = line.substring(i,line.length()).trim();
             i = Util.indexOf(WHITE,argument,0);
@@ -266,7 +260,7 @@ class File
               continue;
             }
 
-            final File infile = new File(argument);
+            File infile = new File(argument);
             infile.readunits(depth+1);
             continue;
           }
@@ -283,17 +277,15 @@ class File
         //-------------------------------------------------------------
         //  Skip the line if wrong locale.
         //-------------------------------------------------------------
-        if (wronglocale) {
-			continue;
-		}
+        if (wronglocale) continue;
 
         //-------------------------------------------------------------
         //  The line is definition of unit, prefix, function, or table.
         //  Split it into name and definition.
         //-------------------------------------------------------------
-        final int i = Util.indexOf(WHITE,line,0);
-        final String unitname = line.substring(0,i).trim();
-        final String unitdef = line.substring(i,line.length()).trim();
+        int i = Util.indexOf(WHITE,line,0);
+        String unitname = line.substring(0,i).trim();
+        String unitdef = line.substring(i,line.length()).trim();
         if (unitdef.length()==0)
         {
           Env.out.println
@@ -305,25 +297,22 @@ class File
         //-------------------------------------------------------------
         //  Enter definition from the line into tables.
         //-------------------------------------------------------------
-        final Location loc = new Location(this,linestart,startpos,pos-1);
+        Location loc = new Location(this,linestart,startpos,pos-1);
 
         //  If line is a prefix definition:
 
-        if (Prefix.accept(unitname,unitdef,loc)) {
-			continue;
-		}
+        if (Prefix.accept(unitname,unitdef,loc))
+          continue;
 
         //  If line is a table definition:
 
-        if (TabularFunction.accept(unitname,unitdef,loc)) {
-			continue;
-		}
+        if (TabularFunction.accept(unitname,unitdef,loc))
+          continue;
 
         //  If line is a function definition:
 
-        if (ComputedFunction.accept(unitname,unitdef,loc)) {
-			continue;
-		}
+        if (ComputedFunction.accept(unitname,unitdef,loc))
+          continue;
 
         //  Otherwise line is a unit definition.
 
@@ -336,7 +325,7 @@ class File
       //---------------------------------------------------------------
       try
         { reader.close(); }
-      catch (final IOException e)
+      catch (IOException e)
         { Env.err.println(e.toString()); }
 
       //---------------------------------------------------------------
@@ -346,43 +335,4 @@ class File
 
       return true;
     }
-
-
-  //=====================================================================
-  //  Standard access to file system.
-  //=====================================================================
-  static class StandAcc extends Env.FileAcc
-  {
-    @Override
-	public
-	BufferedReader open(final String name)
-      {
-        BufferedReader reader = null;
-
-        //---------------------------------------------------------------
-        //  Try to find the file locally.
-        //---------------------------------------------------------------
-        final InputStream s = convert.class.getResourceAsStream(name);
-        if (s!=null)
-        {
-          final InputStreamReader isr = new InputStreamReader(s);
-          reader = new BufferedReader(isr);
-          return reader;
-        }
-
-        //---------------------------------------------------------------
-        //  Try otherwise
-        //---------------------------------------------------------------
-        try
-        {
-          final FileReader fr = new FileReader(name);
-          reader = new BufferedReader(fr);
-          return reader;
-        }
-        catch (final FileNotFoundException e)
-        {
-          return null;
-        }
-      }
-  }
 }

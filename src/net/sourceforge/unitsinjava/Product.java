@@ -54,7 +54,7 @@ import java.util.Vector;
  *  It may be empty, representing dimensionless number 1.
  */
 
-public class Product
+ public class Product
 {
   //-------------------------------------------------------------------
   //  The factors in a Product are represented as element of this Vector.
@@ -122,22 +122,19 @@ public class Product
   //=====================================================================
   //  Return i-th factor.
   //=====================================================================
-  Factor factor(int i)
+  public Factor factor(int i)
     { return factors.elementAt(i); }
 
 
   //=====================================================================
   //  Remove i-th factor.
   //=====================================================================
-  void delete(int i)
+  public void delete(int i)
     { factors.removeElementAt(i); }
 
-  public Vector<Factor> getFactors()
-  {
+  public Vector<Factor> getFactors(){
     return factors;
   }
-
-
   //=====================================================================
   //  Return true if this Product and Product "p" have the same factors,
   //  other than those marked dimensionless.

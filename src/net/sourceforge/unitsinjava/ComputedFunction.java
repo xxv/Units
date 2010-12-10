@@ -39,6 +39,8 @@
 
 package net.sourceforge.unitsinjava;
 
+import java.util.Hashtable;
+import java.util.Vector;
 
 
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
@@ -50,10 +52,10 @@ package net.sourceforge.unitsinjava;
  *  A function defined by an expression (a 'nonlinear unit'.)
  */
 
-class ComputedFunction extends DefinedFunction
+ public class ComputedFunction extends DefinedFunction
 {
-  private final FuncDef forward; // Forward definition
-  private final FuncDef inverse; // Inverse definition
+  private FuncDef forward; // Forward definition
+  private FuncDef inverse; // Inverse definition
 
 
   //=====================================================================
@@ -80,7 +82,7 @@ class ComputedFunction extends DefinedFunction
   //  function, construct a ComputedFunction object defined by it, enter
   //  it into user function table, and return true. Otherwise return false.
   //=====================================================================
-  static boolean accept
+  public static boolean accept
     ( final String nam, final String df, Location loc)
     {
       //  If unitname contains '(', we have a function definition.
@@ -89,12 +91,10 @@ class ComputedFunction extends DefinedFunction
       //  ; invdef may be omitted.
 
 
-      final int leftParen = nam.indexOf('(');
-      final int rightParen = nam.indexOf(')',leftParen+1);
+      int leftParen = nam.indexOf('(');
+      int rightParen = nam.indexOf(')',leftParen+1);
 
-      if (leftParen<0) {
-		return false;
-	}
+      if (leftParen<0) return false;
 
       // Get function name and parameter
 
@@ -107,8 +107,8 @@ class ComputedFunction extends DefinedFunction
         return true;
       }
 
-      final String funcname = nam.substring(0,leftParen);
-      final String param = nam.substring(leftParen+1,rightParen);
+      String funcname = nam.substring(0,leftParen);
+      String param = nam.substring(leftParen+1,rightParen);
 
       // Get dimensions
 
@@ -118,8 +118,8 @@ class ComputedFunction extends DefinedFunction
 
       if (df.charAt(0)=='[')
       {
-        final int semicol = df.indexOf(';',1);
-        final int rightBracket = df.indexOf(']',semicol+1);
+        int semicol = df.indexOf(';',1);
+        int rightBracket = df.indexOf(']',semicol+1);
         if (semicol<0 || rightBracket<0)
         {
           Env.err.println
@@ -127,12 +127,10 @@ class ComputedFunction extends DefinedFunction
              loc.lineNum + ".Function ignored.");
           return true;
         }
-        if (semicol>1) {
-			fwddim = df.substring(1,semicol);
-		}
-        if (rightBracket-semicol>1) {
-			invdim = df.substring(semicol+1,rightBracket);
-		}
+        if (semicol>1)
+          fwddim = df.substring(1,semicol);
+        if (rightBracket-semicol>1)
+          invdim = df.substring(semicol+1,rightBracket);
 
         unitdef = df.substring(rightBracket+1,df.length()).trim();
       }
@@ -142,11 +140,12 @@ class ComputedFunction extends DefinedFunction
       String fwddef = null;
       String invdef = null;
 
-      final int semicol = unitdef.indexOf(';');
+      int semicol = unitdef.indexOf(';');
 
-      if (semicol<0) {
-		fwddef = unitdef;
-	} else
+      if (semicol<0)
+        fwddef = unitdef;
+
+      else
       {
         fwddef = unitdef.substring(0,semicol).trim();
         invdef = unitdef.substring(semicol+1,unitdef.length()).trim();
@@ -175,16 +174,14 @@ class ComputedFunction extends DefinedFunction
   //=====================================================================
   //  Apply the function to Value 'v' (with result in 'v').
   //=====================================================================
-  @Override
-void applyTo(Value v)
+  void applyTo(Value v)
     { forward.applyTo(v,""); }
 
 
   //=====================================================================
   //  Apply inverse of the function to Value 'v' (with result in 'v').
   //=====================================================================
-  @Override
-void applyInverseTo(Value v)
+  void applyInverseTo(Value v)
     { inverse.applyTo(v,"~"); }
 
 
@@ -192,8 +189,7 @@ void applyInverseTo(Value v)
   //  Return definition of the function.
   //  (Originally 'showfuncdef'.)
   //=====================================================================
-  @Override
-String showdef()
+  String showdef()
     {
       return (Env.verbose>0? "\tDefinition: " : "") + name
                     + "(" + forward.param + ") = " + forward.def;
@@ -203,12 +199,10 @@ String showdef()
   //=====================================================================
   //  Check the function. Used in 'checkunits'.
   //=====================================================================
-  @Override
-public void check()
+  void check()
     {
-      if (Env.verbose==2) {
-		Env.out.println("doing function " + name);
-	}
+      if (Env.verbose==2)
+        Env.out.println("doing function " + name);
 
 
       Value v;
@@ -220,24 +214,25 @@ public void check()
           v = Value.parse(forward.dimen);
           v.completereduce();
         }
-        catch (final EvalError e)
+        catch (EvalError e)
         {
           Env.out.println
             ("Function '" + name + "' has invalid type '"
               + forward.dimen + "'");
           return;
         }
-      } else {
-		v = new Value();
-	}
+      }
+
+      else
+        v = new Value();
 
       v.factor *= 7; // Arbitrary choice where we evaluate inverse
 
-      final Value saved = new Value(v);
+      Value saved = new Value(v);
 
       try
       { applyTo(v); }
-      catch (final EvalError e)
+      catch (EvalError e)
       {
         Env.out.println
           ("Error in definition " + name + "("
@@ -257,13 +252,12 @@ public void check()
         applyInverseTo(v);
         v.div(saved);
         v.completereduce();
-        final double delta = v.factor-1;
-        if (!v.isNumber() || delta<-1e-12 || delta>1e-12) {
-			Env.out.println
-			    ("Inverse is not the inverse for function '" + name + "'");
-		}
+        double delta = v.factor-1;
+        if (!v.isNumber() || delta<-1e-12 || delta>1e-12)
+          Env.out.println
+            ("Inverse is not the inverse for function '" + name + "'");
       }
-      catch (final EvalError e)
+      catch (EvalError e)
       {
         Env.out.println
           ("Error in inverse ~" + name + "("
@@ -276,16 +270,11 @@ public void check()
   //=====================================================================
   //  Return true if this function is compatible with Value 'v',
   //=====================================================================
-  @Override
-public boolean isCompatibleWith(final Value v)
+  boolean isCompatibleWith(final Value v)
     {
-      if (inverse.dimen==null) {
-		return false;
-	}
-      final Value thisvalue = Value.fromString(inverse.dimen);
-      if (thisvalue==null) {
-		return false;
-	}
+      if (inverse.dimen==null) return false;
+      Value thisvalue = Value.fromString(inverse.dimen);
+      if (thisvalue==null) return false;
       return thisvalue.isCompatibleWith(v,Factor.Ignore.DIMLESS);
     }
 
@@ -293,8 +282,7 @@ public boolean isCompatibleWith(final Value v)
   //=====================================================================
   //  Return short description of this object to be shown by 'tryallunits'.
   //=====================================================================
-  @Override
-public String desc()
+  String desc()
     { return "<nonlinear unit>"; }
 
 
@@ -335,23 +323,22 @@ public String desc()
           Value dim;
           try
           { dim = Value.parse(dimen); }
-          catch (final EvalError e)
+          catch (EvalError e)
           {
             throw new EvalError("Invalid dimension, " + dimen +
                             ", of function " + inv + name + ". " + e.getMessage());
           }
           dim.completereduce();
-          if (!dim.isCompatibleWith(v,Factor.Ignore.NONE)) {
-			throw new EvalError("Argument " + v.asString() +
-			                    " of function " + inv + name + " is not conformable to " +
-			                    dim.asString() + ".");
-		}
+          if (!dim.isCompatibleWith(v,Factor.Ignore.NONE))
+          throw new EvalError("Argument " + v.asString() +
+                            " of function " + inv + name + " is not conformable to " +
+                            dim.asString() + ".");
         }
 
         Value result;
         try
         { result = Value.parse(def,param,v); }
-        catch (final EvalError e)
+        catch (EvalError e)
         {
           throw new EvalError("Invalid definition of function '" +
                            inv + name + "'. " + e.getMessage());

@@ -72,7 +72,7 @@ package net.sourceforge.unitsinjava;
  */
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
-public class Value
+ public class Value
 {
   //-------------------------------------------------------------------
   //  Components of a Value
@@ -120,7 +120,7 @@ public class Value
    *  @param  v the Value to be copied.
    *  @return this Value - now a copy of 'v'. */
   //=====================================================================
-  public Value copyFrom(final Value v)
+  Value copyFrom(final Value v)
     {
       factor = v.factor;
       numerator   = new Product(v.numerator);
@@ -142,9 +142,9 @@ public class Value
   //=====================================================================
   public static Value parse(final String s)
     {
-      final Parser parser = new Parser();           // Instantiate Parser + Semantics
-      final Semantics sem = parser.semantics();     // Access Semantics
-      final SourceString src = new SourceString(s); // Wrap 's' for parser
+      Parser parser = new Parser();           // Instantiate Parser + Semantics
+      Semantics sem = parser.semantics();     // Access Semantics
+      SourceString src = new SourceString(s); // Wrap 's' for parser
       parser.parse(src);                      // Parse 's' - EvalError on failure
       return sem.result;                      // Obtain result from Semantics
     }
@@ -168,13 +168,13 @@ public class Value
    *  @param  parmValue Value to be substituted for 'parm'.
    *  @return Value represented by the expression. */
   //=====================================================================
-  static Value parse(final String s, final String parm, final Value parmValue)
+  public static Value parse(final String s, final String parm, final Value parmValue)
     {
-      final Parser parser = new Parser();           // Instantiate Parser + Semantics
-      final Semantics sem = parser.semantics();     // Access Semantics
+      Parser parser = new Parser();           // Instantiate Parser + Semantics
+      Semantics sem = parser.semantics();     // Access Semantics
       sem.parm = parm;                        // Identify parameter to replace
       sem.parmValue = parmValue;              // Supply parameter value
-      final SourceString src = new SourceString(s); // Wrap 's' for parser
+      SourceString src = new SourceString(s); // Wrap 's' for parser
       parser.parse(src);                      // Parse 's' - EvalError on failure
       return sem.result;                      // Obtain result from Semantics
     }
@@ -195,11 +195,11 @@ public class Value
     {
       try
       {
-        final Value v = parse(s);
+        Value v = parse(s);
         v.completereduce();
         return v;
       }
-      catch (final EvalError e)
+      catch (EvalError e)
       {
         Env.err.println(e.getMessage());
         return null;
@@ -214,22 +214,19 @@ public class Value
    *  @param  s possible name of a unit, prefix, or prefixed unit.
    *  @return Value represented by 's'. */
   //=====================================================================
-  static Value fromName(final String s)
+  public static Value fromName(final String s)
     {
-      final Factor[] pu = Factor.split(s);
-      if (pu==null) {
-		throw new EvalError("Unit '" + s + "' is unknown.");
-	}
+      Factor[] pu = Factor.split(s);
+      if (pu==null)
+        throw new EvalError("Unit '" + s + "' is unknown.");
 
-      final Value v = new Value();
+      Value v = new Value();
 
-      if (pu[0]!=null) {
-		v.numerator.add(pu[0]);
-	}
+      if (pu[0]!=null)
+        v.numerator.add(pu[0]);
 
-      if (pu[1]!=null) {
-		v.numerator.add(pu[1]);
-	}
+      if (pu[1]!=null)
+        v.numerator.add(pu[1]);
 
       return v;
     }
@@ -239,15 +236,14 @@ public class Value
   /** Constructs printable string representing this Value.
    *  @return this Value as printable string. */
   //=====================================================================
-  public String asString()
+  String asString()
     {
-      final StringBuffer sb = new StringBuffer();
+      StringBuffer sb = new StringBuffer();
 
       sb.append(Util.shownumber(factor)).append(numerator.asString());
 
-      if (denominator.size()>0) {
-		sb.append(" /").append(denominator.asString());
-	}
+      if (denominator.size()>0)
+        sb.append(" /").append(denominator.asString());
 
       return sb.toString();
     }
@@ -257,7 +253,7 @@ public class Value
   /** Prints out this Value.
    *  <br>(Originally 'showunit'.) */
   //=====================================================================
-  public void show()
+  void show()
     { Env.out.println(asString()); }
 
 
@@ -286,7 +282,7 @@ public class Value
    *  @return <code>true</code> if the Value represents a number, or
    *          <code>false</code> otherwise. */
   //=====================================================================
-  public boolean isNumber()
+  boolean isNumber()
     {
       completereduce();
       return numerator.size()==0 && denominator.size()==0;
@@ -302,10 +298,9 @@ public class Value
     {
       completereduce();
       v.completereduce();
-      if (!isCompatibleWith(v,Factor.Ignore.NONE)) {
-		throw new EvalError("Sum of non-conformable values:\n\t"
+      if (!isCompatibleWith(v,Factor.Ignore.NONE))
+        throw new EvalError("Sum of non-conformable values:\n\t"
                           + asString() + "\n\t" + v.asString() + ".");
-	}
       factor += v.factor;
     }
 
@@ -330,10 +325,9 @@ public class Value
   //=====================================================================
   void div(final Value v)
     {
-      if (v.factor==0) {
-		throw new EvalError("Division of " + asString()
+      if (v.factor==0)
+        throw new EvalError("Division of " + asString()
                           + " by zero (" + v.asString() + ").");
-	}
       factor /= v.factor;
       denominator.add(v.numerator);
       numerator.add(v.denominator);
@@ -346,11 +340,10 @@ public class Value
   //=====================================================================
   void invert()
     {
-      if (factor==0) {
-		throw new EvalError("Division by zero (" + asString() + ").");
-	}
+      if (factor==0)
+        throw new EvalError("Division by zero (" + asString() + ").");
       factor = 1.0/factor;
-      final Product num = numerator;
+      Product num = numerator;
       numerator = denominator;
       denominator = num;
     }
@@ -369,46 +362,43 @@ public class Value
       //---------------------------------------------------------------
       //  Exponent must a number.
       //---------------------------------------------------------------
-      if (!v.isNumber()) {
-		throw new EvalError("Non-numeric exponent, " + v.asString()
+      if (!v.isNumber())
+        throw new EvalError("Non-numeric exponent, " + v.asString()
                           + ", of " + asString() + ".");
-	}
 
       //---------------------------------------------------------------
       //  Get numeric value of the exponent.
       //---------------------------------------------------------------
-      final double p = v.factor;
+      double p = v.factor;
 
       //---------------------------------------------------------------
       //  Apply absolute value of the exponent.
       //---------------------------------------------------------------
-      if (Math.floor(p)==p) {
-		power((int)Math.abs(p));
-	} else
-      if (Math.floor(1.0/p)==1.0/p) {
-		root((int)Math.abs(1.0/p));
-	} else                          // exponent neither n nor 1/n
+      if (Math.floor(p)==p)         // integer exponent
+        power((int)Math.abs(p));
+
+      else
+      if (Math.floor(1.0/p)==1.0/p) // fractional exponent
+        root((int)Math.abs(1.0/p));
+
+      else                          // exponent neither n nor 1/n
       {                             // .. for integer n..
-        if (!isNumber()) {
-			throw new EvalError("Non-numeric base, " + asString()
-			                    + ", for exponent " + v.asString() + ".");
-		}
+        if (!isNumber())
+          throw new EvalError("Non-numeric base, " + asString()
+                            + ", for exponent " + v.asString() + ".");
 
-        final Double f = Math.pow(factor,Math.abs(p));
+        Double f = Math.pow(factor,Math.abs(p));
 
-        if (Double.isNaN(f)) {
-			throw new EvalError("The result of " + factor + "^" + p
-			                    + " is undefined.");
-		}
+        if (Double.isNaN(f))
+          throw new EvalError("The result of " + factor + "^" + p
+                            + " is undefined.");
         factor = f;
       }
 
       //---------------------------------------------------------------
       //  Invert if exponent was negative.
       //---------------------------------------------------------------
-      if (p<0) {
-		invert();
-	}
+      if (p<0) invert();
     }
 
 
@@ -419,12 +409,11 @@ public class Value
   //=====================================================================
   void power(int n)
     {
-      if (n<0) {
-		throw new Error("Program error: exponent " + n + ".");
-	}
+      if (n<0)
+        throw new Error("Program error: exponent " + n + ".");
 
-      final Product num = new Product();
-      final Product den = new Product();
+      Product num = new Product();
+      Product den = new Product();
       double fac = 1.0;
 
       for (int i=0;i<n;i++)
@@ -449,17 +438,16 @@ public class Value
   //=====================================================================
   void root(int n)
     {
-      if (n==0 || (n%2==0 && factor<0)) {
-		throw new EvalError("Illegal n-th root of " + asString()
+      if (n==0 || (n%2==0 && factor<0))
+        throw new EvalError("Illegal n-th root of " + asString()
                           +  ", n=" + n + ".");
-	}
 
       completereduce();
-      final Product num = numerator.root(n);
-      final Product den = denominator.root(n);
+      Product num = numerator.root(n);
+      Product den = denominator.root(n);
       if (num==null || den==null)
         {
-          final String nth = n==2? "square" : (n==3? "cube" : n + "-th");
+          String nth = n==2? "square" : (n==3? "cube" : n + "-th");
           throw new EvalError(asString() + " is not a " + nth + " root.");
         }
 
@@ -469,11 +457,10 @@ public class Value
       // Math.pow does not work for negative base and non-integer exponent,
       // so negative 'factor' must be treated separately.
 
-      if (factor>=0) {
-		factor = Math.pow(factor,1.0/n);
-	} else {
-		factor = -Math.pow(-factor,1.0/n);
-	}
+      if (factor>=0)
+        factor = Math.pow(factor,1.0/(double)n);
+      else
+        factor = -Math.pow(-factor,1.0/(double)n);
     }
 
 
@@ -488,18 +475,17 @@ public class Value
 
       while (num<numerator.size() && den<denominator.size())
       {
-        final int comp = (denominator.factor(den).name).
+        int comp = (denominator.factor(den).name).
                 compareTo(numerator.factor(num).name);
         if (comp==0)
         {                    // units match, so cancel them.
           denominator.delete(den);
           numerator.delete(num);
         }
-        else if (comp < 0) {
-			den++;             // ..behind to look for future matches.
-		} else {
-			num++;
-		}
+        else if (comp < 0)   // Move up whichever index is alphabetically..
+          den++;             // ..behind to look for future matches.
+        else
+          num++;
       }
 
     }
@@ -516,24 +502,22 @@ public class Value
   boolean reduceproduct(boolean flip)
     {
       boolean didsomething = false;
-      final Product prod = (flip? denominator : numerator);
-      if (flip) {
-		denominator = new Product();
-	} else {
-		numerator = new Product();
-	}
-      final Product newprod = (flip? denominator : numerator);
+      Product prod = (flip? denominator : numerator);
+      if (flip)
+        denominator = new Product();
+      else
+        numerator = new Product();
+      Product newprod = (flip? denominator : numerator);
 
       //---------------------------------------------------------------
       //  Process all factors of 'prod'
       //---------------------------------------------------------------
       for (int f=0;f<prod.size();f++)
       {
-        final Factor fact = prod.factor(f);
-        final String toadd = fact.name;
-        if (toadd==null) {
-			throw new EvalError("Unit '" + toadd + "' is unknown.");
-		}
+        Factor fact = prod.factor(f);
+        String toadd = fact.name;
+        if (toadd==null)                                   // Is this possible?
+          throw new EvalError("Unit '" + toadd + "' is unknown.");
 
         if (fact.isPrimitive)
         {
@@ -546,17 +530,14 @@ public class Value
         try
         { newval = parse(fact.def); }
 
-        catch (final EvalError e)
+        catch (EvalError e)
         {
           throw new EvalError("Invalid definition of '" + toadd + "'. "
                             + e.getMessage());
         }
 
-        if (flip) {
-			div(newval);
-		} else {
-			mult(newval);
-		}
+        if (flip) div(newval);
+        else mult(newval);
 
         didsomething = true;
 
@@ -574,11 +555,9 @@ public class Value
       /* Keep calling reduceproduct until it doesn't do anything */
       while (true)
       {
-        final boolean topchanged = reduceproduct(false);
-        final boolean botchanged = reduceproduct(true);
-        if (!topchanged && !botchanged) {
-			break;
-		}
+        boolean topchanged = reduceproduct(false);
+        boolean botchanged = reduceproduct(true);
+        if (!topchanged && !botchanged) break;
       }
       cancel();
     }
@@ -599,7 +578,7 @@ public class Value
     ( String fromExpr, Value fromValue,
       String toExpr, Value toValue)
     {
-      final Value invfrom = new Value();    // inverse of fromValue, if needed
+      Value invfrom = new Value();    // inverse of fromValue, if needed
       boolean doingrec;               // reciprocal conversion?
 
       doingrec = false;
@@ -653,35 +632,32 @@ public class Value
 
       if (Env.verbose==2)
       {
-        if ("0123456789".indexOf(toExpr.charAt(0))>=0) {
-			sep=" *";
-		}
+        if ("0123456789".indexOf(toExpr.charAt(0))>=0)
+          sep=" *";
         if (doingrec)
         {
           if (fromExpr.indexOf('/')>=0)
           {
             left="1 / (";
             right=")";
-          } else {
-			left="1 / ";
-		}
+          }
+          else
+            left="1 / ";
         }
       }
 
       //---------------------------------------------------------------
       //  Print the first line of output.
       //---------------------------------------------------------------
-      if (Env.verbose==2) {
-		Env.out.print("\t" + left + fromExpr + right + " = ");
-	} else if (Env.verbose==1) {
-		Env.out.print("\t* ");
-	}
+      if (Env.verbose==2)
+        Env.out.print("\t" + left + fromExpr + right + " = ");
+      else if (Env.verbose==1)
+        Env.out.print("\t* ");
 
       Env.out.print(Util.shownumber(fromValue.factor / toValue.factor));
 
-      if (Env.verbose==2) {
-		Env.out.print(sep + " " + toExpr);
-	}
+      if (Env.verbose==2)
+        Env.out.print(sep + " " + toExpr);
 
 
       //---------------------------------------------------------------
@@ -689,19 +665,17 @@ public class Value
       //---------------------------------------------------------------
       if (!Env.oneline)
       {
-        if (Env.verbose==2) {
-			Env.out.print("\n\t" + left + fromExpr + right + " = (1 / ");
-		} else if (Env.verbose==1) {
-			Env.out.print("\n\t/ ");
-		} else {
-			Env.out.print("\n");
-		}
+        if (Env.verbose==2)
+          Env.out.print("\n\t" + left + fromExpr + right + " = (1 / ");
+        else if (Env.verbose==1)
+          Env.out.print("\n\t/ ");
+        else
+          Env.out.print("\n");
 
         Env.out.print(Util.shownumber(toValue.factor / fromValue.factor));
 
-        if (Env.verbose==2) {
-			Env.out.print(")" + sep + " " + toExpr);
-		}
+        if (Env.verbose==2)
+          Env.out.print(")" + sep + " " + toExpr);
       }
       Env.out.println("");
       return true;
@@ -717,7 +691,7 @@ public class Value
    *  @param  fromValue 'from' expression converted to completely reduced Value.
    *  @param  fun 'to' function.
    */
-  static boolean convert
+  public static boolean convert
     ( String fromExpr, Value fromValue, Function fun)
     {
       try
@@ -725,22 +699,19 @@ public class Value
         fun.applyInverseTo(fromValue);
         fromValue.completereduce();
       }
-      catch(final EvalError e)
+      catch(EvalError e)
       {
         Env.out.println(e.getMessage());
         return false;
       }
 
-      if (Env.verbose==2) {
-		Env.out.print("\t" + fromExpr + " = " + fun.name + "(");
-	} else
-        if (Env.verbose==1) {
-			Env.out.print("\t");
-		}
+      if (Env.verbose==2)
+        Env.out.print("\t" + fromExpr + " = " + fun.name + "(");
+      else
+        if (Env.verbose==1) Env.out.print("\t");
       Env.out.print(fromValue.asString());
-      if (Env.verbose==2) {
-		Env.out.print(")");
-	}
+      if (Env.verbose==2)
+        Env.out.print(")");
       Env.out.print("\n");
       return true;
     }

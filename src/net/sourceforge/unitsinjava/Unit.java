@@ -39,6 +39,7 @@
 package net.sourceforge.unitsinjava;
 
 import java.util.Hashtable;
+import java.util.Vector;
 
 
 
@@ -51,7 +52,7 @@ import java.util.Hashtable;
  *  A unit.
  */
 
-public class Unit extends Factor
+ public class Unit extends Factor
 {
   //-------------------------------------------------------------------
   //  Table of Units
@@ -73,7 +74,7 @@ public class Unit extends Factor
   //  Construct a Unit object defined by the line, enter it into
   //  Units table, and return true.
   //=====================================================================
-  static boolean accept
+  public static boolean accept
     ( final String nam, final String df, Location loc)
     {
       // Units that end in [2-9] can never be accessed.
@@ -116,41 +117,34 @@ public class Unit extends Factor
   //=====================================================================
   //  Check the unit definition. Used in 'checkunits'.
   //=====================================================================
-  static Value one = new Value();
+  public static Value one = new Value();
 
-  @Override
-public void check()
+  void check()
     {
       // check if can be reduced
-      if (Env.verbose==2) {
-		Env.out.println("doing '" + name + "'");
-	}
-      final Value v = Value.fromString(name);
-      if (v==null || !v.isCompatibleWith(one,Factor.Ignore.PRIMITIVE)) {
-		Env.out.println
+      if (Env.verbose==2)
+        Env.out.println("doing '" + name + "'");
+      Value v = Value.fromString(name);
+      if (v==null || !v.isCompatibleWith(one,Factor.Ignore.PRIMITIVE))
+        Env.out.println
           ("'" + name + "' defined as '"
            + def + "' is irreducible");
-	}
 
       // check if not hidden by function
-      if (DefinedFunction.table.containsKey(name)) {
-		Env.out.println
+      if (DefinedFunction.table.containsKey(name))
+        Env.out.println
           ("unit '" + name
            + "' is hidden by function '" + name + "'");
-	}
     }
 
 
   //=====================================================================
   //  Return true if this unit is compatible with Value 'v',
   //=====================================================================
-  @Override
-public boolean isCompatibleWith(final Value v)
+  boolean isCompatibleWith(final Value v)
     {
-      final Value thisvalue = Value.fromString(name);
-      if (thisvalue==null) {
-		return false;
-	}
+      Value thisvalue = Value.fromString(name);
+      if (thisvalue==null) return false;
       return thisvalue.isCompatibleWith(v,Factor.Ignore.DIMLESS);
     }
 
@@ -158,8 +152,7 @@ public boolean isCompatibleWith(final Value v)
   //=====================================================================
   //  Return short description of this object to be shown by 'tryallunits'.
   //=====================================================================
-  @Override
-public String desc()
+  String desc()
     { return (isPrimitive? "<primitive unit>" : "= " + def); }
 
 
@@ -174,9 +167,8 @@ public String desc()
       //  If 'name' appears as unit name in table,
       //  return object from the table.
       //---------------------------------------------------------------
-      if (Unit.table.containsKey(name)) {
-		return Unit.table.get(name);
-	}
+      if (Unit.table.containsKey(name))
+        return Unit.table.get(name);
 
       //---------------------------------------------------------------
       //  Plural rules for English: add -s
@@ -184,13 +176,12 @@ public String desc()
       //  -y becomes -ies except after a vowel when you just add -s
       //  Try removing 's'.
       //---------------------------------------------------------------
-      final int ulg = name.length();
+      int ulg = name.length();
       if (ulg>2 && name.charAt(ulg-1)=='s')
       {
         String temp = name.substring(0,ulg-1);
-        if (Unit.table.containsKey(temp)) {
-			return Unit.table.get(temp);
-		}
+        if (Unit.table.containsKey(temp))
+          return Unit.table.get(temp);
 
         //-------------------------------------------------------------
         //  Removing the suffix 's' did not help. It could still be
@@ -199,9 +190,8 @@ public String desc()
         if (ulg>3 && name.charAt(ulg-2)=='e')
         {
           temp = name.substring(0,ulg-2);
-          if (Unit.table.containsKey(temp)) {
-			return Unit.table.get(temp);
-		}
+          if (Unit.table.containsKey(temp))
+            return Unit.table.get(temp);
 
           //-----------------------------------------------------------
           //  Removing the suffix 'es' did not help. It could still be
@@ -210,9 +200,8 @@ public String desc()
           if (ulg>4 && name.charAt(ulg-3)=='i')
           {
             temp = name.substring(0,ulg-3) + "y";
-            if (Unit.table.containsKey(temp)) {
-				return Unit.table.get(temp);
-			}
+            if (Unit.table.containsKey(temp))
+              return Unit.table.get(temp);
           }
         }
       }

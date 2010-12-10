@@ -19,10 +19,10 @@
 //-------------------------------------------------------------------------
 //
 //  Change log
-//   20090701 License changed by the author to Apache v.2.
-//   20090810 Renamed from 'SourceString'.
-//   20091101 Package changed from 'mouse.runtime'.
-//   20091105 Modified 'where'.
+//    090701 License changed by the author to Apache v.2.
+//    090810 Renamed from 'SourceString' and package name changed.
+//   Version 1.2
+//    091105 Modified where() to insert three dots.
 //
 //=========================================================================
 
