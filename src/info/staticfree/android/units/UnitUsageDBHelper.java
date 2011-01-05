@@ -134,6 +134,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		c.moveToFirst();
 		final int count = c.getCount();
 		c.close();
+		db.close();
 		return count;
 	}
 
@@ -237,6 +238,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		}
 		db.setTransactionSuccessful();
 		db.endTransaction();
+		db.close();
 
 		context.getContentResolver().notifyChange(UsageEntry.CONTENT_URI, null);
 
@@ -276,6 +278,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		}
 		db.setTransactionSuccessful();
 		db.endTransaction();
+		db.close();
 		Log.d(TAG, "Successfully added "+jo.length()+" classification entries.");
 	}
 
