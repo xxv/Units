@@ -110,7 +110,9 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	ACTION_USE_UNIT = "info.staticfree.android.units.ACTION_USE_UNIT",
     	EXTRA_UNIT_NAME = "info.staticfree.android.units.EXTRA_UNIT_NAME";
 
-    public final static String STATE_RESULT_TEXT = "info.staticfree.android.units.RESULT_TEXT";
+    public final static String
+    	STATE_RESULT_TEXT = "info.staticfree.android.units.RESULT_TEXT",
+    	STATE_DRAWER_OPENED = "info.staticfree.android.units.DRAWER_OPENED";
 
     private static final int REQUEST_PICK_UNIT = 0;
 
@@ -164,6 +166,18 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
 		unitUsageDBHelper = new UnitUsageDBHelper(this);
 
+		final Object instance = getLastNonConfigurationInstance();
+		if (instance instanceof LoadInitialUnitUsageTask){
+			mLoadInitialUnitUsageTask = (LoadInitialUnitUsageTask) instance;
+			mLoadInitialUnitUsageTask.setActivity(this);
+		}else{
+			if (unitUsageDBHelper.getUnitUsageDbCount() == 0){
+	    		mLoadInitialUnitUsageTask = new LoadInitialUnitUsageTask();
+	    		mLoadInitialUnitUsageTask.setActivity(this);
+	    		mLoadInitialUnitUsageTask.execute();
+	    	}
+		}
+
 		wantEditText.setOnEditorActionListener(this);
 
 		final UnitsMultiAutoCompleteTokenizer tokenizer = new UnitsMultiAutoCompleteTokenizer();
@@ -174,10 +188,12 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
 		if (savedInstanceState != null){
 			resultView.setText(savedInstanceState.getCharSequence(STATE_RESULT_TEXT));
+			setHistoryVisible(savedInstanceState.getBoolean(STATE_DRAWER_OPENED, false), false);
 		}
 
 		final Intent intent = getIntent();
 		handleIntent(intent);
+
     }
 
     private void handleIntent(Intent intent){
@@ -191,10 +207,11 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
 		}else if(ACTION_USE_UNIT.equals(action)){
 			final String[] projection = {UsageEntry._ID, UsageEntry._UNIT};
-			final Cursor c = managedQuery(intent.getData(), projection, null, null, null);
+			final Cursor c = getContentResolver().query(intent.getData(), projection, null, null, null);
 			if (c.moveToFirst()){
 				sendTextAsSoftKeyboard(c.getString(c.getColumnIndex(UsageEntry._UNIT)) + " ");
 			}
+			c.close();
 		}
     }
 
@@ -219,15 +236,18 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     protected void onResume() {
     	super.onResume();
 
-    	if (unitUsageDBHelper.getUnitUsageDbCount() == 0){
-    		new LoadInitialUnitUsageTask().execute();
-    	}
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
     	super.onSaveInstanceState(outState);
     	outState.putCharSequence(STATE_RESULT_TEXT, resultView.getText());
+    	outState.putBoolean(STATE_DRAWER_OPENED, isHistoryVisible());
+    }
+
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+    	return mLoadInitialUnitUsageTask;
     }
 
     @Override
@@ -242,13 +262,25 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	}
     }
 
+    private boolean isHistoryVisible(){
+    	return historyDrawer.getVisibility() == View.VISIBLE;
+    }
+
     private void setHistoryVisible(boolean visible){
+    	setHistoryVisible(visible, true);
+    }
+    private void setHistoryVisible(boolean visible, boolean animate){
     	if (visible && historyDrawer.getVisibility() == View.INVISIBLE){
-    		historyDrawer.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.history_show));
+    		if (animate) {
+    			historyDrawer.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.history_show));
+    		}
     		historyDrawer.setVisibility(View.VISIBLE);
+    		historyDrawer.requestFocus();
 
     	}else if(! visible && historyDrawer.getVisibility() == View.VISIBLE){
-			historyDrawer.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.history_hide));
+			if (animate){
+				historyDrawer.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.history_hide));
+			}
 			historyDrawer.setVisibility(View.INVISIBLE);
     	}
     }
@@ -277,7 +309,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 	    	getContentResolver().insert(HistoryEntry.CONTENT_URI, cv);
 
 		}
-
     }
 
     // TODO make reciprocal notice better animated so it doesn't modify main layout
@@ -306,14 +337,17 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     private final static String[] PROJECTION_LOAD_FROM_HISTORY = {HistoryEntry._HAVE, HistoryEntry._WANT, HistoryEntry._RESULT};
 
+    /**
+     * Set the current entries to that of a history entry.
+     *
+     * @param entry a history entry URI
+     */
     private void setCurrentEntry(Uri entry){
-    	final Cursor c = managedQuery(entry, PROJECTION_LOAD_FROM_HISTORY, null, null, null);
+    	final Cursor c = getContentResolver().query(entry, PROJECTION_LOAD_FROM_HISTORY, null, null, null);
     	if (c.moveToFirst()){
 			setCurrentEntry(c.getString(c.getColumnIndex(HistoryEntry._HAVE)), c.getString(c.getColumnIndex(HistoryEntry._WANT)));
-			c.close();
-    	}else{
-    		// why can't we load the history?
     	}
+		c.close();
     }
 
     private void setCurrentEntry(String have, String want){
@@ -324,17 +358,20 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		haveEditText.setSelection(haveEditText.length());
     }
 
+    /**
+     * Converts the history entry to a CharSequence.
+     *
+     * @param entry A history entry URI
+     * @return the name of the unit, as a CharSequence
+     */
     private CharSequence getEntryAsCharSequence(Uri entry){
-    	final Cursor c = managedQuery(entry, PROJECTION_LOAD_FROM_HISTORY, null, null, null);
+    	CharSequence text = null;
+    	final Cursor c = getContentResolver().query(entry, PROJECTION_LOAD_FROM_HISTORY, null, null, null);
     	if (c.moveToFirst()){
-
-			final CharSequence text = HistoryEntry.toCharSequence(c, c.getColumnIndex(HistoryEntry._HAVE), c.getColumnIndex(HistoryEntry._WANT), c.getColumnIndex(HistoryEntry._RESULT));
-			c.close();
-			return text;
-    	}else{
-    		// why can't we load the history?
-    		return null;
+			text = HistoryEntry.toCharSequence(c, c.getColumnIndex(HistoryEntry._HAVE), c.getColumnIndex(HistoryEntry._WANT), c.getColumnIndex(HistoryEntry._RESULT));
     	}
+    	c.close();
+    	return text;
     }
 
     // TODO there's got to be a translate function that's more efficient than this...
@@ -538,14 +575,14 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		}break;
 
 		case MENU_USE_RESULT: {
-			final Cursor c = managedQuery(itemUri, PROJECTION_LOAD_FROM_HISTORY, null, null, null);
+			final Cursor c = getContentResolver().query(itemUri, PROJECTION_LOAD_FROM_HISTORY, null, null, null);
 			if (c.moveToFirst()){
 				final int resultCol = c.getColumnIndex(HistoryEntry._RESULT);
 				setCurrentEntry((c.isNull(resultCol) ? "" : (c.getDouble(resultCol)
 							+ " ")) + c.getString(c.getColumnIndex(HistoryEntry._WANT)), "");
 				setHistoryVisible(false);
-				c.close();
 			}
+			c.close();
 		}break;
 		}
 
@@ -635,7 +672,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
 	private static final int
 		DIALOG_ABOUT = 0,
-		DIALOG_ALL_UNITS = 1;
+		DIALOG_ALL_UNITS = 1,
+		DIALOG_LOADING_UNITS = 2;
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id){
@@ -668,6 +706,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			final Builder b = new Builder(Units.this);
 			b.setTitle(R.string.dialog_all_units_title);
 			final ExpandableListView unitExpandList = new ExpandableListView(Units.this);
+			unitExpandList.setId(android.R.id.list);
 			final String[] groupProjection = {UsageEntry._ID, UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};
 			// any selection below will select from the grouping description
 			final Cursor cursor = managedQuery(UsageEntry.CONTENT_URI_CONFORM_TOP, groupProjection, null, null, UnitUsageDBHelper.USAGE_SORT);
@@ -681,6 +720,14 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			unitExpandList.setOnChildClickListener(allUnitChildClickListener);
 			b.setView(unitExpandList);
 			return b.create();
+		}
+
+		case DIALOG_LOADING_UNITS:{
+			final ProgressDialog pd = new ProgressDialog(this);
+			pd.setIndeterminate(true);
+			pd.setTitle(R.string.app_name);
+			pd.setMessage(getText(R.string.dialog_loading_units));
+			return pd;
 		}
 
 		default:
@@ -841,6 +888,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		}
 	}
 
+	private LoadInitialUnitUsageTask mLoadInitialUnitUsageTask;
+
 	/**
 	 * Load the initial usage data on the first run of the application.
 	 *
@@ -848,10 +897,13 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 	 *
 	 */
 	private class LoadInitialUnitUsageTask extends AsyncTask<Void, Void, Void>{
-		private ProgressDialog pd;
+		private Activity mActivity;
+		public void setActivity(Activity activity){
+			mActivity = activity;
+		}
 		@Override
 		protected void onPreExecute() {
-			pd = ProgressDialog.show(Units.this, getText(R.string.app_name), getText(R.string.dialog_loading_units));
+			showDialog(DIALOG_LOADING_UNITS);
 		}
 		@Override
 		protected Void doInBackground(Void... params) {
@@ -863,7 +915,14 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
 		@Override
 		protected void onPostExecute(Void result) {
-			pd.dismiss();
+			try {
+				if (mActivity != null){
+					mActivity.dismissDialog(DIALOG_LOADING_UNITS);
+				}
+			}catch (final IllegalArgumentException ie){
+				// it's alright if it was dismissed already.
+			}
+			mLoadInitialUnitUsageTask = null;
 		}
 	}
 }

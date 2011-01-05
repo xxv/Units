@@ -57,7 +57,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
-import android.widget.FilterQueryProvider;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -368,7 +367,9 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
 		private static final int MSG_REQUERY = 0;
 		private boolean runningQuery;
+		private final ContentResolver mContentResolver;
 		private final Activity mActivity;
+		private final TextView mOtherEntry;
 		private final Handler mHandler = new Handler(){
 			private int retryCount = 0;
 			@Override
@@ -376,8 +377,8 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 				switch (msg.what){
 				case MSG_REQUERY:
 					if (!runningQuery){
-						changeCursor(getFilterQueryProvider().runQuery(null));
-						notifyDataSetInvalidated();
+						getFilter().filter(null);
+						//notifyDataSetInvalidated();
 						retryCount = 0;
 					}else{
 						// XXX hack to work around race condition when clearing
@@ -397,21 +398,57 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 					new String[] {UsageEntry._UNIT},
 					new int[] {android.R.id.text1});
 
-			this.mActivity = context;
+			mActivity = context;
+			mContentResolver = context.getContentResolver();
 			setStringConversionColumn(dbCursor.getColumnIndex(UsageEntry._UNIT));
 
 			final TextUpdateWatcher tuw = new TextUpdateWatcher(this);
 			otherEntry.addTextChangedListener(tuw);
 			otherEntry.setOnFocusChangeListener(tuw);
 
-			// a filter that searches for units starting with the given constraint
-			setFilterQueryProvider(new UnitMatcherFilterQueryProvider(otherEntry));
+			mOtherEntry = otherEntry;
 		}
 
 		public synchronized void otherEntryUpdated(){
 			if (!mHandler.hasMessages(MSG_REQUERY)){
 				mHandler.sendEmptyMessage(MSG_REQUERY);
 			}
+		}
+
+		@Override
+		public void changeCursor(Cursor c) {
+			mActivity.stopManagingCursor(getCursor());
+
+			super.changeCursor(c);
+			mActivity.startManagingCursor(c);
+		}
+
+		@Override
+		public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
+			if (getFilterQueryProvider() != null){
+				return getFilterQueryProvider().runQuery(constraint);
+			}
+
+			runningQuery = true;
+
+			final String[] selectionArgs = null;
+			final String selection = null;
+			Cursor c = null;
+
+			if (constraint == null || constraint.length() == 0){
+				c = queryWithConforming(mOtherEntry, selection, selectionArgs);
+			}else{
+				final Matcher m = UNIT_EXTRACT_REGEX.matcher(constraint);
+				String modConstraint;
+				if (m.matches()){
+					modConstraint = m.group(1);
+					c = queryWithConforming(mOtherEntry, UsageEntry._UNIT +" GLOB ?", new String[] {modConstraint+"*"});
+				}else{
+					c = queryWithConforming(mOtherEntry, null, null);
+				}
+			}
+			runningQuery = false;
+			return c;
 		}
 
 		private Cursor queryWithConforming(TextView otherEntry, String selection, String[] selectionArgs){
@@ -432,49 +469,14 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 			}else if (conformingSelectionArgs != null){
 				conformingSelection = CONFORMING_SELECTION;
 			}
-			Cursor c = mActivity.managedQuery(UsageEntry.CONTENT_URI, null, conformingSelection, conformingSelectionArgs, USAGE_SORT);
+			Cursor c = mContentResolver.query(UsageEntry.CONTENT_URI, null, conformingSelection, conformingSelectionArgs, USAGE_SORT);
 			// If we don't get anything by conforming, the user may be attempting to ask for
 			// a complex result and we should just return everything.
 			if (c.getCount() == 0){
 				c.close();
-				c = mActivity.managedQuery(UsageEntry.CONTENT_URI, null, selection, selectionArgs, USAGE_SORT);
+				c = mContentResolver.query(UsageEntry.CONTENT_URI, null, selection, selectionArgs, USAGE_SORT);
 			}
 			return c;
-		}
-
-		private class UnitMatcherFilterQueryProvider implements FilterQueryProvider {
-			// matches a unit being entered in-progress (at the end of the expression)
-			// intentionally does not match single-letter units (what's the point for autocompleting these?)
-
-			TextView otherEntry;
-
-			public UnitMatcherFilterQueryProvider(TextView otherEntry){
-				this.otherEntry = otherEntry;
-			}
-
-			public synchronized Cursor runQuery(CharSequence constraint) {
-				runningQuery = true;
-
-				final String[] selectionArgs = null;
-				final String selection = null;
-				Cursor c = null;
-
-				if (constraint == null || constraint.length() == 0){
-					c = queryWithConforming(otherEntry, selection, selectionArgs);
-				}else{
-					final Matcher m = UNIT_EXTRACT_REGEX.matcher(constraint);
-					String modConstraint;
-					if (m.matches()){
-						modConstraint = m.group(1);
-						c = queryWithConforming(otherEntry, UsageEntry._UNIT +" GLOB ?", new String[] {modConstraint+"*"});
-					}else{
-						c = queryWithConforming(otherEntry, null, null);
-					}
-				}
-				runningQuery = false;
-				return c;
-			}
-
 		}
 
 		private static class TextUpdateWatcher implements TextWatcher, OnFocusChangeListener {
