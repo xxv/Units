@@ -87,7 +87,7 @@ import java.util.Vector;
       if (d==(int)d)
         return Integer.toString((int)d);
 
-      return Float.toString((float)d);
+      return Double.toString(d);
     }
 
   //=====================================================================
