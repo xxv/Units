@@ -23,8 +23,11 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
@@ -35,15 +38,17 @@ class ColorButton extends Button implements OnClickListener {
     int CLICK_FEEDBACK_COLOR;
     static final int CLICK_FEEDBACK_INTERVAL = 10;
     static final int CLICK_FEEDBACK_DURATION = 350;
-    
+
     float mTextX;
     float mTextY;
     long mAnimStart;
     OnClickListener mListener;
     Paint mFeedbackPaint;
-    
+    private final Context mContext;
+
     public ColorButton(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
         //final Units units = (Units)context;
         init();
 
@@ -59,21 +64,52 @@ class ColorButton extends Button implements OnClickListener {
         mFeedbackPaint.setStyle(Style.STROKE);
         mFeedbackPaint.setStrokeWidth(2);
         getPaint().setColor(res.getColor(R.color.button_text));
-        
+
         mAnimStart = -1;
 
 
-        //calc.adjustFontSize(this);
+        //adjustFontSize();
     }
+
+    private static final int HVGA_WIDTH_PIXELS  = 320;
+
+    /**
+     * The font sizes in the layout files are specified for a HVGA display.
+     * Adjust the font sizes accordingly if we are running on a different
+     * display.
+     */
+    public void adjustFontSize() {
+        final float fontPixelSize = getTextSize();
+        final Display display = ((WindowManager)(mContext.getSystemService(Context.WINDOW_SERVICE))).getDefaultDisplay();
+        final int h = Math.min(display.getWidth(), display.getHeight());
+        final float ratio = (float)h/HVGA_WIDTH_PIXELS;
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, fontPixelSize*ratio);
+    }
+
+    // XXX doesn't work
+    public void adjustFontSizeToFit() {
+        final Paint newPaint = new Paint(getPaint());
+        //newPaint.setTextSize(getTextSize());
+//        float newX = mTextX;
+//        for (int i = 0; newX < 10 && i < 10; i++){
+//
+//        	newPaint.setTextSize(newPaint.getTextSize() * 0.7f);
+//        	newX = (getWidth() - newPaint.measureText(getText().toString())) / 2;
+//        }
+        setTextSize(newPaint.getTextSize());
+    }
+
 
     public void onClick(View view) {
         mListener.onClick(this);
     }
 
 
-    @Override 
+    @Override
     public void onSizeChanged(int w, int h, int oldW, int oldH) {
-        measureText();
+    	measureText();
+//        adjustFontSizeToFit();
+//        measureText();
     }
 
     private void measureText() {
@@ -99,7 +135,7 @@ class ColorButton extends Button implements OnClickListener {
     public void onDraw(Canvas canvas) {
         if (mAnimStart != -1) {
             final int animDuration = (int) (System.currentTimeMillis() - mAnimStart);
-            
+
             if (animDuration >= CLICK_FEEDBACK_DURATION) {
                 mAnimStart = -1;
             } else {
@@ -109,16 +145,16 @@ class ColorButton extends Button implements OnClickListener {
         } else if (isPressed()) {
             drawMagicFlame(0, canvas);
         }
-        
+
         final CharSequence text = getText();
         canvas.drawText(text, 0, text.length(), mTextX, mTextY, getPaint());
     }
 
     public void animateClickFeedback() {
         mAnimStart = System.currentTimeMillis();
-        invalidate();        
-    } 
-    
+        invalidate();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         final boolean result = super.onTouchEvent(event);

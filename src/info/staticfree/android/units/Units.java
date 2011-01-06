@@ -75,19 +75,14 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.TextView.OnEditorActionListener;
 
 // TODO high: add functions from BuiltInFunctions.table
-// TODO high: find more useful button to put in place of swap. Maybe use? Clear? Maybe just keep simple.
-// TODO high: redo graphics to better visually integrate with keypad. Maybe go with white-on-black theme?
 // TODO high: show keyboard icon for 2nd tap (can't do this easily, as one can't detect if soft keyboard is shown or not). May need to scrap this idea.
-// TODO high: fix temperature conversion
 // TODO high: fix mdpi app icon on Android 1.6
 // TODO high: ldpi smaller icon for about
-// TODO high: ldpi fix keyboard
 // TODO med: auto-ranging for metric units (auto add "kilo-" or "micro-")
 // TODO med: allow for returning composite Imperial and time units. eg. "3 hours + 12 minutes" instead of "3.2 hours"
 // TODO med: remove soft keyboard for non-touch devices
 // TODO med: look into performance bug on ADP device. Slows down considerably when backspacing whole entry.
 // TODO med: add date headers for history, to consolidate items ("yesterday", "1 week ago", etc.)
-// TODO med: add function parenthesis auto complete
 // TODO low: longpress on unit for description (look in unit addition error message for hints)
 // TODO low: Auto-scale text for display (square)
 public class Units extends Activity implements OnClickListener, OnEditorActionListener, OnTouchListener, OnLongClickListener {

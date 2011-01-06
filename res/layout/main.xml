@@ -14,6 +14,8 @@
 				android:orientation="vertical">
 
 		<MultiAutoCompleteTextView android:id="@+id/have"
+			android:background="@drawable/edit_text"
+			android:textAppearance="?android:attr/textAppearance"
 			android:completionThreshold="2" 
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent"
@@ -25,6 +27,8 @@
 
 		<MultiAutoCompleteTextView android:id="@+id/want"
 			android:layout_height="wrap_content"
+			android:background="@drawable/edit_text"
+			android:textAppearance="?android:attr/textAppearance"
 			android:completionThreshold="1" 
 			android:hint="@string/want_hint" android:layout_width="fill_parent"
 			android:inputType="text"
