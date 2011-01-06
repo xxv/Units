@@ -5,7 +5,7 @@
 
 	<LinearLayout android:orientation="vertical"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content">
+		android:layout_height="fill_parent">
 		<TextView android:id="@+id/result" android:layout_width="fill_parent"
 			android:textAppearance="?android:attr/textAppearanceLarge"
 			android:gravity="center_vertical" android:paddingLeft="6dip"
@@ -19,31 +19,44 @@
 			/>
 	
 		<LinearLayout android:orientation="horizontal"
-			android:layout_width="fill_parent" android:layout_height="fill_parent">
+			android:layout_width="fill_parent" android:layout_height="?android:attr/listPreferredItemHeight">
 			
 		<MultiAutoCompleteTextView android:id="@+id/have"
 			android:completionThreshold="2" 
-			android:layout_height="wrap_content"
+			android:layout_height="fill_parent"
 			android:layout_width="fill_parent"
-			android:layout_weight="1"
+			android:layout_weight="2"
 			android:hint="@string/have_hint"
 			android:inputType="text"
 			android:imeOptions="actionNext"
 			android:layout_margin="0dip"
+			android:gravity="center_vertical"
 			android:nextFocusDown="@+id/want"
 			 />
 		<MultiAutoCompleteTextView android:id="@+id/want"
-			android:layout_height="wrap_content"
+			android:layout_height="fill_parent"
+			android:layout_width="fill_parent"
 			android:completionThreshold="2" 
-			android:hint="@string/want_hint" android:layout_width="fill_parent"
-			android:layout_weight="1"
+			android:hint="@string/want_hint" 
+			android:layout_weight="2"
 			android:inputType="text"
 			android:imeOptions="actionGo"
 			
 			android:layout_margin="0dip"
 			
 			android:nextFocusUp="@+id/have"
+			android:gravity="center_vertical"
 			 />
+			 
+             <com.android.calculator2.ColorButton
+                android:id="@+id/backspace"
+                android:background="@drawable/backspace"
+                android:gravity="center_vertical"
+                style="@style/button_style"
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:layout_weight="3"
+                />
 		</LinearLayout>
 				
 <!-- 
@@ -106,11 +119,10 @@
                 style="@style/button_style"
                 />
             <com.android.calculator2.ColorButton
-                android:id="@+id/backspace"
-                android:background="@drawable/backspace"
+                android:id="@+id/sqrt"
+                android:text="@string/sqrt"
                 style="@style/button_style"
                 />
-                
 
         </LinearLayout>
 

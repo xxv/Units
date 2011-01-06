@@ -4,7 +4,42 @@
 		android:layout_width="fill_parent" android:layout_height="fill_parent">
 		
 		<include layout="@layout/result" />
-		<include layout="@layout/unit_entry" />
+		<LinearLayout android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content">
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent" 
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:orientation="vertical">
+
+		<MultiAutoCompleteTextView android:id="@+id/have"
+			android:completionThreshold="2" 
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:hint="@string/have_hint"
+			android:inputType="text"
+			android:imeOptions="actionNext"
+			android:layout_margin="0dip"			
+			 />
+
+		<MultiAutoCompleteTextView android:id="@+id/want"
+			android:layout_height="wrap_content"
+			android:completionThreshold="1" 
+			android:hint="@string/want_hint" android:layout_width="fill_parent"
+			android:inputType="text"
+			android:imeOptions="actionGo"
+			android:layout_margin="0dip"
+			 />
+		</LinearLayout>
+            <com.android.calculator2.ColorButton
+                android:id="@+id/backspace"
+                android:background="@drawable/backspace"
+                style="@style/button_style"
+                android:layout_weight="3"
+                android:layout_width="fill_parent"
+                />
+			</LinearLayout>
 		<include layout="@layout/keypad" />
 		
 	</LinearLayout>

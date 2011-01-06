@@ -164,6 +164,10 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			}
 		}
 
+		final View backspace = findViewById(R.id.backspace);
+		backspace.setOnClickListener(buttonListener);
+		backspace.setOnLongClickListener(buttonListener);
+
 		unitUsageDBHelper = new UnitUsageDBHelper(this);
 
 		final Object instance = getLastNonConfigurationInstance();

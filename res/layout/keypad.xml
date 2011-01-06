@@ -43,8 +43,8 @@
                 style="@style/button_style"
                 />
             <com.android.calculator2.ColorButton
-                android:id="@+id/backspace"
-                android:background="@drawable/backspace"
+                android:id="@+id/power"
+                android:text="@string/power"
                 style="@style/button_style"
                 />
         </LinearLayout>
