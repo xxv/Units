@@ -33,4 +33,13 @@
        <item name="android:layout_height">fill_parent</item>
        <item name="android:padding">8dp</item>
     </style>
+    
+    <style name="MainEntry">
+    	<item name="android:background">@drawable/edit_text</item>
+    	<item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    	<item name="android:inputType">text</item>
+    	<item name="android:layout_margin">0dip</item>
+    	<item name="android:maxLines">1</item>
+        <item name="android:textColorHint">#999</item>
+    </style>
 </resources>

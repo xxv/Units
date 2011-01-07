@@ -11,14 +11,14 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="35"
-   height="74"
+   height="66"
    id="svg3997"
    version="1.1"
    inkscape:version="0.47 r22583"
    sodipodi:docname="textarea.svg"
    inkscape:export-filename="/home/steve/media/android/workspace/Units/res/drawable-mdpi/edit_text_default.9.png"
-   inkscape:export-xdpi="60.81081"
-   inkscape:export-ydpi="60.81081">
+   inkscape:export-xdpi="61.709999"
+   inkscape:export-ydpi="61.709999">
   <defs
      id="defs3999">
     <linearGradient
@@ -186,7 +186,7 @@
        xlink:href="#linearGradient4519"
        id="linearGradient4848"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(0.79351762,-1.8315442)"
+       gradientTransform="translate(0.79351762,5.1684545)"
        x1="197.06366"
        y1="528.62225"
        x2="197.06366"
@@ -236,7 +236,7 @@
        xlink:href="#linearGradient4529"
        id="linearGradient4860"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(6.5810371,-1027.2404)"
+       gradientTransform="translate(6.5810371,-1034.2404)"
        x1="193.14673"
        y1="500.47937"
        x2="193.14673"
@@ -246,7 +246,7 @@
        xlink:href="#linearGradient4529"
        id="linearGradient4863"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-683.28883,-712.33657)"
+       gradientTransform="translate(-690.28883,-712.33657)"
        x1="193.14673"
        y1="500.47937"
        x2="193.14673"
@@ -256,7 +256,7 @@
        xlink:href="#linearGradient4529"
        id="linearGradient4866"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-683.28883,-317.62222)"
+       gradientTransform="translate(-690.28883,-317.62222)"
        x1="193.14673"
        y1="500.47937"
        x2="193.14673"
@@ -266,7 +266,7 @@
        xlink:href="#linearGradient4529"
        id="linearGradient4869"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(6.5810371,-33.65901)"
+       gradientTransform="translate(6.5810371,-26.659011)"
        x1="193.14673"
        y1="500.47937"
        x2="193.14673"
@@ -294,10 +294,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="5.6568542"
-     inkscape:cx="20.122238"
-     inkscape:cy="23.559928"
+     inkscape:cx="20.175687"
+     inkscape:cy="33.344769"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer2"
      showgrid="true"
      inkscape:snap-bbox="true"
      inkscape:object-paths="true"
@@ -330,39 +330,26 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-179.85717,-462.79071)"
-     style="display:inline">
-    <rect
-       style="color:#000000;fill:#333333;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.66299999;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       id="rect4574"
-       width="8.375"
-       height="8.25"
-       x="152.73216"
-       y="489.54071" />
-    <rect
-       y="489.54071"
-       x="161.10716"
-       height="8.25"
-       width="8.375"
-       id="rect4576"
-       style="color:#000000;fill:#ff860f;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.66299999;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+     transform="translate(-179.85717,-470.79071)"
+     style="display:inline"
+     sodipodi:insensitive="true">
     <rect
        style="color:#000000;fill:url(#linearGradient4848);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.66299999;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect4007"
        width="29"
        height="60"
        x="182.85716"
-       y="466.79071" />
+       y="473.79071" />
     <rect
        style="color:#000000;fill:url(#linearGradient4869);fill-opacity:1;stroke:none;stroke-width:5.67448997;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect4527"
        width="28.939743"
        height="2.5648804"
        x="182.85716"
-       y="466.79071" />
+       y="473.79071" />
     <rect
        y="182.85716"
-       x="-526.79071"
+       x="-533.79071"
        height="3.1097412"
        width="59.999756"
        id="rect4543"
@@ -374,10 +361,10 @@
        id="rect4726"
        width="59.999756"
        height="3.1097412"
-       x="-526.79071"
+       x="-533.79071"
        y="-211.85716" />
     <rect
-       y="-526.79071"
+       y="-533.79071"
        x="182.85716"
        height="2.5648804"
        width="28.939743"
@@ -385,7 +372,7 @@
        style="color:#000000;fill:url(#linearGradient4860);fill-opacity:1;stroke:none;stroke-width:5.67448997;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        transform="scale(1,-1)" />
     <rect
-       y="466.79071"
+       y="473.79071"
        x="182.85716"
        height="60"
        width="29"
@@ -398,27 +385,25 @@
      id="layer3"
      inkscape:label="9patch_90dpi"
      style="display:none"
+     transform="translate(0,-8)"
      sodipodi:insensitive="true">
     <rect
-       transform="translate(-179.85717,-462.79071)"
        style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect5384"
        width="1.0000075"
        height="0.99999952"
-       x="196.85716"
-       y="462.79071" />
+       x="16.999992"
+       y="8" />
     <rect
-       transform="translate(-179.85717,-462.79071)"
        style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect5384-2"
        width="1.0000075"
        height="54"
-       x="179.85716"
-       y="469.79071" />
+       x="-7.5244143e-06"
+       y="13" />
     <rect
-       transform="translate(-179.85717,-462.79071)"
-       y="473.79071"
-       x="213.85716"
+       y="17"
+       x="33.999992"
        height="46"
        width="1"
        id="rect5408"
@@ -437,10 +422,10 @@
      id="layer2"
      inkscape:label="focused"
      style="display:none"
-     transform="translate(0,2)"
+     transform="translate(0,-6)"
      sodipodi:insensitive="true">
     <rect
-       y="2"
+       y="9"
        x="3"
        height="60"
        width="29"
@@ -452,23 +437,25 @@
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="9patch_mdpi"
-     style="display:inline">
+     style="display:inline"
+     transform="translate(0,-8)"
+     sodipodi:insensitive="true">
     <rect
        style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect5384-6"
        width="1.5"
        height="1.5"
        x="16.75"
-       y="0" />
+       y="8" />
     <rect
        style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect5384-2-5"
        width="1.5"
        height="54"
        x="-7.5244143e-06"
-       y="7" />
+       y="13" />
     <rect
-       y="11"
+       y="17"
        x="33.5"
        height="46"
        width="1.5"
