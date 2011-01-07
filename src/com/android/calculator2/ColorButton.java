@@ -49,11 +49,7 @@ class ColorButton extends Button implements OnClickListener {
     public ColorButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        //final Units units = (Units)context;
         init();
-
-        //mListener = units.buttonListener;
-        //setOnClickListener(this);
     }
 
     private void init() {
@@ -66,9 +62,6 @@ class ColorButton extends Button implements OnClickListener {
         getPaint().setColor(res.getColor(R.color.button_text));
 
         mAnimStart = -1;
-
-
-        //adjustFontSize();
     }
 
     private static final int HVGA_WIDTH_PIXELS  = 320;
@@ -83,10 +76,9 @@ class ColorButton extends Button implements OnClickListener {
         final Display display = ((WindowManager)(mContext.getSystemService(Context.WINDOW_SERVICE))).getDefaultDisplay();
         final int h = Math.min(display.getWidth(), display.getHeight());
         final float ratio = (float)h/HVGA_WIDTH_PIXELS;
-        setTextSize(TypedValue.COMPLEX_UNIT_PX, fontPixelSize*ratio);
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, fontPixelSize * ratio);
     }
 
-    // XXX doesn't work
     public void adjustFontSizeToFit() {
         final Paint newPaint = new Paint(getPaint());
         float newX = mTextX;
@@ -96,7 +88,6 @@ class ColorButton extends Button implements OnClickListener {
         	newX = (getWidth() - newPaint.measureText(getText().toString())) / 2;
         }
         setTextSize(TypedValue.COMPLEX_UNIT_PX, newPaint.getTextSize());
-
     }
 
 
