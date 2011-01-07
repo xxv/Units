@@ -11,7 +11,7 @@
     <string name="ctx_menu_reedit">Re-edit</string>
     <string name="ctx_menu_use_result">Use result</string>
     
-    <string name="toast_copy">\"%s\" copied to clipboard.</string>
+    <string name="toast_copy">\"%1$s\" copied to clipboard.</string>
 
     <string name="menu_swap_input">Swap inputs</string>
     <string name="menu_about">About</string>
@@ -26,7 +26,7 @@
     
     <string name="search_hint">Search units</string>
     <string name="search_no_results">No units found.</string>
-    <string name="search_title_unit">Units matching \"%s\"</string>
+    <string name="search_title_unit">Units matching \"%1$s\"</string>
     
     <!-- user-facing alerts -->
     <string name="dialog_loading_units">Loading initial unit usage database...</string>

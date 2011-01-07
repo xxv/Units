@@ -3,15 +3,15 @@
 <resources>
     <string name="app_name">Unità</string>
     
-    <string name="have_hint">hai</string>
-    <string name="want_hint">voui</string>
+    <string name="have_hint">ha</string>
+    <string name="want_hint">vorrei</string>
     
     <string name="ctx_menu_send">Invia</string>
     <string name="ctx_menu_send_title">Invia risultato con...</string>
     <string name="ctx_menu_reedit">Ri-modificare</string>
     <string name="ctx_menu_use_result">Utilizzare il risultato</string>
     
-    <string name="toast_copy">\"%s\" copiato negli appunti.</string>
+    <string name="toast_copy">\"%1$s\" copiato negli appunti.</string>
     
 	<string name="menu_swap_input">Swap ingressi</string>
 	<string name="menu_about">Informazioni su</string>
@@ -26,10 +26,10 @@
     
 	<string name="search_hint">Cerca unità</string>
 	<string name="search_no_results">Nessuna unità trovata.</string>
-    <string name="search_title_unit">Unità di corrispondenza \"%s\"</string>
+    <string name="search_title_unit">Unità di corrispondenza \"%1$s\"</string>
     
     <!-- user-facing alerts -->
-	<string name="dialog_loading_units">Caricamento iniziale del database di utilizzo unità ...</string>
+	<string name="dialog_loading_units">Caricamento iniziale del database di utilizzo unità…</string>
 	<string name="err_have_empty">Che cosa si desidera convertire da?</string>
 	<string name="err_no_conform">Impossibile convertire a questa unità.</string>
     <string name="err_no_load_about">Errore: non è riuscito a caricare la pagina Informazioni su.</string>
