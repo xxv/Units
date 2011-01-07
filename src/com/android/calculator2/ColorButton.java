@@ -89,14 +89,14 @@ class ColorButton extends Button implements OnClickListener {
     // XXX doesn't work
     public void adjustFontSizeToFit() {
         final Paint newPaint = new Paint(getPaint());
-        //newPaint.setTextSize(getTextSize());
-//        float newX = mTextX;
-//        for (int i = 0; newX < 10 && i < 10; i++){
-//
-//        	newPaint.setTextSize(newPaint.getTextSize() * 0.7f);
-//        	newX = (getWidth() - newPaint.measureText(getText().toString())) / 2;
-//        }
-        setTextSize(newPaint.getTextSize());
+        float newX = mTextX;
+        for (int i = 0; newX < 10 && i < 10; i++){
+
+        	newPaint.setTextSize(newPaint.getTextSize() * 0.9f);
+        	newX = (getWidth() - newPaint.measureText(getText().toString())) / 2;
+        }
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, newPaint.getTextSize());
+
     }
 
 
@@ -108,8 +108,8 @@ class ColorButton extends Button implements OnClickListener {
     @Override
     public void onSizeChanged(int w, int h, int oldW, int oldH) {
     	measureText();
-//        adjustFontSizeToFit();
-//        measureText();
+        adjustFontSizeToFit();
+        measureText();
     }
 
     private void measureText() {
