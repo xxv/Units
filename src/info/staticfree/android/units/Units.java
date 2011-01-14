@@ -74,7 +74,8 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.TextView.OnEditorActionListener;
 
-// TODO high: add functions from BuiltInFunctions.table
+// TODO high: fix "gallon" bug.
+// TODO high: move category strings to a system that can handle runtime i18n changes. maybe put string refs in the DB?
 // TODO high: show keyboard icon for 2nd tap (can't do this easily, as one can't detect if soft keyboard is shown or not). May need to scrap this idea.
 // TODO high: fix mdpi app icon on Android 1.6
 // TODO high: ldpi smaller icon for about
