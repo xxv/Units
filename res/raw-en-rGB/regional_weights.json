@@ -1,0 +1,48 @@
+{"-- imperial measures used in the GB.  --": 0,
+"-- metric distance, volume, weight, area --": 0,
+"kilometer": 2,
+"km": 1,
+"meter": 2,
+"m": 1,
+"centimeter": 2,
+"cm": 1,
+"millimeter": 2,
+"mm": 1,
+
+"liter": 2,
+"l": 1,
+"centiliter": 2,
+"cl": 1,
+"milliliter": 2,
+"ml": 1,
+
+"kilogram": 2,
+"kg": 1,
+"gram": 2,
+"g": 1,
+
+"km²": 1,
+"hectare": 2,
+"m²": 1,
+
+"euro": 2,
+
+"-- these should be in sync with the localized units in units.dat--": 0,
+"ton": 2,
+"acre": 1,
+
+"-- fluid volume --": 0,
+"teaspoon": 1,
+"tablespoon": 1,
+"fluidounce": 1,
+"cup": 1,
+"pint": 1,
+"quart": 1,
+"gallon": 1,
+
+"horsepower": 1,
+
+"dollar": 1,
+
+"--": 0
+}

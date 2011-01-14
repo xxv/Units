@@ -74,9 +74,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.TextView.OnEditorActionListener;
 
-// TODO high: fix "gallon" bug.
 // TODO high: move category strings to a system that can handle runtime i18n changes. maybe put string refs in the DB?
-// TODO high: show keyboard icon for 2nd tap (can't do this easily, as one can't detect if soft keyboard is shown or not). May need to scrap this idea.
 // TODO high: fix mdpi app icon on Android 1.6
 // TODO high: ldpi smaller icon for about
 // TODO med: auto-ranging for metric units (auto add "kilo-" or "micro-")
@@ -84,6 +82,7 @@ import android.widget.TextView.OnEditorActionListener;
 // TODO med: remove soft keyboard for non-touch devices
 // TODO med: look into performance bug on ADP device. Slows down considerably when backspacing whole entry.
 // TODO med: add date headers for history, to consolidate items ("yesterday", "1 week ago", etc.)
+// TODO med: show keyboard icon for 2nd tap (can't do this easily, as one can't detect if soft keyboard is shown or not). May need to scrap this idea.
 // TODO low: longpress on unit for description (look in unit addition error message for hints)
 // TODO low: Auto-scale text for display (square)
 public class Units extends Activity implements OnClickListener, OnEditorActionListener, OnTouchListener, OnLongClickListener {

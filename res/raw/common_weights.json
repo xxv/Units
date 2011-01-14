@@ -10,6 +10,12 @@
 "millimeter": 2,
 "mm": 1,
 
+"km²": 1,
+"hectare": 2,
+"m²": 1,
+"usacre": 1,
+"bracre": 1,
+
 "liter": 2,
 "l": 1,
 "centiliter": 2,
@@ -22,14 +28,40 @@
 "meter³": 2,
 "m³": 1,
 
+"-- these are more common than other units that also share this prefix --": 0,
+"usgallon": 1,
+"brgallon": 1,
+"uspint": 1,
+"brpint": 1,
+"usfluidounce": 1,
+"brfluidounce": 1,
+"usteaspoon": 1,
+"brteaspoon": 1,
+"ustablespoon": 1,
+"brtablespoon": 1,
+"usfluidounce": 1,
+"brfluidounce": 1,
+"uscup": 1,
+"brcup": 1,
+"uspint": 1,
+"brpint": 1,
+"usquart": 1,
+"brquart": 1,
+"usgallon": 1,
+"brgallon": 1,
+
+
+
 "kilogram": 2,
 "kg": 1,
 "gram": 2,
 "g": 1,
-
-"km²": 1,
-"hectare": 2,
-"m²": 1,
+"uston": 1,
+"brton": 1,
+"uspound": 1,
+"brpound": 1,
+"usounce": 1,
+"brounce": 1,
 
 "-- time units --": 0,
 "week": 2,
@@ -44,7 +76,8 @@
 "-- energy, work, etc. --": 0,
 "kilocalorie": 1,
 "Calorie": 1,
-"horsepower": 1,
+"ushorsepower": 1,
+"brhorsepower": 1,
 
 
 "-- other SI base units --": 0,
@@ -110,20 +143,9 @@
 "foot": 2,
 "inch": 2,
 
-"gallon": 2,
-"quart": 2,
-"pint": 2,
-"cup": 2,
-"fluidounce": 2,
-"teaspoon": 2,
-"tablespoon": 2,
-
-"ton": 2,
 "stone": 1,
 "pound": 2,
 "ounce": 2,
-
-"acre": 2,
 
 "-- speeds --": 0,
 "kph": 2,
@@ -146,10 +168,11 @@
 "-- currency --": 0,
 
 "euro": 1,
-"dollar": 1,
+
 "canadadollar": 1,
 "yen": 1,
 "britainpound": 1,
+"usdollar": 1,
 
 
 "-- functions --": 0,

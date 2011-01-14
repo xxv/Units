@@ -32,7 +32,10 @@
 "pound": 2,
 "ounce": 2,
 
+"dollar": 2,
 "US$": 2,
+
+"horsepower": 1,
 
 "--": 0
 }
