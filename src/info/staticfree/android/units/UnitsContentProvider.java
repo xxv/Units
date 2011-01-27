@@ -2,6 +2,7 @@ package info.staticfree.android.units;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import android.app.SearchManager;
@@ -27,17 +28,18 @@ public class UnitsContentProvider extends ContentProvider {
     	TYPE_CLASSIFICATION_DIR  = "vnd.android.cursor.dir/vnd.info.staticfree.android.units.classification";
 
 	private final static int
-		MATCHER_HISTORY_ENTRY_ITEM = 1,
-		MATCHER_HISTORY_ENTRY_DIR  = 2,
-		MATCHER_UNIT_USAGE_ITEM    = 3,
-		MATCHER_UNIT_USAGE_DIR     = 4,
-		MATCHER_UNIT_USAGE_CONFORM_TOP_DIR = 5,
-		MATCHER_CLASSIFICATION_ITEM = 6,
-		MATCHER_CLASSIFICATION_DIR  = 7,
-		MATCHER_CLASSIFICATION_ITEM_FPRINT = 8,
-		MATCHER_SEARCH_DIR = 9,
-		MATCHER_SEARCH_ITEM = 10,
-		MATCHER_UNIT_USAGE_WITH_CLASSIFICATION = 11;
+		MATCHER_HISTORY_ENTRY_ITEM 				= 1,
+		MATCHER_HISTORY_ENTRY_DIR  				= 2,
+		MATCHER_UNIT_USAGE_ITEM    				= 3,
+		MATCHER_UNIT_USAGE_DIR     				= 4,
+		MATCHER_UNIT_USAGE_CONFORM_TOP_DIR 		= 5,
+		MATCHER_CLASSIFICATION_ITEM 			= 6,
+		MATCHER_CLASSIFICATION_DIR  			= 7,
+		MATCHER_CLASSIFICATION_ITEM_FPRINT 		= 8,
+		MATCHER_SEARCH_DIR 						= 9,
+		MATCHER_SEARCH_ITEM 					= 10,
+		MATCHER_UNIT_USAGE_WITH_CLASSIFICATION 	= 11,
+		MATCHER_UNIT_USAGE_ITEM_FPRINT 			= 12;
 
     public static UriMatcher uriMatcher;
     static {
@@ -50,6 +52,7 @@ public class UnitsContentProvider extends ContentProvider {
 
         uriMatcher.addURI(AUTHORITY, UsageEntry.PATH_CONFORM_TOP, MATCHER_UNIT_USAGE_CONFORM_TOP_DIR);
         uriMatcher.addURI(AUTHORITY, UsageEntry.PATH_WITH_CLASSIFICATION, MATCHER_UNIT_USAGE_WITH_CLASSIFICATION);
+        uriMatcher.addURI(AUTHORITY, UsageEntry.PATH + "/" + UsageEntry.PATH_BY_FPRINT + "/*", MATCHER_UNIT_USAGE_ITEM_FPRINT);
 
         uriMatcher.addURI(AUTHORITY, ClassificationEntry.PATH, MATCHER_CLASSIFICATION_DIR);
         uriMatcher.addURI(AUTHORITY, ClassificationEntry.PATH + "/#", MATCHER_CLASSIFICATION_ITEM);
@@ -117,6 +120,7 @@ public class UnitsContentProvider extends ContentProvider {
 		case MATCHER_UNIT_USAGE_WITH_CLASSIFICATION:
 			return TYPE_UNIT_USAGE_DIR;
 		case MATCHER_UNIT_USAGE_ITEM:
+		case MATCHER_UNIT_USAGE_ITEM_FPRINT:
 			return TYPE_UNIT_USAGE_ITEM;
 
 		case MATCHER_CLASSIFICATION_DIR:
@@ -255,21 +259,18 @@ public class UnitsContentProvider extends ContentProvider {
 
 		case MATCHER_CLASSIFICATION_ITEM_FPRINT:{
 			final SQLiteDatabase db = unitDbHelper.getReadableDatabase();
-	        final SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+			c = db.query(UnitUsageDBHelper.DB_CLASSIFICATION_TABLE, projection,
+					addExtraWhere(selection, ClassificationEntry._FACTOR_FPRINT+"=?"),
+					addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()),
+					null, null, sortOrder);
+		}break;
 
-			qb.setTables(UnitUsageDBHelper.DB_CLASSIFICATION_TABLE);
-            final String fprint = uri.getLastPathSegment();
-            qb.appendWhere(ClassificationEntry._FACTOR_FPRINT + "=?");
-
-            List<String> selectionArgs2;
-            if (selectionArgs == null){
-            	selectionArgs2 = new ArrayList<String>();
-            }else{
-            	selectionArgs2 = Arrays.asList(selectionArgs);
-            }
-            selectionArgs2.add(0, fprint);
-			c = qb.query(db, projection, selection, selectionArgs2.toArray(new String[]{}), null, null, sortOrder);
-
+		case MATCHER_UNIT_USAGE_ITEM_FPRINT:{
+			final SQLiteDatabase db = unitDbHelper.getReadableDatabase();
+			c = db.query(UnitUsageDBHelper.DB_USAGE_TABLE, projection,
+					addExtraWhere(selection, UsageEntry._FACTOR_FPRINT+"=?"),
+					addExtraWhereArgs(selectionArgs, uri.getLastPathSegment()),
+					null, null, sortOrder);
 		}break;
 
 		case MATCHER_SEARCH_DIR:
@@ -391,6 +392,59 @@ public class UnitsContentProvider extends ContentProvider {
 		}
 		getContext().getContentResolver().notifyChange(uri, null);
 		return numDeleted;
+	}
+
+
+    /**
+     * Adds extra where clauses
+     * @param where
+     * @param extraWhere
+     * @return
+     */
+    public static String addExtraWhere(String where, String ... extraWhere){
+            final String extraWhereJoined = "(" + join(Arrays.asList(extraWhere), ") AND (") + ")";
+            return extraWhereJoined + (where != null && where.length() > 0 ? " AND ("+where+")":"");
+    }
+
+    /**
+     * Adds in extra arguments to a where query. You'll have to put in the appropriate
+     * @param whereArgs the original whereArgs passed in from the query. Can be null.
+     * @param extraArgs Extra arguments needed for the query.
+     * @return
+     */
+    public static String[] addExtraWhereArgs(String[] whereArgs, String...extraArgs){
+            final List<String> whereArgs2 = new ArrayList<String>();
+            if (whereArgs != null){
+                    whereArgs2.addAll(Arrays.asList(whereArgs));
+            }
+            whereArgs2.addAll(0, Arrays.asList(extraArgs));
+            return whereArgs2.toArray(new String[]{});
+    }
+
+
+	/**
+	 * Join. Why is Collections missing this?
+	 *
+	 * @param list
+	 * @param delim
+	 * @return
+	 * @see http://stackoverflow.com/questions/63150/whats-the-best-way-to-build-a-string-of-delimited-items-in-java
+	 */
+	public static String join(Collection<String> list, String delim) {
+
+	    final StringBuilder sb = new StringBuilder();
+
+	    String loopDelim = "";
+
+	    for(final String s : list) {
+
+	        sb.append(loopDelim);
+	        sb.append(s);
+
+	        loopDelim = delim;
+	    }
+
+	    return sb.toString();
 	}
 
 }
