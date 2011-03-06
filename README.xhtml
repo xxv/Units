@@ -6,6 +6,10 @@
   <link rel="stylesheet" href="android_style.css" type="text/css" />
   <style type="text/css">
   kbd { border: 1px dotted #ccc; }
+  .note { width: 10em; border: 1px solid #aaa; border-bottom: 3px solid #ccc; border-right: 3px solid #ccc; }
+  .float_left { float: left; margin-right: 1em; margin-bottom: 1em }
+  .float_right { float: right; margin-left: 1em; margin-bottom: 1em }
+  h2 { clear: left}
   </style>
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -28,19 +32,19 @@
         
 
     <h2 class="webonly">Download</h2>
-    <p class="webonly" style="float: right"><a class="FlattrButton" style="display:none;" href="http://staticfree.info/projects/units/"></a></p>
-    <a class="webonly" href="market://search?q=pname:info.staticfree.android.units" style="float: left"><img src="market_qrcode.png" alt="" style="border: none" /></a>
+    <p class="webonly float_right"><a class="FlattrButton" style="display:none;" href="http://staticfree.info/projects/units/"></a></p>
+    <a class="webonly float_left" href="market://search?q=pname:info.staticfree.android.units"><img src="market_qrcode.png" alt="" style="border: none" /></a>
     <p class="webonly">You can <a href="market://search?q=pname:info.staticfree.android.units">download Units from the Android market</a> or directly from <a href="Units.apk">Units.apk</a>. The <a href="#changelog"> changelog </a> is below.</p>
 
 
     <h2>Usage</h2>
         
-<p>Place the value and the unit you want to convert from in the "you have" box (eg. <kbd>4.9inches</kbd>) and the unit you wish to convert to in the "you want" box (eg. <kbd>cm</kbd>). To enter units, either press the "unit" button and select from the list, or tap on the input box a second time and an on-screen keyboard should pop up.</p>
+<div class="note float_left">Anything that is shown within a dotted box can be entered into Units. Eg. <kbd>m³÷hr</kbd></div> <p>Place the value and the unit you want to convert from in the "you have" box (eg. <kbd>4.9inches</kbd>) and the unit you wish to convert to in the "you want" box (eg. <kbd>cm</kbd>). To enter units, either press the "unit" button and select from the list, or tap on the input box a second time and an on-screen keyboard should pop up.</p>
 
 <p>You can enter simple units, such as <kbd>cm</kbd>/<kbd>centimeter</kbd> or complex units, such as <kbd>m^3÷hr</kbd>. You can press the "unit" button to show a list of all the units. If you don't specify a "to" unit, it will provide a definition in base units. For a list of examples, please see below.</p>
         
     <h2>Auto-completion</h2>
-    <a class="webonly" href="extra/sshot02.png" style="float: right"><img src="extra/sshot02.thumb.png" /></a>
+    <a class="webonly float_right" href="extra/sshot02.png"><img src="extra/sshot02.thumb.png" /></a>
 <p>Both "you have" and "you want" will auto-complete with all the known units, sorted by usage. The more you use a given unit, the closer it is to the top of the list. The usage is seeded with initial usage values for common units, including regional weights based on your device's locale.</p>
         
 <p>Units will not start off auto-completing every possible permutation of metric prefix (eg. <kbd>deci</kbd>, <kbd>centi</kbd>, <kbd>milli</kbd>) with unit name (<kbd>meter</kbd>, <kbd>liter</kbd>). Once you make a calculation with a prefix+unit combination, Units will remember it and auto-complete it from then-on.</p>
@@ -50,7 +54,7 @@
 <p>Units will auto-detect instances where you may have forgotten to convert from the reciprocal of a given value. For instance, if you enter <kbd>100mpg</kbd> and ask for <kbd>liter÷100km</kbd>, it will compute it using the reciprocal of the "from" value (<kbd>1÷(100mpg)</kbd>) and provide a warning that it used the reciprocal.</p>
 
     <h2>Calculations</h2>
-    <a class="webonly" href="extra/sshot01.png" style="float: left"><img src="extra/sshot01.thumb.png" /></a>
+    <a class="webonly float_left" href="extra/sshot01.png"><img src="extra/sshot01.thumb.png" /></a>
         
 <p>You can enter complex calculations in both input areas. For example, you can add two conformable units such as, <kbd>2 cm + (4 + (1/2)) in</kbd> or multiply values to higher dimensions, such as, <kbd>3m × 1m × 2cm</kbd> to convert to <kbd>liter</kbd> or <kbd>m^3</kbd>. You can even convert to an arbitrary complex unit, provided that everything conforms properly.</p>
 
@@ -128,8 +132,8 @@
 
 
     <h2>License (GPLv3)</h2>
-    <p>Android Units<br/>
-    ©2010 Steve Pomeroy</p>
+    <p>Android Units<br />
+    ©2010-2011 Steve Pomeroy, contributors (below)</p>
 
     <p>This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -143,5 +147,11 @@
 
     <p>You should have received a copy of the GNU General Public License
     along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
+
+    <h2>Contributors</h2>
+    <p>Units is an ongoing project, with volunteers contributing freely to it. We would like to thank:</p>
+    <ul>
+        <li><a href="mailto:andrejs.gorbunovs@inbox.lv">Andrejs Gorbunovs</a> - Russian translations</li>
+    </ul>
 </body>
 </html>

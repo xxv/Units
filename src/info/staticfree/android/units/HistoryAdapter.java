@@ -22,7 +22,7 @@ public class HistoryAdapter extends CursorAdapter {
 		have_col = c.getColumnIndex(HistoryEntry._HAVE);
 		want_col = c.getColumnIndex(HistoryEntry._WANT);
 		result_col = c.getColumnIndex(HistoryEntry._RESULT);
-		time_col = c.getColumnIndex(HistoryEntry._RESULT);
+		time_col = c.getColumnIndex(HistoryEntry._WHEN);
 
 	}
 

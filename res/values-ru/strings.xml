@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="app_name">Единицы</string>
+<string name="have_hint">Вы </string>
+<string name="want_hint">Вы желаете</string>
+<string name="ctx_menu_send">Отправить</string>
+<string name="ctx_menu_send_title">Отправить результат с...</string>
+<string name="ctx_menu_reedit">Редактировать повторно</string>
+<string name="ctx_menu_use_result">Использовать результат</string>
+<string name="toast_copy">\"%1$s\" скопировано в буфер обмена.</string>
+<string name="menu_swap_input">Сменить ввод</string>
+<string name="menu_about">О программе</string>
+<string name="menu_show_history">Показать историю</string>
+<string name="menu_clear_history">Очистить историю</string>
+<string name="menu_pick_unit">Выбрать единицу</string>
+<string name="menu_unit_details">Характеристики единицы</string>
+<string name="dialog_about_title">О единицах</string>
+<string name="dialog_all_units_title">Все единицы</string>
+<string name="search_hint">Искать единицы</string>
+<string name="search_no_results">Единицы не найдены.</string>
+<string name="search_title_unit">Единицы совпавшие с \"%1$s\"</string>
+<string name="dialog_loading_units">Загрузка начальной базы данных использования единиц...</string>
+<string name="err_have_empty">С чего Вы хотите конвертировать?</string>
+<string name="err_no_conform">Невозможно конвертировать в такую единицу.</string>
+<string name="err_no_load_about">Ошибка: невозможно загрузить страницу информации о программе.</string>
+<string name="unit_entry">единица</string>
+</resources>

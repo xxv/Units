@@ -41,5 +41,6 @@
     	<item name="android:layout_margin">0dip</item>
     	<item name="android:maxLines">1</item>
         <item name="android:textColorHint">#999</item>
+        <item name="android:textColor">#fff</item>
     </style>
 </resources>

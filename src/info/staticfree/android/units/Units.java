@@ -27,6 +27,9 @@ import net.sourceforge.unitsinjava.DefinedFunction;
 import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Function;
 import net.sourceforge.unitsinjava.Value;
+
+import org.jared.commons.ui.WorkspaceView;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -46,6 +49,7 @@ import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.view.ContextMenu;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -67,6 +71,7 @@ import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorTreeAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -95,7 +100,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 	private ListView history;
 	private LinearLayout historyDrawer;
 	private Button historyClose;
-	private LinearLayout numberpad;
+	private WorkspaceView workspace;
 
 	private UnitUsageDBHelper unitUsageDBHelper;
 
@@ -107,7 +112,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     public final static String
     	STATE_RESULT_TEXT = "info.staticfree.android.units.RESULT_TEXT",
-    	STATE_DRAWER_OPENED = "info.staticfree.android.units.DRAWER_OPENED";
+    	STATE_DRAWER_OPENED = "info.staticfree.android.units.DRAWER_OPENED",
+    	STATE_DIALOG_UNIT_CATEGORY = "info.staticfree.android.units.STATE_DIALOG_UNIT_CATEGORY";
 
     private static final int REQUEST_PICK_UNIT = 0;
 
@@ -126,7 +132,9 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         history = ((ListView)findViewById(R.id.history_list));
         historyDrawer = ((LinearLayout)findViewById(R.id.history_drawer));
         historyClose = ((Button)findViewById(R.id.history_close));
-        numberpad = ((LinearLayout)findViewById(R.id.numberpad));
+        workspace = (WorkspaceView)findViewById(R.id.numpad_switcher);
+        //workspace.setTouchSlop(); // XXX scale
+        //workspace.setShowTabIndicator(false);
 
         mHistoryAdapter = new HistoryAdapter(this, managedQuery(HistoryEntry.CONTENT_URI, HistoryAdapter.PROJECTION, null, null, HistoryEntry.SORT_DEFAULT));
         history.setAdapter(mHistoryAdapter);
@@ -148,16 +156,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
 		// Go through the numberpad and add all the onClick listeners.
 		// Make sure to update if the layout changes.
-		final int rows = numberpad.getChildCount();
-		for (int row = 0; row < rows; row++){
-			final ViewGroup v = (ViewGroup)numberpad.getChildAt(row);
-			final int columns = v.getChildCount();
-			for (int column = 0; column < columns; column++){
-				final View button = v.getChildAt(column);
-				button.setOnClickListener(buttonListener);
-				button.setOnLongClickListener(buttonListener);
-			}
-		}
+		setGridChildrenListener(((LinearLayout)findViewById(R.id.numberpad)), buttonListener, buttonListener);
+		setGridChildrenListener((ViewGroup) findViewById(R.id.numberpad2), buttonListener, buttonListener);
 
 		final View backspace = findViewById(R.id.backspace);
 		backspace.setOnClickListener(buttonListener);
@@ -188,6 +188,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		if (savedInstanceState != null){
 			resultView.setText(savedInstanceState.getCharSequence(STATE_RESULT_TEXT));
 			setHistoryVisible(savedInstanceState.getBoolean(STATE_DRAWER_OPENED, false), false);
+			mDialogUnitCategoryUnit = savedInstanceState.getString(STATE_DIALOG_UNIT_CATEGORY);
 		}
 
 		final Intent intent = getIntent();
@@ -205,12 +206,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			startActivityForResult(pickUnit, REQUEST_PICK_UNIT);
 
 		}else if(ACTION_USE_UNIT.equals(action)){
-			final String[] projection = {UsageEntry._ID, UsageEntry._UNIT};
-			final Cursor c = getContentResolver().query(intent.getData(), projection, null, null, null);
-			if (c.moveToFirst()){
-				sendTextAsSoftKeyboard(c.getString(c.getColumnIndex(UsageEntry._UNIT)) + " ");
-			}
-			c.close();
+			sendUnitAsSoftKeyboard(intent.getData());
 		}
     }
 
@@ -242,6 +238,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	super.onSaveInstanceState(outState);
     	outState.putCharSequence(STATE_RESULT_TEXT, resultView.getText());
     	outState.putBoolean(STATE_DRAWER_OPENED, isHistoryVisible());
+    	outState.putString(STATE_DIALOG_UNIT_CATEGORY, mDialogUnitCategoryUnit);
     }
 
     @Override
@@ -259,6 +256,26 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 	    		}
 	    	}break;
     	}
+    }
+
+    /**
+     * @param vg Given a view group with view groups inside it, set all children to have the same onClickListeners.
+     * @param onClickListener
+     * @param onLongClickListener
+     */
+    private void setGridChildrenListener(ViewGroup vg, OnClickListener onClickListener, OnLongClickListener onLongClickListener){
+		// Go through the children and add all the onClick listeners.
+		// Make sure to update if the layout changes.
+		final int rows = vg.getChildCount();
+		for (int row = 0; row < rows; row++){
+			final ViewGroup v = (ViewGroup)vg.getChildAt(row);
+			final int columns = v.getChildCount();
+			for (int column = 0; column < columns; column++){
+				final View button = v.getChildAt(column);
+				button.setOnClickListener(onClickListener);
+				button.setOnLongClickListener(onLongClickListener);
+			}
+		}
     }
 
     private boolean isHistoryVisible(){
@@ -659,6 +676,22 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	dispatchKeyEvent(new KeyEvent(SystemClock.uptimeMillis(), text, Units.class.hashCode(), KeyEvent.FLAG_SOFT_KEYBOARD));
     }
 
+    private void sendTextAsSoftKeyboard(String text, boolean moveToDefault){
+    	dispatchKeyEvent(new KeyEvent(SystemClock.uptimeMillis(), text, Units.class.hashCode(), KeyEvent.FLAG_SOFT_KEYBOARD));
+    	if (moveToDefault){
+    		workspace.moveToDefaultScreen();
+    	}
+    }
+
+    private void sendUnitAsSoftKeyboard(Uri unit){
+		final String[] projection = {UsageEntry._ID, UsageEntry._UNIT};
+		final Cursor c = getContentResolver().query(unit, projection, null, null, null);
+		if (c.moveToFirst()){
+			sendTextAsSoftKeyboard(c.getString(c.getColumnIndex(UsageEntry._UNIT)) + " ");
+		}
+		c.close();
+    }
+
     private final OnChildClickListener allUnitChildClickListener = new OnChildClickListener() {
 
 		public boolean onChildClick(ExpandableListView parent, View v,
@@ -669,10 +702,20 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		}
 	};
 
+	private final DialogInterface.OnClickListener dialogUnitCategoryOnClickListener = new DialogInterface.OnClickListener() {
+
+		public void onClick(DialogInterface dialog, int which) {
+
+			sendUnitAsSoftKeyboard(ContentUris.withAppendedId(UsageEntry.CONTENT_URI, dialogUnitCategoryList.getItemId(which)));
+			workspace.moveToDefaultScreen();
+		}
+	};
+
 	private static final int
 		DIALOG_ABOUT = 0,
 		DIALOG_ALL_UNITS = 1,
-		DIALOG_LOADING_UNITS = 2;
+		DIALOG_LOADING_UNITS = 2,
+		DIALOG_UNIT_CATEGORY = 3;
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id){
@@ -721,6 +764,19 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 			return b.create();
 		}
 
+		case DIALOG_UNIT_CATEGORY:{
+			final Builder b = new Builder(new ContextThemeWrapper(this, android.R.style.Theme_Black));
+			final String[] from = {UsageEntry._UNIT};
+			final int[] to = {android.R.id.text1};
+			b.setTitle("all units");
+			final String[] projection = {UsageEntry._ID, UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};
+			final Cursor c = managedQuery(UsageEntry.CONTENT_URI, projection, null, null, UnitUsageDBHelper.USAGE_SORT);
+			dialogUnitCategoryList = new SimpleCursorAdapter(this, android.R.layout.select_dialog_item, c, from, to);
+			b.setAdapter(dialogUnitCategoryList, dialogUnitCategoryOnClickListener);
+
+			return b.create();
+		}
+
 		case DIALOG_LOADING_UNITS:{
 			final ProgressDialog pd = new ProgressDialog(this);
 			pd.setIndeterminate(true);
@@ -732,6 +788,28 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 		default:
 			throw new IllegalArgumentException("Unknown dialog ID:" +id);
 		}
+	}
+
+	private String mDialogUnitCategoryUnit = "m";
+	private SimpleCursorAdapter dialogUnitCategoryList;
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		switch (id){
+		case DIALOG_UNIT_CATEGORY:{
+			dialog.setTitle(mDialogUnitCategoryUnit);
+
+			final String[] projection = {UsageEntry._ID, UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};
+			final Cursor c = managedQuery(UsageEntry.getEntriesMatchingFprint(UnitUsageDBHelper.getFingerprint(mDialogUnitCategoryUnit)),
+					projection, null, null, UnitUsageDBHelper.USAGE_SORT);
+			dialogUnitCategoryList.changeCursor(c);
+			final ListView lv = ((AlertDialog)dialog).getListView();
+			lv.setSelectionFromTop(0, 0);
+
+		}break;
+		default:
+			super.onPrepareDialog(id, dialog);
+		}
+
 	}
 
 	private void swapInputs(EditText focused, EditText unfocused){
@@ -777,7 +855,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 	private final ButtonEventListener buttonListener = new ButtonEventListener();
 	private class ButtonEventListener implements OnClickListener, OnLongClickListener {
 
-
 		public void onClick(View v) {
 			final View currentFocus = getCurrentFocus();
 
@@ -805,10 +882,56 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 				}
 			}break;
 
-			default:
-				sendTextAsSoftKeyboard(((Button)v).getText().toString());
-			}
+			case R.id.length:
+				mDialogUnitCategoryUnit = "m";
+				showDialog(DIALOG_UNIT_CATEGORY);
+				break;
+			case R.id.weight:
+				mDialogUnitCategoryUnit = "g";
+				showDialog(DIALOG_UNIT_CATEGORY);
+				break;
+			case R.id.time:
+				mDialogUnitCategoryUnit = "hr";
+				showDialog(DIALOG_UNIT_CATEGORY);
+				break;
 
+			// functions
+			case R.id.sin:
+			case R.id.cos:
+			case R.id.tan:
+			case R.id.atan:
+			case R.id.log:
+			case R.id.ln:
+				sendTextAsSoftKeyboard(((Button)v).getText().toString() + "( ", true);
+				break;
+
+			// constants
+			case R.id.pi:
+			case R.id.light:
+			case R.id.energy:
+				sendTextAsSoftKeyboard(((Button)v).getText().toString() + " ", true);
+				break;
+
+			case R.id.square:
+				sendTextAsSoftKeyboard("² ", true);
+				break;
+
+			case R.id.cube:
+				sendTextAsSoftKeyboard("³ ", true);
+				break;
+
+			case R.id.milli:
+			case R.id.kilo:
+			case R.id.mega:{
+				String prefix = ((Button)v).getText().toString();
+				prefix = prefix.substring(0, prefix.length() - 1);
+				sendTextAsSoftKeyboard(prefix, false);
+			}break;
+
+
+			default:
+				sendTextAsSoftKeyboard(((Button)v).getText().toString(), true);
+			}
 		}
 
 		public boolean onLongClick(View v) {

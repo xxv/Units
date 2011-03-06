@@ -33,7 +33,32 @@
     <string name="err_have_empty">What do you want to convert from?</string>
     <string name="err_no_conform">Could not convert to this unit.</string>
     <string name="err_no_load_about">Error: could not load about page.</string>
+    <string name="reciprocal_conversion">reciprocal conversion</string>
+
     
-    <!-- calculator buttons -->
+    <!-- unit entry button -->
     <string name="unit_entry">unit</string>
+    <!-- These buttons are for commonly-used categories -->
+    <string name="keypad_length">length…</string>
+    <string name="keypad_weight">weight…</string>
+    <string name="keypad_time">time…</string>
+    
+    <!-- functions -->
+    <string name="keypad_square" translatable="false">◌²</string>
+    <string name="keypad_cube" translatable="false">◌³</string>
+    
+    <!-- unit prefixes -->
+    <string name="keypad_prefix_milli" translatable="false">milli-</string>
+    <string name="keypad_prefix_kilo" translatable="false">kilo-</string>
+    <string name="keypad_prefix_mega" translatable="false">mega-</string>
+    
+    <!-- constants -->
+    <string name="const_light" translatable="false">light</string>
+    <string name="const_energy" translatable="false">energy</string>
+    <!-- Default currency. This should be the default for the given locale. -->
+    <string name="currency">$</string>
+    
+    <string name="log" translatable="false">log</string>
+    <string name="atan" translatable="false">atan</string>
+
 </resources>

@@ -14,7 +14,7 @@
 			
 		<TextView android:id="@+id/reciprocal_notice"
 			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:text="reciprocal conversion" 
+			android:text="@string/reciprocal_conversion" 
 			android:visibility="gone"
 			/>
 	
@@ -51,7 +51,11 @@
                 android:layout_weight="3"
                 />
 		</LinearLayout>
-				
+
+		<org.jared.commons.ui.WorkspaceView
+		android:id="@+id/numpad_switcher"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
 <!-- 
 /*
  * Copyright (C) 2008, The Android Open Source Project
@@ -71,7 +75,6 @@
 -->
 			
 			<LinearLayout android:id="@+id/numberpad"
-			  xmlns:android="http://schemas.android.com/apk/res/android"
 			  android:layout_width="fill_parent"
 			  android:orientation="vertical"
 			  android:layout_weight="1"
@@ -203,8 +206,11 @@
                 style="@style/button_style"
                 />
         </LinearLayout>
-</LinearLayout>
+</LinearLayout><!-- numberpad  -->
 
+	<include layout="@layout/numpad_2" />
+
+	</org.jared.commons.ui.WorkspaceView>
 			
 	</LinearLayout>
 	
