@@ -40,12 +40,12 @@
     <string name="unit_entry">unit</string>
     <!-- These buttons are for commonly-used categories -->
     <string name="keypad_length">length…</string>
-    <string name="keypad_weight">weight…</string>
+    <string name="keypad_mass">mass…</string>
     <string name="keypad_time">time…</string>
     
     <!-- functions -->
-    <string name="keypad_square" translatable="false">◌²</string>
-    <string name="keypad_cube" translatable="false">◌³</string>
+    <string name="keypad_square" translatable="false">x²</string>
+    <string name="keypad_cube" translatable="false">x³</string>
     
     <!-- unit prefixes -->
     <string name="keypad_prefix_milli" translatable="false">milli-</string>

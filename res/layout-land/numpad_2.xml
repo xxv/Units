@@ -22,9 +22,8 @@
                 />
             <com.android.calculator2.ColorButton
                 android:id="@+id/weight"
-                android:text="@string/keypad_weight"
                 style="@style/button_style"
-                />
+                android:text="@string/keypad_mass"/>
             <com.android.calculator2.ColorButton
                 android:id="@+id/time"
                 android:text="@string/keypad_time"

@@ -45,7 +45,7 @@
         
     <h2>Auto-completion</h2>
     <a class="webonly float_right" href="extra/sshot02.png"><img src="extra/sshot02.thumb.png" /></a>
-<p>Both "you have" and "you want" will auto-complete with all the known units, sorted by usage. The more you use a given unit, the closer it is to the top of the list. The usage is seeded with initial usage values for common units, including regional weights based on your device's locale.</p>
+<p>Both "you have" and "you want" will auto-complete with all the known units, sorted by usage. The more you use a given unit, the closer it is to the top of the list. The usage is seeded with initial usage amounts for common units, including some regional adjustments based on your device's locale.</p>
         
 <p>Units will not start off auto-completing every possible permutation of metric prefix (eg. <kbd>deci</kbd>, <kbd>centi</kbd>, <kbd>milli</kbd>) with unit name (<kbd>meter</kbd>, <kbd>liter</kbd>). Once you make a calculation with a prefix+unit combination, Units will remember it and auto-complete it from then-on.</p>
 
@@ -63,11 +63,11 @@
 <dl>
     <dt>US→EU height conversion</dt>
     <dd><kbd>5ft + 6in</kbd> = <strong>167.64</strong> <kbd>cm</kbd></dd>
-    <dt>UK→US weight conversion</dt>
+    <dt>UK→US mass conversion</dt>
     <dd><kbd>13 stone</kbd> = <strong>182</strong> <kbd>lbs</kbd></dd>
     <dt>Volume conversion</dt>
     <dd><kbd>10cm×5cm ×3cm</kbd> = <strong>0.15</strong> <kbd>liter</kbd></dd>
-    <dt>Kitchen: volume to weight</dt>
+    <dt>Kitchen: volume to mass</dt>
     <dd><kbd>1cup flour_sifted</kbd> = <strong>113.398094</strong> <kbd>g</kbd></dd>
     <dt>Driving: time to distance</dt>
     <dd><kbd>100kph ×5minute</kbd> = <strong>5.1780934</strong> <kbd>mile</kbd></dd>
@@ -81,9 +81,12 @@
     <dd><kbd>1cup ÷0.5gallon</kbd> = <strong>12.5</strong> <kbd>percent</kbd></dd>
 </dl>
 
+<p>In comparison (per. 8floz), Minute Maid® Lemonade has 3% juice and 27g sugar.Coke has 46g sugar per. 8floz.</p>
+
 <h3>Fun conversions</h3>
+<p>As you can see above, Units knows a number of units that are useful in the kitchen. Most are for volume↔mass conversion (which can be found under "density"), such as <kbd>flour_scooped</kbd>, <kbd>sugar</kbd>, and <kbd>butter</kbd>. It also has a few known masses, such as <kbd>eggs</kbd>, <kbd>stickbutter</kbd> and <kbd>venusmass</kbd>.</p>
 <dl>
-    <dt>Your weight in eggs</dt>
+    <dt>Your mass in eggs</dt>
     <dd><kbd>78kg</kbd> = <strong>1560</strong> <kbd>eggs</kbd></dd>
     <dt>Time to walk across the U.S. (without sleeping)</dt>
     <dd><kbd>2600mile ÷3mph</kbd> = <strong>5.15873</strong> <kbd>week</kbd></dd>
