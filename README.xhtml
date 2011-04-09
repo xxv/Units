@@ -5,10 +5,19 @@
   <title>Android Units</title>
   <link rel="stylesheet" href="android_style.css" type="text/css" />
   <style type="text/css">
+  body {
+    font-family: Sans;
+    }
   kbd { border: 1px dotted #ccc; }
-  .note { width: 10em; border: 1px solid #aaa; border-bottom: 3px solid #ccc; border-right: 3px solid #ccc; }
+  .note { width: 10em; border: 1px solid #aaa; padding: 0.5em;
+  -moz-box-shadow: 0px 3px 6px #aaa;
+  -webkit-box-shadow: 0px 3px 6px #aaa;
+
+ }
+  .note h2, .note h3 { margin: -0.5em -0.5em 0.5em -0.5em; font-size: 1.1em; font-weight: normal; background-color: #aaa; padding: 0.25em; text-align: center; }
   .float_left { float: left; margin-right: 1em; margin-bottom: 1em }
   .float_right { float: right; margin-left: 1em; margin-bottom: 1em }
+  .flattr iframe { border: none; }
   h2 { clear: left}
   </style>
 <script type="text/javascript">
@@ -32,14 +41,13 @@
         
 
     <h2 class="webonly">Download</h2>
-    <p class="webonly float_right"><a class="FlattrButton" style="display:none;" href="http://staticfree.info/projects/units/"></a></p>
     <a class="webonly float_left" href="market://search?q=pname:info.staticfree.android.units"><img src="market_qrcode.png" alt="" style="border: none" /></a>
     <p class="webonly">You can <a href="market://search?q=pname:info.staticfree.android.units">download Units from the Android market</a> or directly from <a href="Units.apk">Units.apk</a>. The <a href="#changelog"> changelog </a> is below.</p>
 
 
     <h2>Usage</h2>
         
-<div class="note float_left">Anything that is shown within a dotted box can be entered into Units. Eg. <kbd>m³÷hr</kbd></div> <p>Place the value and the unit you want to convert from in the "you have" box (eg. <kbd>4.9inches</kbd>) and the unit you wish to convert to in the "you want" box (eg. <kbd>cm</kbd>). To enter units, either press the "unit" button and select from the list, or tap on the input box a second time and an on-screen keyboard should pop up.</p>
+<div class="note float_left"><h3>key</h3>Anything that is shown within a dotted box can be entered into Units. Eg. <kbd>m³÷hr</kbd></div> <p>Place the value and the unit you want to convert from in the "you have" box (eg. <kbd>4.9inches</kbd>) and the unit you wish to convert to in the "you want" box (eg. <kbd>cm</kbd>). To enter units, either press the "unit" button and select from the list, or tap on the input box a second time and an on-screen keyboard should pop up.</p>
 
 <p>You can enter simple units, such as <kbd>cm</kbd>/<kbd>centimeter</kbd> or complex units, such as <kbd>m^3÷hr</kbd>. You can press the "unit" button to show a list of all the units. If you don't specify a "to" unit, it will provide a definition in base units. For a list of examples, please see below.</p>
         
@@ -120,6 +128,21 @@
         <li>12 July, 2010: 0.3 - First version to hit the Market</li>
     </ul>
 
+    <p class="webonly float_right note" style="text-align: center">
+        <h3>Support Android Units</h3>
+    <div class="flattr">
+    <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;" href="http://staticfree.info/projects/units/"></a>
+    <noscript><a href="http://flattr.com/thing/86174/Android-Units" target="_blank">
+    <img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a></noscript>
+    </div>
+    <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+        <input type="hidden" name="cmd" value="_s-xclick" />
+        <input type="hidden" name="hosted_button_id" value="J7MML4R9ZQ3XG" />
+        <input type="image" src="https://www.paypalobjects.com/WEBSCR-640-20110401-1/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="Donate via PayPal" />
+        <img alt="" border="0" src="https://www.paypalobjects.com/WEBSCR-640-20110401-1/en_US/i/scr/pixel.gif" width="1" height="1" />
+    </form>
+
+</p>
 
     <h2>This is free software / open source</h2>
         
