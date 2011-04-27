@@ -33,7 +33,9 @@
 
 package net.sourceforge.unitsinjava;
 
+import java.text.DecimalFormat;
 import java.util.Vector;
+
 
 
 
@@ -72,6 +74,8 @@ import java.util.Vector;
       return s.length();
     }
 
+  private static DecimalFormat df = new DecimalFormat("#.############");
+  private static DecimalFormat df_exp = new DecimalFormat("#.############E0");
 
   //=====================================================================
   //  shownumber
@@ -84,10 +88,11 @@ import java.util.Vector;
    */
   public static String shownumber(double d)
     {
-      if (d==(int)d)
-        return Integer.toString((int)d);
-
-      return Double.toString(d);
+	  if (d < 0.0001 || d > 1000000){
+		return df_exp.format(d);  
+	  }else{
+		  return df.format(d);
+	  }
     }
 
   //=====================================================================
