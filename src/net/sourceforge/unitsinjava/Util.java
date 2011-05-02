@@ -34,7 +34,8 @@
 package net.sourceforge.unitsinjava;
 
 import java.text.DecimalFormat;
-import java.util.Vector;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 
 
@@ -74,8 +75,16 @@ import java.util.Vector;
       return s.length();
     }
 
-  private static DecimalFormat df = new DecimalFormat("#.############");
-  private static DecimalFormat df_exp = new DecimalFormat("#.############E0");
+  
+  private static NumberFormat df = NumberFormat.getInstance(Locale.US);
+  private static NumberFormat df_exp = NumberFormat.getInstance(Locale.US);
+  
+  static {
+	  if (df instanceof DecimalFormat){
+		  ((DecimalFormat) df).applyPattern("#.############");
+		  ((DecimalFormat) df_exp).applyPattern("#.############E0");
+	  }
+  }
 
   //=====================================================================
   //  shownumber
@@ -88,7 +97,10 @@ import java.util.Vector;
    */
   public static String shownumber(double d)
     {
-	  if (d < 0.0001 || d > 1000000){
+	  if ((d > 0 && d < 1E-3) 
+		|| (d < 0 && d > -1E-3) 
+		|| d > 1E6 
+		|| d < -1E6){
 		return df_exp.format(d);  
 	  }else{
 		  return df.format(d);
