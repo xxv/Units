@@ -50,7 +50,7 @@
     <!-- unit prefixes -->
     <string name="keypad_prefix_milli" translatable="false">milli-</string>
     <string name="keypad_prefix_kilo" translatable="false">kilo-</string>
-    <string name="keypad_prefix_mega" translatable="false">mega-</string>
+    <string translatable="false" name="keypad_prefix_centi">centi-</string>
     
     <!-- constants -->
     <string name="const_light" translatable="false">light</string>

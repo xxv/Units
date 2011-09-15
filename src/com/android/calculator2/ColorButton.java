@@ -17,17 +17,18 @@
 package com.android.calculator2;
 
 import info.staticfree.android.units.R;
+import info.staticfree.android.units.Units;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
@@ -35,21 +36,30 @@ import android.widget.Button;
  * Button with click-animation effect.
  */
 class ColorButton extends Button implements OnClickListener {
-    int CLICK_FEEDBACK_COLOR;
-    static final int CLICK_FEEDBACK_INTERVAL = 10;
-    static final int CLICK_FEEDBACK_DURATION = 350;
+    private int CLICK_FEEDBACK_COLOR;
+    private static final int CLICK_FEEDBACK_INTERVAL = 10;
+    private static final int CLICK_FEEDBACK_DURATION = 350;
 
-    float mTextX;
-    float mTextY;
-    long mAnimStart;
-    OnClickListener mListener;
-    Paint mFeedbackPaint;
-    private final Context mContext;
+    private float mTextX;
+    private float mTextY;
+    private long mAnimStart;
+    private OnClickListener mListener;
+    private Paint mFeedbackPaint;
+
+    private Drawable mEllipsis;
+    private final String mLongpressText;
+    private Paint mLongpressTextPaint;
 
     public ColorButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext = context;
+
         init();
+        if (attrs.getAttributeBooleanValue(Units.XMLNS, "longpressEllipsis", false)){
+        	final Resources res = getResources();
+        	mEllipsis = res.getDrawable(R.drawable.button_ellipsis);
+        }
+
+        mLongpressText = attrs.getAttributeValue(Units.XMLNS, "longpressText");
     }
 
     private void init() {
@@ -57,28 +67,23 @@ class ColorButton extends Button implements OnClickListener {
 
         CLICK_FEEDBACK_COLOR = res.getColor(R.color.magic_flame);
         mFeedbackPaint = new Paint();
-        mFeedbackPaint.setStyle(Style.STROKE);
+        mFeedbackPaint.setStyle(Style.FILL_AND_STROKE);
         mFeedbackPaint.setStrokeWidth(2);
-        getPaint().setColor(res.getColor(R.color.button_text));
+        final Paint textPaint = getPaint();
+        textPaint.setColor(res.getColor(R.color.button_text));
+        mLongpressTextPaint = new Paint(textPaint);
+        mLongpressTextPaint.setAlpha(127);
 
         mAnimStart = -1;
-    }
 
-    private static final int HVGA_WIDTH_PIXELS  = 320;
+        //
+
+    }
 
     /**
-     * The font sizes in the layout files are specified for a HVGA display.
-     * Adjust the font sizes accordingly if we are running on a different
-     * display.
+     * Resizes the text so that it is as big as possible, but still fits comfortably on the button.
+     * This allows arbitrary text to be placed on the buttons.
      */
-    public void adjustFontSize() {
-        final float fontPixelSize = getTextSize();
-        final Display display = ((WindowManager)(mContext.getSystemService(Context.WINDOW_SERVICE))).getDefaultDisplay();
-        final int h = Math.min(display.getWidth(), display.getHeight());
-        final float ratio = (float)h/HVGA_WIDTH_PIXELS;
-        setTextSize(TypedValue.COMPLEX_UNIT_PX, fontPixelSize * ratio);
-    }
-
     public void adjustFontSizeToFit() {
         final Paint newPaint = new Paint(getPaint());
         float newX = mTextX;
@@ -87,6 +92,7 @@ class ColorButton extends Button implements OnClickListener {
         	newPaint.setTextSize(newPaint.getTextSize() * 0.9f);
         	newX = (getWidth() - newPaint.measureText(getText().toString())) / 2;
         }
+
         setTextSize(TypedValue.COMPLEX_UNIT_PX, newPaint.getTextSize());
     }
 
@@ -103,10 +109,18 @@ class ColorButton extends Button implements OnClickListener {
         measureText();
     }
 
+
     private void measureText() {
         final Paint paint = getPaint();
         mTextX = (getWidth() - paint.measureText(getText().toString())) / 2;
         mTextY = (getHeight() - paint.ascent() - paint.descent()) / 2;
+
+        if (mLongpressText != null){
+        	mLongpressTextPaint.measureText(mLongpressText);
+        	final float textSize = (getHeight() - paint.getTextSize()) / 2 - 4;
+        	mLongpressTextPaint.setTextAlign(Align.RIGHT);
+            mLongpressTextPaint.setTextSize(textSize);
+        }
     }
 
     @Override
@@ -114,16 +128,24 @@ class ColorButton extends Button implements OnClickListener {
         measureText();
     }
 
+    private static final int MAX_ALPHA = 64;
     private void drawMagicFlame(int duration, Canvas canvas) {
-        final int alpha = 255 - 255 * duration / CLICK_FEEDBACK_DURATION;
+        final int alpha = MAX_ALPHA - MAX_ALPHA * duration / CLICK_FEEDBACK_DURATION;
         final int color = CLICK_FEEDBACK_COLOR | (alpha << 24);
 
         mFeedbackPaint.setColor(color);
         canvas.drawRect(1, 1, getWidth() - 1, getHeight() - 1, mFeedbackPaint);
     }
 
+    private static final int PADDING = 10;
     @Override
     public void onDraw(Canvas canvas) {
+
+    	if (mEllipsis != null){
+	        mEllipsis.setBounds(canvas.getClipBounds());
+	        mEllipsis.draw(canvas);
+    	}
+
         if (mAnimStart != -1) {
             final int animDuration = (int) (System.currentTimeMillis() - mAnimStart);
 
@@ -139,6 +161,11 @@ class ColorButton extends Button implements OnClickListener {
 
         final CharSequence text = getText();
         canvas.drawText(text, 0, text.length(), mTextX, mTextY, getPaint());
+
+        if (mLongpressText != null){
+
+        	canvas.drawText(mLongpressText, getWidth() - PADDING, -mLongpressTextPaint.ascent() + PADDING, mLongpressTextPaint);
+        }
     }
 
     public void animateClickFeedback() {
@@ -155,7 +182,10 @@ class ColorButton extends Button implements OnClickListener {
                 animateClickFeedback();
                 break;
             case MotionEvent.ACTION_DOWN:
+            	setPressed(true); // not sure why this is needed here
+
             case MotionEvent.ACTION_CANCEL:
+
                 invalidate();
                 break;
         }

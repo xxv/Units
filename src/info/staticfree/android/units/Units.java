@@ -22,6 +22,7 @@ import info.staticfree.android.units.ValueGui.ReciprocalException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 
 import net.sourceforge.unitsinjava.DefinedFunction;
 import net.sourceforge.unitsinjava.EvalError;
@@ -32,10 +33,10 @@ import org.jared.commons.ui.WorkspaceView;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
-import android.app.AlertDialog.Builder;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -49,35 +50,35 @@ import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorTreeAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 // TODO high: move category strings to a system that can handle runtime i18n changes. maybe put string refs in the DB?
 // TODO high: fix mdpi app icon on Android 1.6
@@ -106,6 +107,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 	private UnitUsageDBHelper unitUsageDBHelper;
 
     private HistoryAdapter mHistoryAdapter;
+
+    public final static String XMLNS="http://staticfree.info/ns/android/units";
 
     public final static String
     	ACTION_USE_UNIT = "info.staticfree.android.units.ACTION_USE_UNIT",
@@ -391,34 +394,50 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     	return text;
     }
 
-    // TODO there's got to be a translate function that's more efficient than this...
+    public static HashMap<Character, String> UNICODE_TRANS = new HashMap<Character, String>();
+    static {
+    	UNICODE_TRANS.put('÷', "/");
+    	UNICODE_TRANS.put('×', "*");
+    	UNICODE_TRANS.put('÷', "/");
+    	UNICODE_TRANS.put('×', "*");
+    	UNICODE_TRANS.put('²', "^2");
+    	UNICODE_TRANS.put('³', "^3");
+    	UNICODE_TRANS.put('⁴', "^4");
+    	UNICODE_TRANS.put('−', "-");
+    	UNICODE_TRANS.put('µ', "micro");
+    	UNICODE_TRANS.put('π', "pi");
+    	UNICODE_TRANS.put('Π', "pi");
+    	UNICODE_TRANS.put('€', "euro");
+    	UNICODE_TRANS.put('¥', "japanyen");
+    	UNICODE_TRANS.put('₤', "greatbritainpound");
+    	UNICODE_TRANS.put('√', "sqrt");
+    	UNICODE_TRANS.put('∛', "cuberoot");
+    	UNICODE_TRANS.put('½', "1|2");
+    	UNICODE_TRANS.put('⅓', "1|3");
+    	UNICODE_TRANS.put('⅔', "2|3");
+    	UNICODE_TRANS.put('¼', "1|4");
+    	UNICODE_TRANS.put('⅕', "1|5");
+    	UNICODE_TRANS.put('⅖', "2|5");
+    	UNICODE_TRANS.put('⅗', "3|5");
+    	UNICODE_TRANS.put('⅙', "1|6");
+    	UNICODE_TRANS.put('⅛', "1|8");
+    	UNICODE_TRANS.put('⅜', "3|8");
+    	UNICODE_TRANS.put('⅝', "5|8");
+    }
+
     public static String unicodeToAscii(String unicodeInput){
-    	return unicodeInput.
-    	replaceAll("÷", "/").
-    	replaceAll("×", "*").
-    	replaceAll("²", "^2").
-    	replaceAll("³", "^3").
-    	replaceAll("⁴", "^4").
-    	replaceAll("−", "-").
-    	replaceAll("µ", "micro").
-    	replaceAll("π", "pi").
-    	replaceAll("Π", "pi").
-    	replaceAll("€", "euro").
-    	replaceAll("¥", "japanyen").
-    	replaceAll("₤", "greatbritainpound").
-    	replaceAll("√", "sqrt(").
-    	replaceAll("∛", "cuberoot(").
-    	replaceAll("½", "(1/2)").
-    	replaceAll("⅓", "(1/3)").
-    	replaceAll("⅔", "(2/3)").
-    	replaceAll("¼", "(1/4)").
-    	replaceAll("⅕", "(1/5)").
-    	replaceAll("⅖", "(2/5)").
-    	replaceAll("⅗", "(3/5)").
-    	replaceAll("⅙", "(1/6)").
-    	replaceAll("⅛", "(1/8)").
-    	replaceAll("⅜", "(3/8)").
-    	replaceAll("⅝", "(5/8)");
+    	final StringBuilder sb = new StringBuilder();
+    	final int len = unicodeInput.length();
+    	for (int i = 0; i < len; i++){
+    		final char c = unicodeInput.charAt(i);
+    		final String sub = UNICODE_TRANS.get(c);
+    		if (sub != null){
+    			sb.append(sub);
+    		}else{
+    			sb.append(c);
+    		}
+    	}
+    	return sb.toString();
     }
 
     // TODO filter error messages and output translate to unicode from engine. error msgs and Inifinity → ∞
@@ -857,7 +876,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 	private class ButtonEventListener implements OnClickListener, OnLongClickListener {
 
 		public void onClick(View v) {
-			final View currentFocus = getCurrentFocus();
 
 			switch (v.getId()){
 			case R.id.backspace:{
@@ -871,16 +889,18 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 				break;
 
 			case R.id.unit_entry:{
+				final View currentFocus = getCurrentFocus();
 				if (currentFocus instanceof MultiAutoCompleteTextView){
 					// 2000 is just a magic number that is less than the total number of units,
 					// but greater than the number of possibly conforming units. Discovered empirically.
 					if (((MultiAutoCompleteTextView) currentFocus).getAdapter().getCount() > 2000){
-						showDialog(DIALOG_ALL_UNITS);
+						onSearchRequested();
 					}else{
 						((MultiAutoCompleteTextView) currentFocus).setError(null);
 						((MultiAutoCompleteTextView)currentFocus).showDropDown();
 					}
 				}
+
 			}break;
 
 			case R.id.length:
@@ -923,7 +943,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
 			case R.id.milli:
 			case R.id.kilo:
-			case R.id.mega:{
+			case R.id.centi:{
 				String prefix = ((Button)v).getText().toString();
 				prefix = prefix.substring(0, prefix.length() - 1);
 				sendTextAsSoftKeyboard(prefix, false);
@@ -937,6 +957,18 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
 		public boolean onLongClick(View v) {
 			switch (v.getId()){
+			case R.id.unit_entry:{
+				showDialog(DIALOG_ALL_UNITS);
+				return true;
+			}
+				case R.id.power:{
+					sendTextAsSoftKeyboard("E");
+					return true;
+				}
+				case R.id.div:{
+					sendTextAsSoftKeyboard("|");
+					return true;
+				}
 				case R.id.backspace:{
 					final View currentFocus = getCurrentFocus();
 					if (currentFocus instanceof EditText){

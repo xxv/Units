@@ -514,6 +514,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
 	private static final Pattern UNIT_REGEX = Pattern.compile("([a-zA-Z]\\w+)");
 	private static final Pattern UNIT_EXTRACT_REGEX = Pattern.compile(".*?([a-zA-Z]\\w+)");
+	private static final Pattern UNIT_EXPONENTIAL_REGEX = Pattern.compile("[eE]");
 
 
 	private final static String[] INCREMENT_QUERY_PROJECTION = {UsageEntry._ID, UsageEntry._USE_COUNT, UsageEntry._UNIT};

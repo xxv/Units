@@ -7,3 +7,6 @@ a {
 .webonly {
     display: none;
 }
+.mobileonly {
+   display: block;
+}

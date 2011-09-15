@@ -61,7 +61,7 @@
     <!-- Displayed on buttons on screen for a right parenthesis. -->
     <string name="rightParen">)</string>
     <!-- Do not translate. Unicode square root sign; don't translate. Displayed on button on screen. -->
-    <string name="sqrt" translatable="false">\u221a</string>
+    <string name="sqrt" translatable="false">\u221a(</string>
     <!-- Do not translate. Displayed on buttons on screen. -->
     <string name="power" translatable="false">^</string>
     <string name="percent" translatable="false">%</string>

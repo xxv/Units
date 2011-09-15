@@ -35,37 +35,33 @@
             	android:text="@string/pi" 
             	/>
         </LinearLayout>
-        <LinearLayout
-             android:layout_weight="3"
-             android:layout_width="fill_parent"
-             android:layout_height="0dp"
-             >
-            <com.android.calculator2.ColorButton
-                android:id="@+id/cube"
-                android:text="@string/keypad_cube"
-                style="@style/button_style"
-                />
-	       <com.android.calculator2.ColorButton
-                android:id="@+id/milli"
-                android:text="@string/keypad_prefix_milli"
-                style="@style/digit_button_style"
-                />
-            <com.android.calculator2.ColorButton
-                android:id="@+id/kilo"
-                android:text="@string/keypad_prefix_kilo"
-                style="@style/digit_button_style"
-                />
-            <com.android.calculator2.ColorButton
-                android:id="@+id/mega"
-                android:text="@string/keypad_prefix_mega"
-                style="@style/digit_button_style"
-                />
-            <com.android.calculator2.ColorButton 
-            	android:id="@+id/currency"
-            	style="@style/digit_button_style"
-            	android:text="@string/currency"
-            	/>
-        </LinearLayout>
+	<LinearLayout
+		android:layout_weight="3"
+		android:layout_width="fill_parent"
+		android:layout_height="0dp"
+	>
+		<com.android.calculator2.ColorButton
+			android:id="@+id/cube"
+			android:text="@string/keypad_cube"
+			style="@style/button_style" />
+		<com.android.calculator2.ColorButton
+			android:id="@+id/milli"
+			android:text="@string/keypad_prefix_milli"
+			style="@style/digit_button_style" />
+		<com.android.calculator2.ColorButton
+			style="@style/digit_button_style"
+			android:id="@+id/centi"
+			android:text="@string/keypad_prefix_centi"
+			/>
+		<com.android.calculator2.ColorButton
+			android:id="@+id/kilo"
+			android:text="@string/keypad_prefix_kilo"
+			style="@style/digit_button_style" />
+		<com.android.calculator2.ColorButton
+			android:id="@+id/currency"
+			style="@style/digit_button_style"
+			android:text="@string/currency" />
+	</LinearLayout>
 
         <LinearLayout 
              android:layout_weight="3"
@@ -73,9 +69,8 @@
              android:layout_height="0dp">
             <com.android.calculator2.ColorButton
                 android:id="@+id/sqrt"
-                android:text="@string/sqrt"
                 style="@style/button_style"
-                />
+                android:text="@string/sqrt"/>
             <com.android.calculator2.ColorButton
                 android:id="@+id/sin"
                 android:text="@string/sin"

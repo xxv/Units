@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:staticfree="http://staticfree.info/ns/android/units"
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 
@@ -49,6 +50,7 @@
                 android:layout_height="fill_parent"
                 android:layout_width="fill_parent"
                 android:layout_weight="3"
+                staticfree:longpressEllipsis="true"
                 />
 		</LinearLayout>
 
@@ -103,6 +105,7 @@
                 android:id="@+id/unit_entry"
                 android:text="@string/unit_entry"
                 style="@style/button_style"
+                staticfree:longpressEllipsis="true"
                 />
             <com.android.calculator2.ColorButton
                 android:id="@+id/leftParen"
@@ -156,12 +159,14 @@
                 android:id="@+id/div"
                 android:text="@string/div"
                 style="@style/button_style"
+                staticfree:longpressText="|"
                 />
                 
             <com.android.calculator2.ColorButton
                 android:id="@+id/power"
                 android:text="@string/power"
                 style="@style/button_style"
+                staticfree:longpressText="E"
                 />
         </LinearLayout>
 
