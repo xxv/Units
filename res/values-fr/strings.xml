@@ -1,3 +1,41 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<string name="app_name">Unités</string>
+	<string name="have_hint">Vous avez</string>
+	<string name="want_hint">Vous désirez</string>
+	<string name="ctx_menu_send">Envoyer</string>
+	<string name="ctx_menu_send_title">Envoyer le résultat avec...</string>
+	<string name="ctx_menu_reedit">Re-editer</string>
+	<string name="ctx_menu_use_result">Utiliser le résultat</string>
+	<string name="toast_copy">\"%1$s\" copié dans le presse-papier.</string>
+	<string name="menu_swap_input">Intervertir les données</string>
+	<string name="menu_about">À propos</string>
+	<string name="menu_show_history">Afficher l'historique</string>
+	<string name="menu_clear_history">Nettoyer l'historique</string>
+	<string name="menu_pick_unit">Selectionner l'unité</string>
+	<string name="menu_unit_details">Details de l'unité</string>
+	<string name="dialog_about_title">À propos de Units</string>
+	<string name="dialog_all_units_title">Toutes les unités</string>
+	<string name="search_hint">Chercher des unités</string>
+	<string name="search_no_results">Aucune unité trouvée.</string>
+	<string name="search_title_unit">Les unités concordent \"%1$s\"</string>
+	<string name="dialog_loading_units">Chargement de base de données pour la première utilisation ...</string>
+	<string name="err_have_empty">Que désirez-vous convertir?</string>
+	<string name="err_no_conform">Il est impossible de convertir ces données.</string>
+	<string name="err_no_load_about">Error: il est impossible de charger la page "À propos de"</string>
+	<string name="reciprocal_conversion">conversion réciproque</string>
+	<string name="unit_entry">unité</string>
+	<string name="keypad_length">longitude...</string>
+	<string name="keypad_mass">volume...</string>
+	<string name="keypad_time">temps...</string>
+	<string name="keypad_square">x²</string>
+	<string name="keypad_cube">x³</string>
+	<string name="keypad_prefix_milli">milli-</string>
+	<string name="keypad_prefix_kilo">kilo-</string>
+	<string name="keypad_prefix_centi">centi-</string>
+	<string name="const_light">lumière</string>
+	<string name="const_energy">énergie</string>
+	<string name="currency">$</string>
+	<string name="log">log</string>
+	<string name="atan">atan</string>
 </resources>
