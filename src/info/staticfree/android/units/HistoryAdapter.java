@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
+import android.support.v4.widget.CursorAdapter;
 import android.widget.TextView;
 
 public class HistoryAdapter extends CursorAdapter {
@@ -15,15 +15,33 @@ public class HistoryAdapter extends CursorAdapter {
 					HistoryEntry._WANT,
 					HistoryEntry._RESULT};
 
-	private final int have_col, want_col, result_col, time_col;
+	private int have_col;
+
+	private int want_col;
+
+	private int result_col;
+
+	private int time_col;
 
 	public HistoryAdapter(Context context, Cursor c) {
 		super(context, c, true);
+		if (c != null){
+			initColumns(c);
+		}
+	}
+
+	@Override
+	public Cursor swapCursor(Cursor newCursor) {
+		initColumns(newCursor);
+
+		return super.swapCursor(newCursor);
+	}
+
+	private void initColumns(Cursor c){
 		have_col = c.getColumnIndex(HistoryEntry._HAVE);
 		want_col = c.getColumnIndex(HistoryEntry._WANT);
 		result_col = c.getColumnIndex(HistoryEntry._RESULT);
 		time_col = c.getColumnIndex(HistoryEntry._WHEN);
-
 	}
 
 	@Override
