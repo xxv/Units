@@ -10,10 +10,10 @@
 	<string name="toast_copy">\"%1$s\" copié dans le presse-papier.</string>
 	<string name="menu_swap_input">Intervertir les données</string>
 	<string name="menu_about">À propos</string>
-	<string name="menu_show_history">Afficher l'historique</string>
-	<string name="menu_clear_history">Nettoyer l'historique</string>
-	<string name="menu_pick_unit">Selectionner l'unité</string>
-	<string name="menu_unit_details">Details de l'unité</string>
+	<string name="menu_show_history">Afficher l\'historique</string>
+	<string name="menu_clear_history">Nettoyer l\'historique</string>
+	<string name="menu_pick_unit">Selectionner l\'unité</string>
+	<string name="menu_unit_details">Details de l\'unité</string>
 	<string name="dialog_about_title">À propos de Units</string>
 	<string name="dialog_all_units_title">Toutes les unités</string>
 	<string name="search_hint">Chercher des unités</string>

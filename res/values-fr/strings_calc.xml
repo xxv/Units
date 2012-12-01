@@ -35,5 +35,5 @@
 	<string name="factorial">!</string>
 	<string name="basic">Console de base</string>
 	<string name="advanced">Console avancée</string>
-	<string name="clear_history">Nettoyer l'historique</string>
+	<string name="clear_history">Nettoyer l\'historique</string>
 </resources>
