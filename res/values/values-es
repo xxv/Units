@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- English -->
+<resources>
+    <string name="app_name">Units</string>
+    
+    <string name="have_hint">Tu tienes</string>
+    <string name="want_hint">Tu quieres</string>
+    
+    <string name="ctx_menu_send">Enviar</string>
+    <string name="ctx_menu_send_title">Ver resultados con...</string>
+    <string name="ctx_menu_reedit">Editar de nuevo</string>
+    <string name="ctx_menu_use_result">Usar resultado</string>
+    
+    <string name="toast_copy">\"%1$s\" Copiado al portapapeles.</string>
+
+    <string name="menu_swap_input">Intercambiar entradas</string>
+    <string name="menu_about">Acerca de</string>
+    <string name="menu_show_history">Mostrar historial</string>
+    <string name="menu_clear_history">Limpiar historial</string>
+    
+    <string name="menu_pick_unit">Escoger Unidad</string>
+    <string name="menu_unit_details">Detalles de la Unidad</string>    
+    
+    <string name="dialog_about_title">Acerca de las unidades</string>
+    <string name="dialog_all_units_title">Todas las unidades</string>
+    
+    <string name="search_hint">Buscar Undades</string>
+    <string name="search_no_results">No se encontraron unidades.</string>
+    <string name="search_title_unit">Unidades coincidentes \"%1$s\"</string>
+    
+    <!-- alertas de cara al usuario -->
+    <string name="dialog_loading_units">Cargando la base de datos de uso de la unidad inicial...</string>
+    <string name="err_have_empty">¿De qué quieres convertir??</string>
+    <string name="err_no_conform">No convertir a esta unidad.</string>
+    <string name="err_no_load_about">Error: no se pudo cargar la página Acerca de.</string>
+    <string name="reciprocal_conversion">conversión recíproca</string>
+
+    
+    <!-- botón de entrada de unidad -->
+    <string name="unit_entry">unit</string>
+    <!-- Estos botones son para categorías de uso común -->
+    <string name="keypad_length">Longitud…</string>
+    <string name="keypad_mass">masa…</string>
+    <string name="keypad_time">tiempo…</string>
+    
+    <!-- funciones -->
+    <string name="keypad_square" translatable="false">x²</string>
+    <string name="keypad_cube" translatable="false">x³</string>
+    
+    <!-- Prefijos de unidad -->
+    <string name="keypad_prefix_milli" translatable="false">milli-</string>
+    <string name="keypad_prefix_kilo" translatable="false">kilo-</string>
+    <string translatable="false" name="keypad_prefix_centi">centi-</string>
+    
+    <!-- Constantes -->
+    <string name="const_light" translatable="false">light</string>
+    <string name="const_energy" translatable="false">energy</string>
+    <!-- Default currency. This should be the default for the given locale. -->
+    <string name="currency">$</string>
+    
+    <string name="log" translatable="false">log</string>
+    <string name="atan" translatable="false">atan</string>
+
+</resources>
