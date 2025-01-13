@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="@android:style/Theme.Holo.NoActionBar" />
+    <style name="UnitListTheme" parent="@android:style/Theme.Holo.Dialog" />
+    <style name="UnitCategoryDialogTheme" parent="@android:style/Theme.Holo" />
+    <style name="UnitDetailsTheme" parent="@android:style/Theme.Holo" />
+</resources>

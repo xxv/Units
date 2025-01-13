@@ -1,0 +1,8 @@
+<p><i>Units</i> is a powerful unit-aware calculator that can perform a variety of unit conversions and also doubles as a simple scientific calculator. It's inspired by GNU Units.</p>
+<p>This edition is a continuation of <a href='https://github.com/xxv/Units' target='_blank' rel='nofollow noopener'>Steve Pomeroy's original app</a>.</p>
+<p>
+    <br><b>Usage</b>
+</p>
+<p>Anything that is shown within a box can be entered into Units. E.g. <kbd>m³÷hr</kbd>.</p>
+<p>Place the value and the unit you want to convert from in the "you have" box (e.g. <kbd>4.9inches</kbd>) and the unit you wish to convert to in the "you want" box (e.g. <kbd>cm</kbd>). To enter units, either press the "unit" button and select from the list, or tap on the input box a second time and an on-screen keyboard should pop up.</p>
+<p>You can enter simple units, such as <kbd>cm</kbd> / <kbd>centimeter</kbd> or complex units, such as <kbd>m^3÷hr</kbd>. You can long-press the "unit" button to show a list of all the units. If you don't specify a "to" unit, it will provide a definition in base units. For a list of examples and more information, please see the built-in help or the Readme on Github.</p>

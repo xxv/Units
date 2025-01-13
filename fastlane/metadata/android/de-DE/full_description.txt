@@ -1,0 +1,8 @@
+<p><i>Einheiten</i> ist ein leistungsfähiger Einheitenumrechner, welcher gleichzeitig auch als einfacher wissenschaftlicher Taschenrechner benutzt werden kann. Einheiten wurde von GNU Units inspiriert.</p>
+<p>Diese Ausgabe ist eine Weiterentwicklung von <a href='https://github.com/xxv/Units' target='_blank' rel='nofollow noopener'>Steve Pomeroys ursprünglicher App</a>.</p>
+<p>
+    <br><b>Benutzung</b>
+</p>
+<p>Alle eingekästelten Angaben können von Einheiten verarbeitet werden. Zum Beispiel <kbd>m³÷hr</kbd>.</p>
+<p>Platzieren Sie den Wert und die Einheit, welche Sie umwandlen möchten in das "Sie haben"-Eingabefeld, z.B. <kbd>4.9inches</kbd>, und die Zieleinheit in das "Sie möchten"-Feld, z.B. <kbd>cm</kbd>. Zur Eingabe der Einheiten können Sie entweder den "Einheit"-Knopf benutzen, oder ein zweites Mal auf das Eingabefeld tippen, um die Bildschirmtastatur zu aktivieren.</p>
+<p>Sie können sowohl einfache Einheiten wie etwa <kbd>cm</kbd> / <kbd>centimeter</kbd>, oder auch komplexe Einheiten wie z.B. <kbd>m^3÷hr</kbd> verwenden. Ein langer Druck auf den "Einheit"-Knopf öffnet eine Liste aller verfübarer Einheiten. Falls Sie keine Zieleinheit angeben, wird Einheiten den angegebenen Ausdruck in die jeweilige Basiseinheit umwandeln. Für eine Liste von Beispielen und mehr Informationen konsultieren Sie bitte die eingebaute Hilfe, oder die auf Github verfügbare Liesmich-Datei.</p>

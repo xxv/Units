@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">" Unități"</string>
+    <string name="have_hint">aveți</string>
+    <string name="want_hint">vreți</string>
+    <string name="dialog_loading_units">Se încarcă baza de date a unităților…</string>
+    <string name="menu_button">MENIU</string>
+    <string name="unit_entry">unitate</string>
+    <string name="keypad_length">lungime…</string>
+    <string name="keypad_mass">masă…</string>
+    <string name="keypad_time">timp…</string>
+    <string name="currency">RON</string>
+    <string name="result_rounded_up">rotunjit la cel mai apropiat %1$s</string>
+    <string name="result_rounded_down">rotunjit la cel mai apropiat %1$s</string>
+</resources>

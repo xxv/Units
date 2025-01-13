@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Einheiten</string>
+    <string name="have_hint">Sie haben</string>
+    <string name="want_hint">Sie möchten</string>
+    <string name="ctx_menu_send">Senden</string>
+    <string name="ctx_menu_send_title">Ergebnis senden mit…</string>
+    <string name="ctx_menu_reedit">Erneut bearbeiten</string>
+    <string name="ctx_menu_use_result">Ergebnis verwenden</string>
+    <string name="toast_copy">\"%1$s\" wurde in die Zwischenablage kopiert.</string>
+    <string name="menu_swap_input">Eingaben vertauschen</string>
+    <string name="menu_about">Über</string>
+    <string name="menu_show_history">Verlauf</string>
+    <string name="menu_clear_history">Verlauf löschen</string>
+    <string name="dialog_about_title">Über Einheiten</string>
+    <string name="menu_pick_unit">Einheit verwenden</string>
+    <string name="menu_unit_details">Einheitendetails</string>
+    <string name="currency">€</string>
+    <string name="menu_compatible_units">Andere kompatible Einheiten:</string>
+    <string name="dialog_all_units_title">Alle Einheiten</string>
+    <string name="search_hint">Einheiten suchen</string>
+    <string name="search_no_results">Keine Einheiten gefunden.</string>
+    <string name="search_title_unit">Ergebnisse für \"%1$s\"</string>
+    <string name="err_have_empty">Was möchten Sie konvertieren?</string>
+    <string name="err_no_load_about">Fehler: Konnte die „Über“-Seite nicht laden.</string>
+    <string name="dialog_loading_units">Lade Datenbank für Einheiten-Nutzungshäufigkeit…</string>
+    <string name="err_no_conform">Diese Einheiten können nicht ineinander umgewandelt werden.</string>
+    <string name="reciprocal_conversion">reziproke Konvertierung</string>
+    <string name="backspace_description">Rücktaste</string>
+    <string name="unit_entry">Einheit</string>
+    <string name="keypad_length">Länge…</string>
+    <string name="keypad_mass">Masse…</string>
+    <string name="keypad_time">Zeit…</string>
+    <string name="result_rounded_up">auf nächste %1$s aufgerundet</string>
+    <string name="result_rounded_down">auf nächste %1$s abgerundet</string>
+</resources>

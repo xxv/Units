@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en" lang="en">
+<head>
+    <title>Units</title>
+    <style type="text/css">
+    .mobileonly {
+  display: none;
+  }
+    </style>
+    <link rel="stylesheet" href="android_style.css" type="text/css"/>
+    <style type="text/css">
+  body {
+    font-family: Sans;
+    }
+  kbd { border: 1px dotted #ccc; }
+  .note { width: 10em; border: 1px solid #aaa; padding: 0.5em;
+  -moz-box-shadow: 0px 3px 6px #aaa;
+  -webkit-box-shadow: 0px 3px 6px #aaa;
+ }
+ table {
+  border-collapse: collapse;
+}
+th, td {
+  border: solid 1px;
+  padding: 2.5px 4px;
+}
+  .note h2, .note h3 { margin: -0.5em -0.5em 0.5em -0.5em; font-size: 1.1em; font-weight: normal; background-color: #aaa; padding: 0.25em; text-align: center; }
+  .float_left { float: left; margin-right: 1em; margin-bottom: 1em }
+  .float_right { float: right; margin-left: 1em; margin-bottom: 1em }
+  .flattr iframe { border: none; }
+  h2 { clear: left}
+    </style>
+    <script type="text/javascript">
+/* <![CDATA[ */
+    (function() {
+        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+        
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+        
+        t.parentNode.insertBefore(s, t);
+    })();
+/* ]]> */
+    </script>
+</head>
+
+<body>
+<p>Units is a powerful unit-aware calculator that can perform a variety of unit conversions
+    and also doubles as a simple scientific calculator. It's inspired by GNU Units.</p>
+
+<h2>Usage</h2>
+
+<div class="note float_left"><h3>key</h3>Anything that is shown within a dotted box can be entered
+    into Units. Eg. <kbd>m³÷hr</kbd></div>
+<p>Place the value and the unit you want to convert from in the "you have" box (e.g.
+    <kbd>4.9inches</kbd>) and the unit you wish to convert to in the "you want" box (e.g.
+    <kbd>cm</kbd>). To enter units, either press the "unit" button and select from the list, or tap
+    on the input box a second time and an on-screen keyboard should pop up.</p>
+
+<p>You can enter simple units, such as <kbd>cm</kbd>/<kbd>centimeter</kbd> or complex units, such as
+    <kbd>m^3÷hr</kbd>. You can press the "unit" button to show a list of all the units. If you don't
+    specify a "to" unit, it will provide a definition in base units. You can also convert into lists
+    of units, for example <kbd>ft; in</kbd>. For a list of examples, please see below.</p>
+
+<h3>Auto-completion</h3>
+
+<p>Both "you have" and "you want" will auto-complete with all the known units, sorted by usage. The
+    more you use a given unit, the closer it is to the top of the list. The usage is seeded with
+    initial usage amounts for common units, including some regional adjustments based on your
+    device's locale.</p>
+
+<p>Units will not start off auto-completing every possible permutation of metric prefix (eg. <kbd>deci</kbd>,
+    <kbd>centi</kbd>, <kbd>milli</kbd>) with unit name (<kbd>meter</kbd>, <kbd>liter</kbd>). Once
+    you make a calculation with a prefix+unit combination, Units will remember it and auto-complete
+    it from then-on.</p>
+
+<h3>Reciprocal detection</h3>
+
+<p>Units will auto-detect instances where you may have forgotten to convert from the reciprocal of a
+    given value. For instance, if you enter <kbd>100mpg</kbd> and ask for <kbd>liter÷100km</kbd>, it
+    will compute it using the reciprocal of the "from" value (<kbd>1÷(100mpg)</kbd>) and provide a
+    warning that it used the reciprocal.</p>
+
+<h3>Unit lists</h3>
+
+<p>You can convert values into arbitrary lists of units, for example time durations into hours,
+    minutes and seconds, lengths into foots and inches, or weights into
+    <a href="https://www.gocomics.com/peanuts/1966/03/10">libs and ozzes</a>. Enter the units
+    separated by a semicolon (such as <kbd>ft; in</kbd>), and autocomplete will work as usual. You
+    can also convert into fractional units like <kbd>ft; in; 1|8 in</kbd>.</p>
+<p>To split up display of the last unit into a decimal and an integer part, add a trailing
+    semicolon. For rounding the last unit given, add two trailing semicolons.</p>
+<p>For example, converting from <kbd>42 cm</kbd> gives the following results:</p>
+<table>
+    <thead>
+    <tr>
+        <th>You want</th>
+        <th>Result</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><kbd>ft;&nbsp;in</kbd></td>
+        <td><strong>1</strong> <kbd>ft</kbd> + <strong>4.5354331</strong> <kbd>in</kbd></td>
+    </tr>
+    <tr>
+        <td><kbd>ft;&nbsp;in;</kbd></td>
+        <td><strong>1</strong> <kbd>ft</kbd> + <strong>4</strong> <kbd>in</kbd> + <strong>0.5354331</strong> <kbd>in</kbd>
+        </td>
+    </tr>
+    <tr>
+        <td><kbd>ft;&nbsp;in;;</kbd></td>
+        <td><strong>1</strong> <kbd>ft</kbd> + <strong>5</strong> <kbd>in</kbd> (rounded up to
+            nearest <kbd>in</kbd>)
+        </td>
+    </tr>
+    </tbody>
+</table>
+<p>You can also use the same syntax for rounding single units. For example <kbd>3 ft + 7 in</kbd> to
+    <kbd>cm</kbd> will give <strong>109.22</strong> <kbd>cm</kbd>, however the same length
+    converted to <kbd>cm;;</kbd> will result in <strong>109</strong> <kbd>cm (rounded down to
+    nearest cm)</kbd>.</p>
+
+<p>To make things easier, Units also includes aliases for a few commonly used unit combinations:</p>
+<table>
+    <thead>
+    <tr>
+        <th>Alias</th>
+        <th>Corresponds to</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><kbd>hms</kbd></td>
+        <td><kbd>hr; min; sec</kbd></td>
+    </tr>
+    <tr>
+        <td><kbd>time</kbd></td>
+        <td><kbd>year; day; hr; min; sec</kbd></td>
+    </tr>
+    <tr>
+        <td><kbd>dms</kbd></td>
+        <td><kbd>deg; arcmin; arcsec</kbd></td>
+    </tr>
+    <tr>
+        <td><kbd>ftin</kbd></td>
+        <td><kbd>ft; in; 1|8 in</kbd></td>
+    </tr>
+    <tr>
+        <td><kbd>usvol</kbd></td>
+        <td><kbd>cup; 3|4 cup; 2|3 cup; 1|2 cup; 1|3 cup; 1|4 cup; tbsp; tsp; 1|2 tsp; 1|4 tsp; 1|8 tsp</kbd></td>
+    </tr>
+    <tr>
+        <td><kbd>lsd</kbd></td>
+        <td><kbd>poundsterling; shilling; oldpence; farthing</kbd></td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>Calculations</h3>
+
+<p>You can enter complex calculations in both input areas. For example, you can add two conformable
+    units such as, <kbd>2 cm + (4 + (1/2)) in</kbd> or multiply values to higher dimensions, such
+    as, <kbd>3m × 1m × 2cm</kbd> to convert to <kbd>liter</kbd> or <kbd>m^3</kbd>. You can even
+    convert to an arbitrary complex unit, provided that everything conforms properly.</p>
+
+<h2>Examples</h2>
+<h3>Practical conversions</h3>
+<dl>
+    <dt>US→EU height conversion</dt>
+    <dd><kbd>5ft + 6in</kbd> = <strong>167.64</strong> <kbd>cm</kbd></dd>
+    <dt>EU→US height conversion</dt>
+    <dd><kbd>5ft + 6in</kbd> = <strong>5</strong> <kbd>ft</kbd> + <strong>10</strong> <kbd>in</kbd>
+        + <strong>6.9291339</strong> * <kbd>1|8in</kbd></dd>
+    <dt>UK→US mass conversion</dt>
+    <dd><kbd>13 stone</kbd> = <strong>182</strong> <kbd>lbs</kbd></dd>
+    <dt>Volume conversion</dt>
+    <dd><kbd>10cm×5cm ×3cm</kbd> = <strong>0.15</strong> <kbd>liter</kbd></dd>
+    <dt>Kitchen: volume to mass</dt>
+    <dd><kbd>1cup flour_sifted</kbd> = <strong>113.398094</strong> <kbd>g</kbd></dd>
+    <dt>Driving: time to distance</dt>
+    <dd><kbd>100kph ×5minute</kbd> = <strong>5.1780934</strong> <kbd>mile</kbd></dd>
+</dl>
+
+<h3>Making lemonade, nutritional info</h3>
+<dl>
+    <dt>How much sugar does it have compared to other drinks?</dt>
+    <dd><kbd>1cup sugar ÷0.5gallon</kbd> = <strong>25.0</strong> <kbd>gram ÷8floz</kbd></dd>
+    <dt>What percent juice is it?</dt>
+    <dd><kbd>1cup ÷0.5gallon</kbd> = <strong>12.5</strong> <kbd>percent</kbd></dd>
+</dl>
+
+<p>In comparison (per 8&nbsp;floz), Minute Maid® Lemonade has 3&nbsp;% juice and 27&nbsp;g
+    sugar. Coke has 46&nbsp;g sugar per 8&nbsp;floz.</p>
+
+<h3>Fun conversions</h3>
+<p>As you can see above, Units knows a number of units that are useful in the kitchen. Most are for
+    volume↔mass conversion (which can be found under "density"), such as <kbd>flour_scooped</kbd>,
+    <kbd>sugar</kbd>, and <kbd>butter</kbd>. It also has a few known masses, such as <kbd>eggs</kbd>,
+    <kbd>stickbutter</kbd> and <kbd>venusmass</kbd>.</p>
+<dl>
+    <dt>Your mass in eggs</dt>
+    <dd><kbd>78kg</kbd> = <strong>1560</strong> <kbd>eggs</kbd></dd>
+    <dt>Time to walk across the U.S. (without sleeping)</dt>
+    <dd><kbd>2600mile ÷3mph</kbd> = <strong>5</strong> <kbd>week</kbd> +
+        <strong>1.1111111</strong> <kbd>day</kbd></dd>
+    <dt>Time to walk across the U.S. (assuming walking only 8 hours per day)</dt>
+    <dd><kbd>2600mile ÷(3mph ×(8hour ÷day))</kbd> = <strong>15</strong> <kbd>week</kbd> +
+        <strong>3.3333333</strong> <kbd>day</kbd></dd>
+    <dt>Gasoline efficiency in an alternative unit</dt>
+    <dd><kbd>1÷(25mile ÷gallon)</kbd> = <strong>79.36508</strong> <kbd>microhogshead ÷furlong</kbd>
+    </dd>
+</dl>
+
+<h3>Science &amp; Physics</h3>
+<dl>
+    <dt>Electricity</dt>
+    <dd><kbd>3volt ×150mA</kbd> = <strong>0.45</strong> <kbd>watt</kbd></dd>
+    <dt>Approximate time it takes light to get from the sun to the Earth.</dt>
+    <dd><kbd>sundist ÷c</kbd> = <strong>8.316755</strong> <kbd>minute</kbd></dd>
+    <dt>EM frequency to wavelength</dt>
+    <dd><kbd>light ÷2.417GHz</kbd> = <strong>12.403494</strong> <kbd>cm</kbd></dd>
+    <dt>using e=mc² to figure out how much energy 1g of matter is equivalent to</dt>
+    <dd><kbd>1gram energy</kbd> = <strong>21.480764</strong> <kbd>kiloton tnt</kbd></dd>
+</dl>
+
+<h2 id="changelog">Changelog</h2>
+<ul>
+    <li>20 January, 2024: 1.2 – Ability to convert into lists of units. Support for Android 13's
+        per-app language preferences. Use US units by default for English units outside of the UK.
+    </li>
+    <li>05 January, 2024: 1.1 – Improved compatibility with modern Android versions. Adds German and
+        Spanish translations. Various improvements and fixes.
+    </li>
+    <li>15 September, 2011: 1.0 – Added advanced keypad and improved keypad UI. Adds Russian
+        translations. Numerous bug fixes.
+    </li>
+    <li>13 January, 2011: 0.9 – Improved interface graphics. Fixed bug with imperial units showing
+        up in non-US,UK locales. Fixed loss of precision of output. Fixed various crashes and
+        database bugs.
+    </li>
+    <li>10 December, 2010: 0.8 – Fixed temperature conversion and other functions. Added parenthesis
+        auto-complete.
+    </li>
+    <li>02 December, 2010: 0.7 – Added search and browse. Added Italian translation.</li>
+    <li>30 August, 2010: 0.6 – Added unit classification to unit browser.</li>
+    <li>17 August, 2010: 0.5 – Added pop-up unit browser; major overhaul of unit database backend.
+    </li>
+    <li>12 August, 2010: 0.4.1 – Added database-backed history; improved saved state so rotation
+        doesn't clear recent result
+    </li>
+    <li>20 July, 2010: 0.4 – Units entry now conforms to opposite entry field.</li>
+    <li>12 July, 2010: 0.3 – First version to hit the Market</li>
+</ul>
+
+<h2>This is free software / open source</h2>
+
+<p>Units is an Android interpretation of the classic <a href="http://www.gnu.org/software/units/">GNU
+    Units</a> utility, using <a href="http://units-in-java.sourceforge.net/">Units in Java</a> for
+    all the heavy lifting.</p>
+
+<p>If you wish to get the source to this application and/or contribute to its ongoing development,
+    please visit the <a href="https://github.com/buttercookie42/Units">Android Units project
+        page</a>.</p>
+
+<p>Units needs translators! If you'd like to contribute a translation, please open a pull
+    request on Github.</p>
+
+
+<h2>License (GPLv3)</h2>
+<p>Android Units<br/>
+    ©2010-2011 Steve Pomeroy, contributors (below)</p>
+
+<p>This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.</p>
+
+<p>This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.</p>
+
+<p>You should have received a copy of the GNU General Public License
+    along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+</p>
+
+<h2>Contributors</h2>
+<p>Units is an ongoing project, with volunteers contributing freely to it. We would like to
+    thank:</p>
+<ul>
+    <li><a href="mailto:abalg@laposte.net">Adrien Benoit à la Guillaume</a> – French translations
+    </li>
+    <li><a href="mailto:andrejs.gorbunovs@inbox.lv">Andrejs Gorbunovs</a> – Russian translations
+    </li>
+    <li><a href="https://github.com/ingfabby">ingfabby</a> – Spanish translations</li>
+    <li><a href="https://github.com/buttercookie42">Jan Henning</a> – German translations and kbd
+        fixes
+    </li>
+</ul>
+<p>A special thanks also goes out to <a href="https://units-in-java.sourceforge.net/">Roman
+    Redziejowski</a> as the original creator of the Java port of GNU Units.</p>
+</body>
+</html>

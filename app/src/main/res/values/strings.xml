@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?><!-- English -->
+<resources>
+    <!-- Application name. Feel free to translate this. -->
+    <string name="app_name">Units</string>
+
+    <string name="have_hint">you have</string>
+    <string name="want_hint">you want</string>
+
+    <string name="ctx_menu_send">Send</string>
+    <string name="ctx_menu_send_title">Send result with…</string>
+    <string name="ctx_menu_reedit">Re-edit</string>
+    <string name="ctx_menu_use_result">Use result</string>
+
+    <string name="toast_copy">\"%1$s\" copied to clipboard.</string>
+    <string name="toast_dump_fingerprints">Dumping unit fingerprints…</string>
+
+    <string name="menu_swap_input">Swap inputs</string>
+    <string name="menu_about">About</string>
+    <string name="menu_show_history">Show history</string>
+    <string name="menu_clear_history">Clear history</string>
+    <string name="menu_dump_fingerprints">Dump unit fingerprints</string>
+
+    <string name="menu_pick_unit">Pick unit</string>
+    <string name="menu_unit_details">Unit details</string>
+    <string name="menu_compatible_units">Other compatible units:</string>
+
+    <string name="dialog_about_title">About Units</string>
+    <string name="dialog_all_units_title">All Units</string>
+
+    <string name="search_hint">Search units</string>
+    <string name="search_no_results">No units found.</string>
+    <string name="search_title_unit">Units matching \"%1$s\"</string>
+
+    <string name="history_button_close" translatable="false">↑</string>
+
+    <!-- user-facing alerts -->
+
+    <!-- If this string gets too long-winded in translation, you can also translate it as just
+    "Loading units database…" or even just "Loading database…" -->
+    <string name="dialog_loading_units">Loading unit usage database…</string>
+    <string name="err_have_empty">What do you want to convert from?</string>
+    <string name="err_no_conform">Could not convert to this unit.</string>
+    <string name="err_no_load_about">Error: could not load about page.</string>
+    <string name="reciprocal_conversion">reciprocal conversion</string>
+
+    <!-- Keypad buttons -->
+
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit0" translatable="false">0</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit1" translatable="false">1</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit2" translatable="false">2</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit3" translatable="false">3</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit4" translatable="false">4</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit5" translatable="false">5</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit6" translatable="false">6</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit7" translatable="false">7</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit8" translatable="false">8</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit9" translatable="false">9</string>
+    <!-- Do not translate. Unicode division sign; don't translate. Displayed as button on screen. -->
+    <string name="div" translatable="false">\u00f7</string>
+    <!-- Do not translate. Unicode multiplication sign; don't translate. Displayed as button on screen. -->
+    <string name="mul" translatable="false">\u00d7</string>
+    <!-- Do not translate. Plus sign, displayed as button on screen -->
+    <string name="plus" translatable="false">+</string>
+    <!-- Do not translate. Unicode minus sign; don't translate. Displayed as button on screen. -->
+    <string name="minus" translatable="false">\u2212</string>
+    <!-- Do not translate. Decimal point; don't translate. Displayed as button on screen. -->
+    <string name="dot" translatable="false">.</string>
+    <!-- Do not translate. Equal sign; don't translate. Displayed as button on screen. -->
+    <string name="equal" translatable="false">=</string>
+    <!-- Displayed on buttons on screen for the sin function. -->
+    <string name="sin" translatable="false">sin</string>
+    <!-- Displayed on buttons on screen for the cos function. -->
+    <string name="cos" translatable="false">cos</string>
+    <!-- Displayed on buttons on screen for the tan function. -->
+    <string name="tan" translatable="false">tan</string>
+    <!-- Displayed on buttons on screen for the atan function. -->
+    <string name="atan" translatable="false">atan</string>
+    <!-- Displayed on buttons on screen for the log function. -->
+    <string name="log" translatable="false">log</string>
+    <!-- Do not translate. Unicode pi sign; don't translate. Displayed as button on screen. -->
+    <string name="pi" translatable="false">\u03c0</string>
+    <!-- Displayed on buttons on screen for the ln function. -->
+    <string name="ln" translatable="false">ln</string>
+    <!-- Displayed on buttons on screen for a left parenthesis. -->
+    <string name="leftParen" translatable="false">(</string>
+    <!-- Displayed on buttons on screen for a right parenthesis. -->
+    <string name="rightParen" translatable="false">)</string>
+    <!-- Do not translate. Unicode square root sign; don't translate. Displayed on button on screen. -->
+    <string name="sqrt" translatable="false">\u221a(</string>
+    <!-- Do not translate. Displayed on buttons on screen. -->
+    <string name="power" translatable="false">^</string>
+    <string name="percent" translatable="false">%</string>
+    <!-- Do not translate. Displayed on buttons on screen for entering the exponent in the E notation. -->
+    <string name="exponent" translatable="false">E</string>
+    <!-- Do not translate. Displayed on buttons on screen for entering a fraction. -->
+    <string name="fraction" translatable="false">|</string>
+    <!-- Do not translate. Displayed on buttons on screen for entering a semicolon. -->
+    <string name="semicolon" translatable="false">;</string>
+    <!-- Displayed on buttons on screen for accessing the menu panel. Use a short text due to
+    limited space. Prefer all caps. -->
+    <string name="menu_button">MENU</string>
+    <!-- Accessible description for the backspace button -->
+    <string name="backspace_description">backspace</string>
+
+    <!-- unit entry button -->
+    <string name="unit_entry">unit</string>
+
+    <!-- These buttons are for commonly-used categories -->
+
+    <string name="keypad_length">length…</string>
+    <string name="keypad_mass">mass…</string>
+    <string name="keypad_time">time…</string>
+
+    <!-- functions -->
+
+    <string name="keypad_square" translatable="false">x²</string>
+    <string name="keypad_cube" translatable="false">x³</string>
+
+    <!-- unit prefixes -->
+
+    <string name="keypad_prefix_milli" translatable="false">milli-</string>
+    <string name="keypad_prefix_kilo" translatable="false">kilo-</string>
+    <string name="keypad_prefix_centi" translatable="false">centi-</string>
+
+    <!-- constants -->
+
+    <string name="const_light" translatable="false">light</string>
+    <string name="const_energy" translatable="false">energy</string>
+    <!-- Default currency. This should be the default currency unit for the given locale. -->
+    <string name="currency">$</string>
+
+    <!-- Rounding strings -->
+
+    <!-- %1$s will be replaced by the name of the unit that's being rounded to -->
+    <string name="result_rounded_up">rounded up to nearest %1$s</string>
+    <!-- %1$s will be replaced by the name of the unit that's being rounded to -->
+    <string name="result_rounded_down">rounded down to nearest %1$s</string>
+
+</resources>

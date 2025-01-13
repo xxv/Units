@@ -1,0 +1,120 @@
+//=========================================================================
+//
+//  Part of units package -- a Java version of GNU Units program.
+//
+//  Units is a program for unit conversion originally written in C
+//  by Adrian Mariano (adrian@cam.cornell.edu.).
+//  Copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004,
+//  2005, 2006, 2007, 2010, 2011 by Free Software Foundation, Inc.
+//
+//  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
+//  2009, 2010, 2011, 2012 by Roman R Redziejowski (www.romanredz.se).
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
+//-------------------------------------------------------------------------
+//
+//  Change log
+//
+//  Version 1.87.J01.
+//    091024 Created.
+//
+//  Version 1.88.J01.
+//    101101 Removed superfluous '?' after 'space'.
+//
+//  Version 1.88.J02.
+//    110317 Added !"." after 'number' to reject as invalid the strings
+//           such as '1..2' and '1.2.3' that would otherwise be treated
+//           as two numbers multiplied by juxtaposition.
+//
+//  Version 1.89.J01
+//    111013 Changed !"." after 'number' to '!point', with point = [.,]
+//           expecting local number formats in the future.
+//           Added ',' as the forbidden start character of 'word'.
+//           Redefined 'namechar' using ^[s].
+//    120130 Renamed from 'grammar' to 'Grammar'.
+//    120202 Updated syntax of 'word' according to Section 9.2 of GNU units
+//           manual edition 1.89e, adding decimal comma and tilde
+//           to forbidden start characters.
+//
+//=========================================================================
+
+
+//HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+//
+//  Parsing Expression Grammar of unit expressions
+//
+//HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+unitexpr = space expr? EOT {unitexpr} ~{error};
+
+expr     = term ((PLUS / MINUS) term)* {expr}
+         / (SLASH / PER) product {inverse} ;
+
+term     = product ((STAR / SLASH / PER) product)* {term} ;
+
+product  = factor (![+-] factor)* {product} ; // [+-] between factors IS NOT unary!
+
+factor   = unary ((HAT / STARSTAR) unary)* {factor};
+
+unary    = (PLUS / MINUS)? primary {unary} ;
+
+primary  = numexpr {makeNumUnit}
+         / LPAR expr RPAR {pass2}
+         / unitname {pass}
+         / bfunc LPAR expr RPAR {evalBfunc}
+         / opttilde dfunc LPAR expr RPAR {evalUfunc} ;
+
+numexpr  = number (BAR number)* {numexpr};
+
+number   = mantissa exponent? !point space {number} ;
+
+mantissa = "." digits / digits ("." digits?)? ;
+
+exponent = [Ee] sign? digits ;
+
+sign     = [+-] <sign> ;
+
+digits   = digit+ ;
+
+digit    = [0-9] ;
+
+word     = ![0123456789_.,~] namechar+ ;
+
+namechar = ^[\t\n +-*/|^();#] <more name> ;
+
+point    = [.,] <'.' or ','> ;
+
+opttilde = TILDE? <~> ;
+
+unitname = word space {&unitname} <unit name> ;
+bfunc    = word space {&bfunc}    <function name> ;
+dfunc    = word space {&ufunc}    <function name> ;
+
+BAR      = "|" space  <|> ;
+HAT      = "^" space  <^> ;
+TILDE    = "~" space  <~> ;
+LPAR     = "(" space  <(> ;
+MINUS    = "-" space  <-> ;
+PLUS     = "+" space  <+> ;
+RPAR     = ")" space  <)> ;
+SLASH    = "/" space  </> ;
+STARSTAR = "**" space <**> ;
+STAR     = "*" !"*" space <*> ;
+PER      = "per" !namechar space  <'per'> ;
+
+space       = [ \t]* {space} ;
+
+EOT         = !_ <end of input> ;
+
