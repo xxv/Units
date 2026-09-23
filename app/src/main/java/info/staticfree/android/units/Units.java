@@ -47,10 +47,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import androidx.fragment.app.FragmentActivity;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.InputType;
@@ -135,6 +135,8 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        WindowInsetsHelper.padForSystemBars(this);
+
         wantEditText = ((MultiAutoCompleteTextView)findViewById(R.id.want));
         haveEditText = ((MultiAutoCompleteTextView)findViewById(R.id.have));
         defaultInputType = wantEditText.getInputType();
@@ -178,7 +180,7 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
 
 		unitUsageDBHelper = new UnitUsageDBHelper(this);
 
-		final Object instance = getLastNonConfigurationInstance();
+		final Object instance = getLastCustomNonConfigurationInstance();
 		if (instance instanceof LoadInitialUnitUsageTask){
 			mLoadInitialUnitUsageTask = (LoadInitialUnitUsageTask) instance;
 			mLoadInitialUnitUsageTask.setActivity(this);
@@ -215,7 +217,10 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
     private void handleIntent(Intent intent){
 		final String action = intent.getAction();
 		if (Intent.ACTION_SEARCH.equals(action)){
-			final Intent pickUnit = new Intent(Intent.ACTION_PICK, UsageEntry.CONTENT_URI);
+			// Explicit target: Android 14 and up refuse to deliver an implicit
+			// intent to a component that isn't exported.
+			final Intent pickUnit = new Intent(Intent.ACTION_PICK, UsageEntry.CONTENT_URI)
+					.setClass(this, UnitList.class);
 			final String query = intent.getExtras().getString(SearchManager.QUERY);
 			pickUnit.putExtra(UnitList.EXTRA_UNIT_QUERY, query);
 
@@ -255,8 +260,10 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
     	outState.putString(STATE_DIALOG_UNIT_CATEGORY, mDialogUnitCategoryUnit);
     }
 
+    // AndroidX's FragmentActivity owns onRetainNonConfigurationInstance();
+    // onRetainCustomNonConfigurationInstance() is the hook it leaves for apps.
     @Override
-    public Object onRetainNonConfigurationInstance() {
+    public Object onRetainCustomNonConfigurationInstance() {
     	return mLoadInitialUnitUsageTask;
     }
 
@@ -579,21 +586,19 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
     }
 
     public void onClick(View v) {
-    	switch (v.getId()){
-    	case R.id.result:
-    		setHistoryVisible(true);
-    		break;
+    	final int id = v.getId();
 
-    	case R.id.history_close:
+    	if (id == R.id.result){
+    		setHistoryVisible(true);
+
+    	}else if (id == R.id.history_close){
     		setHistoryVisible(false);
-    		break;
     	}
     }
 
 
 	public boolean onLongClick(View v) {
-		switch (v.getId()){
-		case R.id.result:
+		if (v.getId() == R.id.result){
 			v.showContextMenu();
 			return true;
 		}
@@ -675,8 +680,9 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()){
-		case R.id.swap_inputs:{
+		final int id = item.getItemId();
+
+		if (id == R.id.swap_inputs){
 			if (getCurrentFocus() == haveEditText){
 				swapInputs(haveEditText, wantEditText);
 
@@ -686,24 +692,25 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
 				swapInputs(null, null);
 			}
 			return true;
-		}
-		case R.id.about:
+
+		}else if (id == R.id.about){
 			showDialog(DIALOG_ABOUT);
 			return true;
 
-		case R.id.show_history:
+		}else if (id == R.id.show_history){
 			setHistoryVisible(true);
 			return true;
 
-		case R.id.clear_history:
+		}else if (id == R.id.clear_history){
 			getContentResolver().delete(HistoryEntry.CONTENT_URI, null, null);
 			resultView.setText(null);
 			return true;
 
-		case R.id.search:
+		}else if (id == R.id.search){
 			onSearchRequested();
 			return true;
-		default:
+
+		}else{
 			return super.onOptionsItemSelected(item);
 		}
 	}
@@ -917,18 +924,16 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
 
 		public void onClick(View v) {
 
-			switch (v.getId()){
-			case R.id.backspace:{
+			final int id = v.getId();
+
+			if (id == R.id.backspace){
 				dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
 				dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL));
 
-			} break;
-
-			case R.id.equal:
+			}else if (id == R.id.equal){
 				go();
-				break;
 
-			case R.id.unit_entry:{
+			}else if (id == R.id.unit_entry){
 				final View currentFocus = getCurrentFocus();
 				if (currentFocus instanceof MultiAutoCompleteTextView){
 					// 2000 is just a magic number that is less than the total number of units,
@@ -941,96 +946,78 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
 					}
 				}
 
-			}break;
-
-			case R.id.length:
+			}else if (id == R.id.length){
 				mDialogUnitCategoryUnit = "m";
 				showDialog(DIALOG_UNIT_CATEGORY);
-				break;
-			case R.id.weight:
+
+			}else if (id == R.id.weight){
 				mDialogUnitCategoryUnit = "g";
 				showDialog(DIALOG_UNIT_CATEGORY);
-				break;
-			case R.id.time:
+
+			}else if (id == R.id.time){
 				mDialogUnitCategoryUnit = "hr";
 				showDialog(DIALOG_UNIT_CATEGORY);
-				break;
 
 			// functions
-			case R.id.sin:
-			case R.id.cos:
-			case R.id.tan:
-			case R.id.atan:
-			case R.id.log:
-			case R.id.ln:
+			}else if (id == R.id.sin || id == R.id.cos || id == R.id.tan
+					|| id == R.id.atan || id == R.id.log || id == R.id.ln){
 				sendTextAsSoftKeyboard(((Button)v).getText().toString() + "( ", true);
-				break;
 
 			// constants
-			case R.id.pi:
-			case R.id.light:
-			case R.id.energy:
+			}else if (id == R.id.pi || id == R.id.light || id == R.id.energy){
 				sendTextAsSoftKeyboard(((Button)v).getText().toString() + " ", true);
-				break;
 
-			case R.id.square:
+			}else if (id == R.id.square){
 				sendTextAsSoftKeyboard("² ", true);
-				break;
 
-			case R.id.cube:
+			}else if (id == R.id.cube){
 				sendTextAsSoftKeyboard("³ ", true);
-				break;
 
-			case R.id.milli:
-			case R.id.kilo:
-			case R.id.centi:{
+			}else if (id == R.id.milli || id == R.id.kilo || id == R.id.centi){
 				String prefix = ((Button)v).getText().toString();
 				prefix = prefix.substring(0, prefix.length() - 1);
 				sendTextAsSoftKeyboard(prefix, false);
-			}break;
 
-
-			default:
+			}else{
 				sendTextAsSoftKeyboard(((Button)v).getText().toString(), true);
 			}
 		}
 
 		public boolean onLongClick(View v) {
-			switch (v.getId()){
-			case R.id.unit_entry:{
+			final int id = v.getId();
+
+			if (id == R.id.unit_entry){
 				showDialog(DIALOG_ALL_UNITS);
 				return true;
-			}
-				case R.id.power:{
-					sendTextAsSoftKeyboard("E");
-					return true;
+
+			}else if (id == R.id.power){
+				sendTextAsSoftKeyboard("E");
+				return true;
+
+			}else if (id == R.id.div){
+				sendTextAsSoftKeyboard("|");
+				return true;
+
+			}else if (id == R.id.backspace){
+				final View currentFocus = getCurrentFocus();
+				if (currentFocus instanceof EditText){
+					((EditText)currentFocus).getEditableText().clear();
+					((EditText)currentFocus).setError(null);
 				}
-				case R.id.div:{
-					sendTextAsSoftKeyboard("|");
-					return true;
-				}
-				case R.id.backspace:{
-					final View currentFocus = getCurrentFocus();
-					if (currentFocus instanceof EditText){
-						((EditText)currentFocus).getEditableText().clear();
-						((EditText)currentFocus).setError(null);
-					}
-					return true;
-				}
+				return true;
 			}
 			return false;
 		}
 	}
 
 	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-		switch (v.getId()){
-			case R.id.want:
-				go();
-				final InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+		if (v.getId() == R.id.want){
+			go();
+			final InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
 
-				return true;
+			return true;
 		}
 		return false;
 	};
@@ -1045,11 +1032,10 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
 		}
 	};
 	public boolean onTouch(View v, MotionEvent event) {
-		switch (v.getId()){
+		final int id = v.getId();
 
 		// this is used to prevent the first touch on these editors from triggering the IME soft keyboard.
-		case R.id.want:
-		case R.id.have:
+		if (id == R.id.want || id == R.id.have){
 			if (event.getAction() == MotionEvent.ACTION_DOWN){
 				final EditText editor = (EditText)v;
 				if (v.hasFocus()){

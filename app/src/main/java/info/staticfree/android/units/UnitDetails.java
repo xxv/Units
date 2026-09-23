@@ -37,6 +37,8 @@ public class UnitDetails extends Activity {
 		setContentView(R.layout.unit_details);
 		super.onCreate(savedInstanceState);
 
+		WindowInsetsHelper.padForSystemBars(this);
+
 		final Intent intent = getIntent();
 		final String action = intent.getAction();
 
@@ -76,7 +78,9 @@ public class UnitDetails extends Activity {
 		conformable.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long id) {
-				startActivity(new Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(UsageEntry.CONTENT_URI, id)));
+				// Explicit target: see the note in UnitList.viewUnit().
+				startActivity(new Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(UsageEntry.CONTENT_URI, id))
+						.setClass(UnitDetails.this, UnitDetails.class));
 
 			}
 		});;

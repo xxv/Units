@@ -143,7 +143,10 @@ public class UnitList extends ListActivity implements OnClickListener {
 	}
 
 	private void viewUnit(Uri unit, String unitName){
-		final Intent viewUnit = new Intent(Intent.ACTION_VIEW, unit);
+		// Android 14 and up refuse to deliver an implicit intent to a component
+		// that isn't exported, so name the target explicitly.
+		final Intent viewUnit = new Intent(Intent.ACTION_VIEW, unit)
+				.setClass(this, UnitDetails.class);
 
 		viewUnit.putExtra(Units.EXTRA_UNIT_NAME, unitName);
 		startActivity(viewUnit);
@@ -231,10 +234,8 @@ public class UnitList extends ListActivity implements OnClickListener {
 	}
 
 	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.search:
-				onSearchRequested();
-			break;
+		if (v.getId() == R.id.search) {
+			onSearchRequested();
 		}
 	}
 }
