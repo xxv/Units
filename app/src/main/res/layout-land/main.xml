@@ -31,7 +31,10 @@
 			android:hint="@string/have_hint"
 			android:imeOptions="actionNext"
 			android:nextFocusDown="@+id/want"
-			 />
+			>
+			<!-- Apps targeting API 28+ no longer get initial focus for free. -->
+			<requestFocus />
+		</MultiAutoCompleteTextView>
 		<MultiAutoCompleteTextView android:id="@+id/want"
 			style="@style/MainEntry"
 			android:layout_height="fill_parent"

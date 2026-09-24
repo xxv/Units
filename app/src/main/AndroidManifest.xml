@@ -17,7 +17,14 @@
             android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:theme="@android:style/Theme.Black.NoTitleBar">
+            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:windowSoftInputMode="stateHidden">
+            <!--
+                 "you have" takes focus on launch, but input normally comes from
+                 the app's own keypad; the system keyboard only appears when the
+                 focused box is tapped again (see Units.onTouch). stateHidden
+                 keeps Android from popping it up over the keypad on its own.
+            -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
