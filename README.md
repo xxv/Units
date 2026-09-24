@@ -155,6 +155,7 @@ You should have received a copy of the GNU General Public License along with thi
 Units is an ongoing project, with volunteers contributing freely to it. We would like to thank:
 
 * [Andrejs Gorbunovs][11] - Russian translations
+* [Jan Henning][12] - app icon, and the long-press menu on the = key
 
 
 
@@ -170,3 +171,4 @@ Units is an ongoing project, with volunteers contributing freely to it. We would
 [9]: http://mygengo.com/string/p/android-units-1/
 [10]: http://www.gnu.org/licenses/
 [11]: mailto:andrejs.gorbunovs@inbox.lv
+[12]: https://github.com/buttercookie42
