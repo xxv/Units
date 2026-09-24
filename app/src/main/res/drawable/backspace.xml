@@ -1,4 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-        <item android:drawable="@drawable/red_button" />
-        <item android:drawable="@drawable/ic_delete" />
+    <item android:drawable="@drawable/red_button" />
+    <!--
+         Sized and centred explicitly. Left to fill the layer, the glyph would
+         stretch to the whole button; given no size at all it would draw at its
+         intrinsic size, which is larger than the key.
+    -->
+    <item
+        android:drawable="@drawable/ic_backspace"
+        android:gravity="center"
+        android:width="64dp"
+        android:height="32dp" />
 </layer-list>

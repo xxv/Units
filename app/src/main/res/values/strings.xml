@@ -36,6 +36,9 @@
     <string name="reciprocal_conversion">reciprocal conversion</string>
 
     
+    <!-- Spoken label for the backspace key, which has an icon but no text. -->
+    <string name="backspace_description">Backspace</string>
+
     <!-- unit entry button -->
     <string name="unit_entry">unit</string>
     <!-- These buttons are for commonly-used categories -->

@@ -45,6 +45,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import androidx.fragment.app.FragmentActivity;
@@ -79,6 +80,7 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.PopupMenu;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorTreeAdapter;
 import android.widget.TextView;
@@ -677,6 +679,33 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
 		return true;
 	}
 
+	/**
+	 * Shows the options menu hanging off the given view.
+	 *
+	 * <p>Phones stopped having a hardware menu button a long time ago, and this
+	 * activity has no action bar, so without this the menu is unreachable. A
+	 * long-press on "=" calls it; the "..." drawn on that key advertises it.
+	 *
+	 * <p>Deliberately not {@code openOptionsMenu()}: PhoneWindow.openPanel()
+	 * silently refuses to open the legacy options panel for an app targeting
+	 * Honeycomb or later when the screen is xlarge, so on a tablet that call
+	 * does nothing at all. A popup menu has no such restriction, and it lands
+	 * next to the key that opened it.
+	 *
+	 * @param anchor the view to hang the menu off
+	 */
+	private void showMenu(View anchor) {
+		final PopupMenu popup = new PopupMenu(this, anchor);
+		popup.inflate(R.menu.main);
+		// The menu was written for the old options panel, which always drew
+		// icons; a popup menu hides them unless asked.
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			popup.setForceShowIcon(true);
+		}
+		popup.setOnMenuItemClickListener(this::onOptionsItemSelected);
+		popup.show();
+	}
+
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -1004,6 +1033,10 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
 					((EditText)currentFocus).getEditableText().clear();
 					((EditText)currentFocus).setError(null);
 				}
+				return true;
+
+			}else if (id == R.id.equal){
+				showMenu(v);
 				return true;
 			}
 			return false;

@@ -35,6 +35,7 @@
             <com.android.calculator2.ColorButton
                 android:id="@+id/backspace"
                 android:background="@drawable/backspace"
+                android:contentDescription="@string/backspace_description"
                 style="@style/button_style"
                 android:layout_weight="3"
                 android:layout_width="fill_parent"
@@ -193,10 +194,12 @@
                 android:text="@string/digit0"
                 style="@style/digit_button_style"
                 />
+            <!-- Long-press opens the options menu; see Units.onLongClick(). -->
             <com.android.calculator2.ColorButton
                 android:id="@+id/equal"
                 android:text="@string/equal"
                 style="@style/equal_button_style"
+                staticfree:longpressEllipsis="true"
                 />
             <com.android.calculator2.ColorButton
                 android:id="@+id/plus"

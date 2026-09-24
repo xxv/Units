@@ -2,15 +2,11 @@
 
 Last updated: 23 September 2026
 
-Units is a hobby project. I wrote it because I wanted a good unit converter on
-my phone, not because I wanted your data. So this policy is short.
-
 ## The short version
 
 **Units doesn't collect anything about you.** It has no account, no ads, no
 analytics, no crash reporter, no tracking of any kind. It doesn't even have
-permission to use the network — you can check: the app requests no Android
-permissions at all, so there is no way for it to phone home.
+permission to use the network.
 
 ## What Units keeps, and where
 
@@ -34,25 +30,15 @@ your own Google account and is governed by
 [Google's privacy policy](https://policies.google.com/privacy), not this one.
 You can turn it off in your device's backup settings.
 
-## What Google Play tells me
-
-If you installed Units from Google Play, Play gives me the usual aggregate
-developer statistics — roughly how many installs there have been, which
-countries and Android versions, that sort of thing — plus anonymised crash
-reports if your device is set to send them. None of that identifies you to me,
-and it comes from Play, not from anything in the app. See
-[Google Play's privacy policy](https://policies.google.com/privacy) for what
-Play itself does.
-
 ## Children
 
 There's nothing here to collect, from anyone, of any age.
 
 ## Changes
 
-If this ever changes — say I add something that genuinely needs the network —
-I'll update this page and say so in the release notes. Since Units is free
-software, you can also just read the source and check for yourself.
+If this ever changes I'll update this page and say so in the release notes.
+Since Units is free software, you can also just read the source and check for
+yourself.
 
 ## Questions
 
