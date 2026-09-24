@@ -40,7 +40,15 @@ public class Application extends android.app.Application {
         Env.filenames = new Vector<String>();
         Env.filenames.add("units.dat");
 
-        Env.locale = Locale.getDefault().toString();
+        // units.dat picks regional definitions (tablespoon, gallon, ...) with
+        // "!locale en_US" blocks, matched by exact string. Locale.toString() also
+        // carries any script and Unicode extensions: Android 14's regional
+        // preferences (first day of week, temperature unit) turn en_US into
+        // "en_US_#u-fw-mon-mu-celsius", which would match no block at all.
+        final Locale locale = Locale.getDefault();
+        Env.locale = locale.getCountry().isEmpty()
+                ? locale.getLanguage()
+                : locale.getLanguage() + "_" + locale.getCountry();
         Env.quiet = true;
         Env.oneline = true;
 
