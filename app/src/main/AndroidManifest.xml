@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     The package name, versions and SDK levels now live in app/build.gradle.kts.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:name=".Application"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name">
+
+        <activity
+            android:name=".Units"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:windowSoftInputMode="stateHidden">
+            <!--
+                 "you have" takes focus on launch, but input normally comes from
+                 the app's own keypad; the system keyboard only appears when the
+                 focused box is tapped again (see Units.onTouch). stateHidden
+                 keeps Android from popping it up over the keypad on its own.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="info.staticfree.android.units.ACTION_USE_UNIT" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.info.staticfree.android.units.unit_usage" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+
+        <!--
+             The VIEW filters below are not web links: they match Units' own
+             private cursor MIME types, and only Units ever sends them, which is
+             why these activities are not exported.
+        -->
+        <activity
+            android:name=".UnitList"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Dialog"
+            tools:ignore="AppLinkUrlError">
+
+            <intent-filter>
+                <data android:mimeType="vnd.android.cursor.dir/vnd.info.staticfree.android.units.unit_usage" />
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.PICK" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+
+        <activity
+            android:name=".UnitDetails"
+            android:exported="false"
+            android:label="@string/app_name"
+            tools:ignore="AppLinkUrlError">
+
+            <intent-filter>
+                <data android:mimeType="vnd.android.cursor.item/vnd.info.staticfree.android.units.unit_usage" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!--
+             Everything the provider stores (calculation history, unit-usage
+             counts) is private to the app, and only the app's own search dialog
+             queries it, so it is not exported.
+        -->
+        <provider
+            android:name=".UnitsContentProvider"
+            android:authorities="info.staticfree.android.units"
+            android:exported="false" />
+
+    </application>
+
+</manifest>

@@ -1,5 +1,17 @@
+.gradle/
+build/
+local.properties
+*.p12
+*.jks
+*.keystore
+
+# Legacy Eclipse/ADT leftovers
 gen/
 bin/
 .classpath
 .project
 .settings/
+
+# IDE
+.idea/
+*.iml

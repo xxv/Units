@@ -6,7 +6,11 @@ Android Units is a powerful unit-aware calculator that can also easily perform s
 
 ## Download
 
-[![](market_qrcode.png)](market://search?q=pname:info.staticfree.android.units)You can [download Units from the Android market][1] or directly from [Units.apk][2]. The [changelog][3] is below.
+[![](extra/market_qrcode.png)][1]You can [download Units from Google Play][1]. The [changelog][3] is below.
+
+## Privacy
+
+Units collects nothing about you, and has no permission to use the network. See the [privacy policy](PRIVACY.md) for the details.
 
 ## Usage
 
@@ -79,8 +83,16 @@ As you can see above, Units knows a number of units that are useful in the kitch
 - using e=mc² to figure out how much energy 1g of matter is equivalent to
 `1gram energy` = **21.480764**`kiloton tnt`
 
+## Building
+
+    ./gradlew assembleDebug    # debug APK
+    ./gradlew lintDebug        # lint
+
+Releases are built and signed by GitHub Actions; see [cicd_notes.md](cicd_notes.md).
+
 ## Changelog
 
+* 23 September, 2026: 1.1 - Modernized the build (Gradle, AndroidX, API 36) so that Units can be published again.
 * 15 September, 2011: 1.0 - Added advanced keypad and improved keypad UI. Adds Russian translations. Numerous bug fixes.
 * 13 January, 2011: 0.9 - Improved interface graphics. Fixed bug with imperial units showing up in non-US,UK locales. Fixed loss of precision of output. Fixed various crashes and database bugs.
 * 10 December, 2010: 0.8 - Fixed temperature conversion and other functions. Added parenthesis auto-complete.
@@ -127,11 +139,12 @@ You should have received a copy of the GNU General Public License along with thi
 Units is an ongoing project, with volunteers contributing freely to it. We would like to thank:
 
 * [Andrejs Gorbunovs][11] - Russian translations
+* [Jan Henning][12] - app icon, and the long-press menu on the = key
 
 
 
-[0]: res/drawable-mdpi/icon.png
-[1]: market://search?q=pname:info.staticfree.android.units
+[0]: app/src/main/res/drawable-mdpi/icon.png
+[1]: https://play.google.com/store/apps/details?id=info.staticfree.android.units
 [2]: Units.apk
 [3]: #changelog
 [4]: https://www.paypalobjects.com/WEBSCR-640-20110401-1/en_US/i/scr/pixel.gif
@@ -142,3 +155,4 @@ Units is an ongoing project, with volunteers contributing freely to it. We would
 [9]: http://mygengo.com/string/p/android-units-1/
 [10]: http://www.gnu.org/licenses/
 [11]: mailto:andrejs.gorbunovs@inbox.lv
+[12]: https://github.com/buttercookie42

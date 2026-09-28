@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     The backspace glyph, traced from extra/backspace.svg. It used to be a pair
+     of mdpi/hdpi nine-patches (ic_delete.9.png), which meant that on a modern
+     high-density screen the glyph stayed small while the nine-patch's stretch
+     regions absorbed the extra space. As a vector it scales with the button.
+
+     The viewport is the glyph's own bounding box, so the drawable has no
+     built-in padding; backspace.xml sizes and centres it.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="114dp"
+    android:height="57dp"
+    android:viewportWidth="114.36"
+    android:viewportHeight="57.17">
+
+    <group android:translateX="-8.82" android:translateY="-35.42">
+
+        <!-- The key outline: an arrow pointing at a box. -->
+        <path
+            android:pathData="M 11.322,64.193 L 37.598,37.917 L 120.678,37.917 L 120.678,90.083 L 36.826,90.083 Z"
+            android:strokeColor="#ffffff"
+            android:strokeWidth="5"
+            android:strokeLineJoin="miter"
+            android:strokeMiterLimit="4" />
+
+        <!-- The X inside it. -->
+        <path
+            android:pathData="M 88.219,52.987 L 64.648,76.559"
+            android:strokeColor="#ffffff"
+            android:strokeWidth="5" />
+        <path
+            android:pathData="M 64.648,52.987 L 88.219,76.559"
+            android:strokeColor="#ffffff"
+            android:strokeWidth="5" />
+    </group>
+</vector>

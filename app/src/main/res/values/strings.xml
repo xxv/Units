@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- English -->
+<resources>
+    <string name="app_name">Units</string>
+    
+    <string name="have_hint">you have</string>
+    <string name="want_hint">you want</string>
+    
+    <string name="ctx_menu_send">Send</string>
+    <string name="ctx_menu_send_title">Send result with...</string>
+    <string name="ctx_menu_reedit">Re-edit</string>
+    <string name="ctx_menu_use_result">Use result</string>
+    
+    <string name="toast_copy">\"%1$s\" copied to clipboard.</string>
+
+    <string name="menu_swap_input">Swap inputs</string>
+    <string name="menu_about">About</string>
+    <string name="menu_show_history">Show history</string>
+    <string name="menu_clear_history">Clear history</string>
+    
+    <string name="menu_pick_unit">Pick unit</string>
+    <string name="menu_unit_details">Unit details</string>    
+    
+    <string name="dialog_about_title">About Units</string>
+    <string name="dialog_all_units_title">All Units</string>
+    
+    <string name="search_hint">Search units</string>
+    <string name="search_no_results">No units found.</string>
+    <string name="search_title_unit">Units matching \"%1$s\"</string>
+    
+    <!-- user-facing alerts -->
+    <string name="dialog_loading_units">Loading initial unit usage database...</string>
+    <string name="err_have_empty">What do you want to convert from?</string>
+    <string name="err_no_conform">Could not convert to this unit.</string>
+    <string name="err_no_load_about">Error: could not load about page.</string>
+    <string name="reciprocal_conversion">reciprocal conversion</string>
+
+    
+    <!-- Spoken label for the backspace key, which has an icon but no text. -->
+    <string name="backspace_description">Backspace</string>
+
+    <!-- unit entry button -->
+    <string name="unit_entry">unit</string>
+    <!-- These buttons are for commonly-used categories -->
+    <string name="keypad_length">length…</string>
+    <string name="keypad_mass">mass…</string>
+    <string name="keypad_time">time…</string>
+    
+    <!-- functions -->
+    <string name="keypad_square" translatable="false">x²</string>
+    <string name="keypad_cube" translatable="false">x³</string>
+    
+    <!-- unit prefixes -->
+    <string name="keypad_prefix_milli" translatable="false">milli-</string>
+    <string name="keypad_prefix_kilo" translatable="false">kilo-</string>
+    <string translatable="false" name="keypad_prefix_centi">centi-</string>
+    
+    <!-- constants -->
+    <string name="const_light" translatable="false">light</string>
+    <string name="const_energy" translatable="false">energy</string>
+    <!-- Default currency. This should be the default for the given locale. -->
+    <string name="currency">$</string>
+    
+    <string name="log" translatable="false">log</string>
+    <string name="atan" translatable="false">atan</string>
+
+</resources>
