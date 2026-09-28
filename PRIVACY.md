@@ -1,3 +1,8 @@
+---
+title: Privacy Policy
+permalink: /privacy/
+---
+
 # Privacy policy for Android Units
 
 Last updated: 23 September 2026

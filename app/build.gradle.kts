@@ -1,25 +1,10 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
 }
 
-// Release signing is configured out-of-band so that no secrets live in the
-// repository. Create a keystore.properties in the project root (it is
-// .gitignore'd) holding storeFile/storePassword/keyAlias/keyPassword, or set
-// the equivalent UNITS_* environment variables on your build machine. Without
-// either, the release build still works, but comes out unsigned.
-val keystorePropertiesFile = rootProject.file("keystore.properties")
-val keystoreProperties = Properties().apply {
-    if (keystorePropertiesFile.exists()) {
-        keystorePropertiesFile.inputStream().use { load(it) }
-    }
-}
-
-fun signingValue(key: String, env: String): String? =
-    keystoreProperties.getProperty(key) ?: System.getenv(env)
-
-val releaseStoreFile = signingValue("storeFile", "UNITS_KEYSTORE")
+// Release signing comes from the environment (see cicd_notes.md). Without
+// KEYSTORE_FILE the release build is left unsigned.
+val releaseStoreFile: String? = System.getenv("KEYSTORE_FILE")
 
 android {
     namespace = "info.staticfree.android.units"
@@ -44,9 +29,9 @@ android {
         if (releaseStoreFile != null) {
             create("release") {
                 storeFile = file(releaseStoreFile)
-                storePassword = signingValue("storePassword", "UNITS_KEYSTORE_PASSWORD")
-                keyAlias = signingValue("keyAlias", "UNITS_KEY_ALIAS")
-                keyPassword = signingValue("keyPassword", "UNITS_KEY_PASSWORD")
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
             }
         }
     }

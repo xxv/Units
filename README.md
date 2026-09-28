@@ -85,26 +85,10 @@ As you can see above, Units knows a number of units that are useful in the kitch
 
 ## Building
 
-Units builds with Gradle; you need a JDK 17 or newer and an Android SDK with
-platform 37 installed. The wrapper fetches everything else.
+    ./gradlew assembleDebug    # debug APK
+    ./gradlew lintDebug        # lint
 
-    ./gradlew assembleDebug          # debug APK
-    ./gradlew lint                   # static analysis
-    ./gradlew bundleRelease          # release App Bundle for Google Play
-
-To produce a *signed* release, put your keystore details in a `keystore.properties`
-file in the project root (it is git-ignored):
-
-    storeFile=/path/to/units.jks
-    storePassword=...
-    keyAlias=units
-    keyPassword=...
-
-Alternatively set `UNITS_KEYSTORE`, `UNITS_KEYSTORE_PASSWORD`, `UNITS_KEY_ALIAS`
-and `UNITS_KEY_PASSWORD` in the environment, which is friendlier for CI. Without
-either, the release build still works but comes out unsigned.
-
-The finished bundle lands in `app/build/outputs/bundle/release/app-release.aab`.
+Releases are built and signed by GitHub Actions; see [cicd_notes.md](cicd_notes.md).
 
 ## Changelog
 

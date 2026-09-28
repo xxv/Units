@@ -8,3 +8,5 @@
 
 gradlew text eol=lf
 *.bat text eol=crlf
+*.sh text eol=lf
+signing/lineage binary
